@@ -1,7 +1,7 @@
 import { RawVerse, Verse } from "./types";
 import rawVerses from "../data/verses.json";
 import memoize from "./memoize";
-import annotateVerse from "./annotateVerse";
+import annotateVerse from "./populateVerseAnnotations";
 
 const getVerses = memoize(
   (

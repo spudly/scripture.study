@@ -1,7 +1,7 @@
 import parseReference from "./parseReference";
 import allVerses from "../data/verses.json";
 import { Verse, RawVerse } from "./types";
-import annotateVerse from "./annotateVerse";
+import annotateVerse from "./populateVerseAnnotations";
 
 const getVersesByReference = (ref: string): Verse[] =>
   parseReference(ref as string).flatMap(reference =>
