@@ -76,48 +76,35 @@
     "type": "speaker",
     "speaker": "nephi-1",
     "verseId": "31115",
-    "range": [
-      0,
-      21
-    ]
+    "range": [0, 21]
   },
   {
     "id": "6940feec-35e8-4189-a722-e6f824664230",
     "type": "speaker",
     "speaker": "unknown",
     "verseId": "31115",
-    "range": [
-      21,
-      80
-    ]
+    "range": [21, 80]
   },
   {
     "id": "087aa288-3dd0-43b1-bf63-20a69077a303",
     "type": "speaker",
     "speaker": "nephi-1",
     "verseId": "31115",
-    "range": [
-      80
-    ]
+    "range": [80]
   },
   {
     "id": "3de72dcf-22d7-4523-bb3d-6d04f90f2e5c",
     "type": "speaker",
     "speaker": "nephi-1",
     "verseId": "31116",
-    "range": [
-      0,
-      142
-    ]
+    "range": [0, 142]
   },
   {
     "id": "d86f167d-21c1-4a87-ac2b-c42d5c604779",
     "type": "speaker",
     "speaker": "lehi-1",
     "verseId": "31116",
-    "range": [
-      142
-    ]
+    "range": [142]
   },
   {
     "id": "a13a3d38-c64c-41cf-9571-34b5b99d7ec6",
@@ -190,48 +177,35 @@
     "type": "speaker",
     "speaker": "lehi-1",
     "verseId": "31788",
-    "range": [
-      0,
-      36
-    ]
+    "range": [0, 36]
   },
   {
     "id": "5cf16d55-a02f-42e6-96fb-5a4d9bbd3a7f",
     "type": "speaker",
     "speaker": "joseph-1",
     "verseId": "31788",
-    "range": [
-      36
-    ]
+    "range": [36]
   },
   {
     "id": "94ef1b29-a53b-4337-81bb-1f66a961eafd",
     "type": "speaker",
     "speaker": "lehi-1",
     "verseId": "31789",
-    "range": [
-      0,
-      24
-    ]
+    "range": [0, 24]
   },
   {
     "id": "c0b8fb42-058e-48ac-b569-a299c81ed4a2",
     "type": "speaker",
     "speaker": "joseph-1",
     "verseId": "31789",
-    "range": [
-      24,
-      53
-    ]
+    "range": [24, 53]
   },
   {
     "id": "02c680d6-78ac-431f-8fe0-57f26f379f92",
     "type": "speaker",
     "speaker": "jesus-christ",
     "verseId": "31789",
-    "range": [
-      53
-    ]
+    "range": [53]
   },
   {
     "id": "f15023cd-e3c9-498f-846c-c355b97473b6",
@@ -256,91 +230,625 @@
     "type": "speaker",
     "speaker": "jesus-christ",
     "verseId": "31793",
-    "range": [
-      0,
-      184
-    ]
+    "range": [0, 184]
   },
   {
     "id": "05408a8a-0050-44e9-b711-e71449629237",
     "type": "speaker",
     "speaker": "joseph-1",
     "verseId": "31793",
-    "range": [
-      184,
-      200
-    ]
+    "range": [184, 200]
   },
   {
     "id": "e976ad26-1328-4c0b-998e-47f7a1370f5b",
     "type": "speaker",
     "speaker": "jesus-christ",
     "verseId": "31793",
-    "range": [
-      200
-    ]
+    "range": [200]
   },
   {
     "id": "d029a60a-a233-4977-95a8-5b4a43caf741",
     "type": "speaker",
     "speaker": "jesus-christ",
     "verseId": "31794",
-    "range": [
-      0,
-      489
-    ]
+    "range": [0, 489]
   },
   {
     "id": "5776a62c-fca5-4e7f-8f65-8aed634248a9",
     "type": "speaker",
     "speaker": "joseph-1",
     "verseId": "31794",
-    "range": [
-      489
-    ]
+    "range": [489]
   },
   {
     "id": "846806d2-5344-4da0-994a-dbf5d9a0bbd5",
     "type": "speaker",
     "speaker": "jesus-christ",
     "verseId": "31795",
-    "range": [
-      0,
-      150
-    ]
+    "range": [0, 150]
   },
   {
     "id": "605af7a6-2fff-49dd-ae40-641d2286dfca",
     "type": "speaker",
     "speaker": "joseph-1",
     "verseId": "31795",
-    "range": [
-      150
-    ]
+    "range": [150]
   },
   {
     "id": "f78e1246-071d-40a5-aa60-8b80fa56796a",
     "type": "speaker",
     "speaker": "lehi-1",
     "verseId": "31796",
-    "range": [
-      0,
-      36
-    ]
+    "range": [0, 36]
   },
   {
     "id": "798a9c59-f519-48d4-ab63-33614133f42a",
     "type": "speaker",
     "speaker": "joseph-1",
     "verseId": "31796",
-    "range": [
-      36
-    ]
+    "range": [36]
   },
   {
     "id": "9236171f-14f8-4e3a-8c0a-1793caee8ca2",
     "type": "speaker",
     "speaker": "joseph-1",
     "verseId": "31797"
+  },
+  {
+    "verseId": "31798",
+    "range": [0, 29],
+    "id": "5397cedb-bc2f-4b3a-b5b4-092801b45008",
+    "type": "speaker",
+    "speaker": "lehi-1"
+  },
+  {
+    "verseId": "31798",
+    "range": [29, 129],
+    "id": "a3f8dac6-f19a-49d3-8abd-40bfab109ef7",
+    "type": "speaker",
+    "speaker": "joseph-1"
+  },
+  {
+    "verseId": "31798",
+    "range": [129],
+    "id": "2a3c5e99-7c5e-482b-aa73-06ebb4f23f18",
+    "type": "speaker",
+    "speaker": "jesus-christ"
+  },
+  {
+    "verseId": "31799",
+    "range": [0, 24],
+    "id": "700eeee1-8c12-4cc3-b6ff-b5e64a264a59",
+    "type": "speaker",
+    "speaker": "joseph-1"
+  },
+  {
+    "verseId": "31799",
+    "range": [24],
+    "id": "29aae004-ece2-4989-bb6b-0b88af01254d",
+    "type": "speaker",
+    "speaker": "jesus-christ"
+  },
+  {
+    "verseId": "31800",
+    "range": [0, 32],
+    "id": "aef7b3fc-ce73-4d93-86aa-fa32e1f9e59a",
+    "type": "speaker",
+    "speaker": "joseph-1"
+  },
+  {
+    "verseId": "31800",
+    "range": [32],
+    "id": "453cb49a-9baa-4c6c-a105-7c2b543e750a",
+    "type": "speaker",
+    "speaker": "jesus-christ"
+  },
+  {
+    "verseId": "31800",
+    "range": [32],
+    "id": "645490b9-2e35-444f-b694-a631432d159e",
+    "type": "speaker",
+    "speaker": "jesus-christ"
+  },
+  {
+    "verseId": "31801",
+    "id": "65c3b063-a59a-4c38-b23d-d4afd01fd496",
+    "type": "speaker",
+    "speaker": "jesus-christ"
+  },
+  {
+    "verseId": "31802",
+    "id": "46beda9e-d206-49f1-b4fc-a010219d0b52",
+    "type": "speaker",
+    "speaker": "jesus-christ"
+  },
+  {
+    "verseId": "31803",
+    "range": [0, 256],
+    "id": "7f337049-0445-4632-b0fa-b3004ec1e783",
+    "type": "speaker",
+    "speaker": "jesus-christ"
+  },
+  {
+    "verseId": "31804",
+    "range": [0],
+    "id": "aabdb0d4-6bae-467c-bebc-e80c4b8f4dd6",
+    "type": "speaker",
+    "speaker": "lehi-1"
+  },
+  {
+    "verseId": "31805",
+    "id": "761765b7-bf24-4aad-a67a-7803c86725b5",
+    "type": "speaker",
+    "speaker": "lehi-1"
+  },
+  {
+    "verseId": "31806",
+    "id": "819e2814-9c16-41f4-a825-6a3779c4516b",
+    "type": "speaker",
+    "speaker": "lehi-1"
+  },
+  {
+    "verseId": "31807",
+    "range": [0, 241],
+    "id": "49445a9f-9956-471c-b853-6b69a20bf4c5",
+    "type": "speaker",
+    "speaker": "lehi-1"
+  },
+  {
+    "verseId": "31808",
+    "range": [0],
+    "id": "84a419ce-d730-4eab-96b1-078b71979d4e",
+    "type": "speaker",
+    "speaker": "nephi-1"
+  },
+  {
+    "verseId": "31809",
+    "id": "b96ecd2f-83b2-422d-9c66-dc077b11a7fe",
+    "type": "speaker",
+    "speaker": "nephi-1"
+  },
+  {
+    "verseId": "31810",
+    "range": [0, 174],
+    "id": "821afd3c-3d5a-4cac-a143-dd8b7122b4ae",
+    "type": "speaker",
+    "speaker": "nephi-1"
+  },
+  {
+    "verseId": "31810",
+    "range": [174],
+    "id": "07e39290-d661-4c7f-8fc2-b43edd05be1b",
+    "type": "speaker",
+    "speaker": "lehi-1"
+  },
+  {
+    "verseId": "31811",
+    "range": [0, 33],
+    "id": "2300824b-8763-43cb-a19b-e0a021341d79",
+    "type": "speaker",
+    "speaker": "lehi-1"
+  },
+  {
+    "verseId": "31811",
+    "range": [33],
+    "id": "43256327-6ab6-4b46-b832-db9a83ffd693",
+    "type": "speaker",
+    "speaker": "lehi-1"
+  },
+  {
+    "verseId": "31812",
+    "id": "25644421-63d8-4298-af80-d52168804abe",
+    "type": "speaker",
+    "speaker": "lehi-1"
+  },
+  {
+    "verseId": "31813",
+    "id": "d2a8c8cd-8ab1-4c5e-9c0e-9b4a5a9f4501",
+    "type": "speaker",
+    "speaker": "lehi-1"
+  },
+  {
+    "verseId": "31814",
+    "range": [0, 152],
+    "id": "7142ff5e-90cf-42a6-a7ff-501fe4bda138",
+    "type": "speaker",
+    "speaker": "lehi-1"
+  },
+  {
+    "verseId": "31815",
+    "range": [0],
+    "id": "c7ae958f-9908-43b8-ab7c-09e84a9da070",
+    "type": "speaker",
+    "speaker": "nephi-1"
+  },
+  {
+    "verseId": "31816",
+    "range": [0, 32],
+    "id": "1d1be1d3-4883-4729-8faa-8f9dfbd319f8",
+    "type": "speaker",
+    "speaker": "nephi-1"
+  },
+  {
+    "verseId": "31816",
+    "range": [32],
+    "id": "2052cd63-8d2a-47da-889a-6a8989362efd",
+    "type": "speaker",
+    "speaker": "lehi-1"
+  },
+  {
+    "verseId": "31817",
+    "range": [0],
+    "id": "d3c70c7c-715d-4b3f-b8f1-a48d49a73528",
+    "type": "speaker",
+    "speaker": "nephi-1"
+  },
+  {
+    "verseId": "31818",
+    "range": [0, 79],
+    "id": "de18f784-4ce1-4e04-83d4-d6ddc3ece9a9",
+    "type": "speaker",
+    "speaker": "nephi-1"
+  },
+  {
+    "verseId": "31818",
+    "range": [79],
+    "id": "3205b663-ce39-4479-bc52-11349192b15c",
+    "type": "speaker",
+    "speaker": "lehi-1"
+  },
+  {
+    "verseId": "31824",
+    "range": [243],
+    "id": "d707d73d-d2cc-41aa-9eda-6a5e42abe124",
+    "type": "speaker",
+    "speaker": "nephi-1"
+  },
+  {
+    "verseId": "31825",
+    "id": "59f218b3-17e3-4c7c-a1e2-d5c83182a97d",
+    "type": "speaker",
+    "speaker": "nephi-1"
+  },
+  {
+    "verseId": "31826",
+    "id": "3f260606-8d7d-4fff-bf46-9d82722af0a0",
+    "type": "speaker",
+    "speaker": "nephi-1"
+  },
+  {
+    "verseId": "31827",
+    "id": "edc69b0d-b5f3-4645-8cac-153ea71d75e3",
+    "type": "speaker",
+    "speaker": "nephi-1"
+  },
+  {
+    "verseId": "31828",
+    "id": "c377aec0-1df1-4ea4-882a-5d1639fc25f3",
+    "type": "speaker",
+    "speaker": "nephi-1"
+  },
+  {
+    "verseId": "31829",
+    "id": "6fcb7f93-4fd7-4cdb-b0ad-1dc9c23b83c7",
+    "type": "speaker",
+    "speaker": "nephi-1"
+  },
+  {
+    "verseId": "31830",
+    "id": "f4952b7b-14e0-4dc9-b7a7-dc28726f179a",
+    "type": "speaker",
+    "speaker": "nephi-1"
+  },
+  {
+    "verseId": "31831",
+    "id": "420b671c-08c0-479a-b179-123735a4aa37",
+    "type": "speaker",
+    "speaker": "nephi-1"
+  },
+  {
+    "verseId": "31832",
+    "id": "fbb029ad-c1a6-426e-a795-ffeb82a74149",
+    "type": "speaker",
+    "speaker": "nephi-1"
+  },
+  {
+    "verseId": "31833",
+    "id": "e03f271d-1a59-48e9-a7d8-d913e710214e",
+    "type": "speaker",
+    "speaker": "nephi-1"
+  },
+  {
+    "verseId": "31834",
+    "id": "3fafeffb-d5ca-4980-a645-82abbf009c1b",
+    "type": "speaker",
+    "speaker": "nephi-1"
+  },
+  {
+    "verseId": "31835",
+    "id": "5da2653f-2fa6-4d98-af93-1e7ccaa3f0e5",
+    "type": "speaker",
+    "speaker": "nephi-1"
+  },
+  {
+    "verseId": "31836",
+    "id": "08fe72dc-9ec5-48a1-983e-aef7157745df",
+    "type": "speaker",
+    "speaker": "nephi-1"
+  },
+  {
+    "verseId": "31837",
+    "id": "f902cd3f-101b-43fe-ba33-2eb05ade0449",
+    "type": "speaker",
+    "speaker": "nephi-1"
+  },
+  {
+    "verseId": "31838",
+    "id": "4e8a23a1-472a-40e0-bc0a-66ccd9a32487",
+    "type": "speaker",
+    "speaker": "nephi-1"
+  },
+  {
+    "verseId": "31839",
+    "id": "f635b438-505c-45de-b104-de62514e2b85",
+    "type": "speaker",
+    "speaker": "nephi-1"
+  },
+  {
+    "verseId": "31840",
+    "id": "c343f28e-176c-4cba-9587-a68faed4fdeb",
+    "type": "speaker",
+    "speaker": "nephi-1"
+  },
+  {
+    "verseId": "31841",
+    "id": "a3b64b10-3ac8-4007-985b-faa36fc074a5",
+    "type": "speaker",
+    "speaker": "nephi-1"
+  },
+  {
+    "verseId": "31842",
+    "range": [0, 308],
+    "id": "675d8c75-57d8-4cd3-b4f3-d1243271578f",
+    "type": "speaker",
+    "speaker": "nephi-1"
+  },
+  {
+    "verseId": "31819",
+    "range": [0],
+    "id": "0167963b-6389-4b24-a1bd-4eef7e513eae",
+    "type": "speaker",
+    "speaker": "nephi-1"
+  },
+  {
+    "verseId": "31820",
+    "id": "d656c5e0-16d8-40dc-b87a-3cb9588678f5",
+    "type": "speaker",
+    "speaker": "nephi-1"
+  },
+  {
+    "verseId": "31821",
+    "id": "3bf00ed7-8595-464f-986a-6e6ea7f7556a",
+    "type": "speaker",
+    "speaker": "nephi-1"
+  },
+  {
+    "verseId": "31822",
+    "id": "6b0f3729-4ca1-45a3-9c33-a70b75f8fd03",
+    "type": "speaker",
+    "speaker": "nephi-1"
+  },
+  {
+    "verseId": "31823",
+    "id": "e71fc3ba-cfb4-4dcc-8817-94e35c0fa5ca",
+    "type": "speaker",
+    "speaker": "nephi-1"
+  },
+  {
+    "verseId": "31824",
+    "range": [0, 243],
+    "id": "15295a8d-f624-4676-9f2e-86f7aad1ac93",
+    "type": "speaker",
+    "speaker": "nephi-1"
+  },
+  {
+    "verseId": "31843",
+    "range": [0],
+    "id": "1d4faf8f-8a72-4ed4-8b74-3155bc0af1e4",
+    "type": "speaker",
+    "speaker": "nephi-1"
+  },
+  {
+    "verseId": "31844",
+    "id": "959cbe7c-8f5f-4e9a-b7b3-ca7aed2d83e6",
+    "type": "speaker",
+    "speaker": "nephi-1"
+  },
+  {
+    "verseId": "31845",
+    "range": [0, 41],
+    "id": "53e6a9ae-888d-4243-8019-55e349321b88",
+    "type": "speaker",
+    "speaker": "nephi-1"
+  },
+
+  {
+    "verseId": "31845",
+    "range": [41],
+    "id": "36a5801b-f994-472e-a101-c71ef0cde264",
+    "type": "speaker",
+    "speaker": "laman"
+  },
+  {
+    "verseId": "31845",
+    "range": [41],
+    "id": "fcf2d5a6-216b-40f0-9242-a085083733c5",
+    "type": "speaker",
+    "speaker": "lemuel"
+  },
+  {
+    "verseId": "31846",
+    "range": [0],
+    "id": "e366d147-1833-4405-80f9-a300337cc6f7",
+    "type": "speaker",
+    "speaker": "nephi-1"
+  },
+  {
+    "verseId": "31847",
+    "id": "353cd24c-48d6-419a-8443-353ea614f51f",
+    "type": "speaker",
+    "speaker": "nephi-1"
+  },
+  {
+    "verseId": "31848",
+    "id": "b70005e2-65bb-448f-8714-73388d291fb2",
+    "type": "speaker",
+    "speaker": "nephi-1"
+  },
+  {
+    "verseId": "31849",
+    "id": "2863063d-88f9-4123-92ce-170bd09969c9",
+    "type": "speaker",
+    "speaker": "nephi-1"
+  },
+  {
+    "verseId": "31850",
+    "id": "858d9da9-c46d-40f2-bd9f-9c389c318a8c",
+    "type": "speaker",
+    "speaker": "nephi-1"
+  },
+  {
+    "verseId": "31851",
+    "id": "5de4863a-256a-46ea-8295-7c52227f12f3",
+    "type": "speaker",
+    "speaker": "nephi-1"
+  },
+  {
+    "verseId": "31852",
+    "id": "344ff773-e6b9-4465-add1-4774d845a95d",
+    "type": "speaker",
+    "speaker": "nephi-1"
+  },
+  {
+    "verseId": "31853",
+    "id": "607c3a0b-9121-44fb-9d68-2e79110b3439",
+    "type": "speaker",
+    "speaker": "nephi-1"
+  },
+  {
+    "verseId": "31854",
+    "id": "50b3afb0-a8a1-4027-a98f-5db49562bb7c",
+    "type": "speaker",
+    "speaker": "nephi-1"
+  },
+  {
+    "verseId": "31855",
+    "id": "ff628f79-fd28-41d6-a440-88b4283207e1",
+    "type": "speaker",
+    "speaker": "nephi-1"
+  },
+  {
+    "verseId": "31856",
+    "id": "b235a514-aec5-479e-9a6b-48110b3e69a8",
+    "type": "speaker",
+    "speaker": "nephi-1"
+  },
+  {
+    "verseId": "31857",
+    "id": "9c619eba-7247-45f5-b822-3b82b1184665",
+    "type": "speaker",
+    "speaker": "nephi-1"
+  },
+  {
+    "verseId": "31858",
+    "id": "1571a43d-e384-4905-b5ab-7441255a2eb2",
+    "type": "speaker",
+    "speaker": "nephi-1"
+  },
+  {
+    "verseId": "31859",
+    "id": "ff6eb05b-a04f-4eb6-acee-4f503ecc31c6",
+    "type": "speaker",
+    "speaker": "nephi-1"
+  },
+  {
+    "verseId": "31860",
+    "id": "3b09ccb1-4545-4c41-8c11-f3c77fd61ecc",
+    "type": "speaker",
+    "speaker": "nephi-1"
+  },
+  {
+    "verseId": "31861",
+    "id": "ec109e61-0391-408f-b995-583a992646b3",
+    "type": "speaker",
+    "speaker": "nephi-1"
+  },
+  {
+    "verseId": "31862",
+    "range": [0, 83],
+    "id": "0341f766-8316-4ec1-ba0f-2ab843d75da6",
+    "type": "speaker",
+    "speaker": "nephi-1"
+  },
+  {
+    "verseId": "31862",
+    "range": [83, 185],
+    "id": "622e9ba7-37fb-4729-b65e-c796e20c5d84",
+    "type": "speaker",
+    "speaker": "jesus-christ"
+  },
+  {
+    "verseId": "31862",
+    "range": [185],
+    "id": "88cabccd-5425-4266-9aa4-bb48d26aca8c",
+    "type": "speaker",
+    "speaker": "nephi-1"
+  },
+  {
+    "verseId": "31863",
+    "id": "22f15ff2-b812-4ada-ae62-c0bdfda83d15",
+    "type": "speaker",
+    "speaker": "nephi-1"
+  },
+  {
+    "verseId": "31864",
+    "range": [0, 29],
+    "id": "9a8ba884-b90f-44a7-bf07-44fdc5576cd4",
+    "type": "speaker",
+    "speaker": "nephi-1"
+  },
+  {
+    "verseId": "31864",
+    "range": [29],
+    "id": "be3827f9-fb30-4276-bd0a-7faef4cb5b80",
+    "type": "speaker",
+    "speaker": "jesus-christ"
+  },
+  {
+    "verseId": "31865",
+    "range": [0, 117],
+    "id": "f73729c6-01dc-497a-bb95-84524fa007a0",
+    "type": "speaker",
+    "speaker": "jesus-christ"
+  },
+  {
+    "verseId": "31865",
+    "range": [117],
+    "id": "7e325ae4-418c-4e20-b7f1-cd8bd33512c5",
+    "type": "speaker",
+    "speaker": "nephi-1"
+  },
+  {
+    "verseId": "31866",
+    "id": "387afb83-586d-418c-965f-7b521071c7db",
+    "type": "speaker",
+    "speaker": "nephi-1"
+  },
+  {
+    "verseId": "31867",
+    "range": [0, 31],
+    "id": "46ecd8e0-7de0-4866-8573-54b055e4cf92",
+    "type": "speaker",
+    "speaker": "nephi-1"
   }
 ]

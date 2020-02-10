@@ -51,6 +51,23 @@ const themes: Array<MicroTheme> = [
       textColor: "active:text-green-900",
       borderColor: "active:border-green-900"
     }
+  },
+  {
+    default: {
+      bgColor: "bg-red-200",
+      textColor: "text-red-900",
+      borderColor: "border-red-900"
+    },
+    hover: {
+      bgColor: "hover:bg-red-300",
+      textColor: "hover:text-red-900",
+      borderColor: "hover:border-red-900"
+    },
+    active: {
+      bgColor: "active:bg-red-400",
+      textColor: "active:text-red-900",
+      borderColor: "active:border-red-900"
+    }
   }
 ];
 
@@ -65,6 +82,9 @@ const theme = (
     states = ["default", "hover", "active"],
     colors = ["bgColor", "textColor", "borderColor"]
   }: Options = {}
-) => states.flatMap(state => colors.map(color => themes[index][state][color]));
+) =>
+  states.flatMap(state =>
+    colors.map(color => themes[index % themes.length][state][color])
+  );
 
 export default theme;

@@ -83,3 +83,5 @@ export type MicroTheme = {
   hover: StateMicroTheme;
   active: StateMicroTheme;
 };
+
+export type DrawerView = { type: "CREATE_ANNOTATIONS"; marks: Array<Mark> };

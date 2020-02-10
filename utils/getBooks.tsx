@@ -4,7 +4,6 @@ import memoize from "./memoize";
 
 const getBooks = memoize(
   (volumeToken: string): Array<Book> => {
-    console.log({ volumeToken });
     const map = new Map<number, Book>();
     for (const v of verses as Array<RawVerse>) {
       if (v.volume_lds_url === volumeToken) {
