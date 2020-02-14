@@ -2,7 +2,7 @@ import React, { FC, Fragment, ReactNode, useContext } from "react";
 import { Annotation, Verse as $Verse } from "../utils/types";
 import AnnotationsContext from "../contexts/AnnotationsContext";
 import sortAnnotations from "../utils/sortAnnotations";
-import theme from "../data/themes";
+import { theme } from "../data/themes";
 import unique from "../utils/unique";
 
 const getAnnotationClasses = (
@@ -29,24 +29,19 @@ const Verse: FC<{
   const { speakers } = useContext(AnnotationsContext);
   const breakpoints = unique([
     0,
-    ...sortedAnnotations.flatMap(note => note.range ?? []).sort()
+    ...sortedAnnotations.flatMap(note => note.range ?? []).sort((a, b) => a - b)
   ]);
 
-  const getAnnotationsAt = (index: number) => {
-    const result = sortedAnnotations.filter(
+  const getAnnotationsAt = (index: number) =>
+    sortedAnnotations.filter(
       ({ range: [start, end = text.length] = [0, text.length] }) =>
         index >= start && index < end
     );
-    if (verse.number === 3) {
-      console.log({ verse: verse.number, index, sortedAnnotations, result });
-    }
-    return result;
-  };
   return (
     <blockquote
       data-verse={verse.id}
       key={verse.id}
-      className="mx-4 sm:mx-24 content-center text-4xl font-serif my-6 leading-loose text-justify"
+      className="content-center text-4xl font-serif my-6 leading-loose text-justify"
     >
       <span className={getAnnotationClasses(getAnnotationsAt(0), speakers)}>
         {verse.number}{" "}

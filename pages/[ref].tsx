@@ -5,23 +5,37 @@ import React, {
   useState,
   ReactNode,
   ReactElement,
-  useEffect
+  useEffect,
+  useCallback
 } from "react";
 import { NextPage } from "next";
+import Link from "next/link";
 import fetch from "isomorphic-unfetch";
 import {
   Verse,
   Mark,
-  DrawerView as $DrawerView,
-  Annotation
+  Annotation,
+  ApiResponse,
+  SlimBookAndChapter,
+  SlimBookAndChapterAndVerse,
+  SlimVerse
 } from "../utils/types";
 import Verses from "../components/Verses";
 import AnnotationsContext from "../contexts/AnnotationsContext";
 import SpeakerLegend from "../components/SpeakerLegend";
 import unique from "../utils/unique";
-import { MdClose } from "react-icons/md";
+import {
+  MdClose,
+  MdSave,
+  MdErrorOutline,
+  MdDone,
+  MdRecordVoiceOver,
+  MdNavigateBefore,
+  MdNavigateNext
+} from "react-icons/md";
 import classnames from "classnames";
 import uuid from "uuid/v4";
+import CircleButton from "../components/CircleButton";
 
 type Unstyled<T extends keyof JSX.IntrinsicElements> = Omit<
   JSX.IntrinsicElements[T],
@@ -93,99 +107,22 @@ const Textarea: FC<Unstyled<"textarea">> = props => (
   />
 );
 
-const Button: FC<Unstyled<"button">> = props => (
-  <button type="button" {...props} />
-);
+const Button: FC<Unstyled<"button"> & {
+  intent?: "success" | "error" | "warning" | "danger";
+}> = props => <button type="button" {...props} />;
 
 const IconButton: FC<Unstyled<"button">> = props => <button {...props} />;
 
-const Drawer: FC<{
-  children: ReactNode;
-  isOpen: boolean;
-  close: () => void;
-}> = ({ isOpen, close, children }) => (
-  <div
-    className={classnames(
-      "fixed top-0 right-0 bottom-0 duration-200 ease-in bg-gray-100 opacity-75",
-      {
-        "w-0": !isOpen,
-        "w-3/4 sm:w-3/12": isOpen
-      }
-    )}
-  >
-    <div className="absolute left-0 top-0 p-2">
-      <IconButton onClick={close}>
-        <MdClose />
-      </IconButton>
-    </div>
-    {children}
-  </div>
-);
-
-const CreateAnnotation: FC<{ marks: Array<Mark> }> = ({ marks }) => {
-  const [notes, setNotes] = useState<Array<Annotation> | null>(null);
-  const [speaker, setSpeaker] = useState("");
-  return (
-    <form>
-      <Heading level={1}>Create Annotation</Heading>
-      <textarea readOnly value={JSON.stringify(marks, null, 2)} />
-      <FormGroup
-        label="Speaker"
-        control={
-          <Select
-            value={speaker}
-            onChange={e => setSpeaker(e.currentTarget.value)}
-          >
-            <option />
-            <option>jesus-christ</option>
-            <option>joseph-1</option>
-            <option>laman</option>
-            <option>lehi-1</option>
-            <option>lemuel</option>
-            <option>nephi-1</option>
-          </Select>
-        }
-      />
-      <div className="text-center">
-        <Button
-          onClick={() =>
-            setNotes(
-              marks.map(mark => ({
-                ...mark,
-                id: uuid(),
-                type: "speaker",
-                speaker
-              }))
-            )
-          }
-        >
-          Create
-        </Button>
-      </div>
-      {notes && (
-        <FormGroup
-          label="Annotations"
-          control={
-            <Textarea
-              readOnly
-              rows={40}
-              value={JSON.stringify(notes, null, 2)
-                .replace(/^\[/, "")
-                .replace(/\]$/, "")}
-            />
-          }
-        />
-      )}
-    </form>
-  );
-};
-
-const DrawerView: FC<{ view: $DrawerView | null }> = ({ view }) => {
-  if (view?.type === "CREATE_ANNOTATIONS") {
-    return <CreateAnnotation marks={view.marks} />;
-  }
-  return null;
-};
+const buildSpeakerAnnotations = (
+  marks: Array<Mark>,
+  speaker: string
+): Array<Annotation> =>
+  marks.map(mark => ({
+    ...mark,
+    id: uuid(),
+    type: "speaker",
+    speaker
+  }));
 
 class ErrorBoundary extends React.Component<
   { children?: ReactNode },
@@ -204,10 +141,73 @@ class ErrorBoundary extends React.Component<
   }
 }
 
+const getUrl = ({
+  book,
+  chapter,
+  verse = undefined
+}: SlimBookAndChapter & { verse?: SlimVerse }) =>
+  `/${book.title.replace(/\s/g, "")}${chapter.number}${
+    verse?.number ? `.${verse?.number}` : ""
+  }`;
+
+const fetchVerses = async (
+  ref: string
+): Promise<{ verses: Array<Verse>; prev?: string; next?: string }> => {
+  const res = await fetch(
+    `http://localhost:3000/api/ref/${encodeURIComponent(ref as string)}`
+  );
+  if (!res.ok) {
+    throw new Error(res.statusText);
+  }
+  const result: ApiResponse = await res.json();
+  switch (result.type) {
+    case "chapter": {
+      const { prev, next } = result;
+      return { verses: result.verses, prev: getUrl(prev), next: getUrl(next) };
+    }
+    case "verses":
+      return { verses: result.verses };
+    case "verse": {
+      const { prev, next } = result;
+      return { verses: [result.verse], prev: getUrl(prev), next: getUrl(next) };
+    }
+    default:
+      return { verses: [] };
+  }
+};
+
+const Pagination: FC<{ type: "prev" | "next"; href: string }> = ({
+  type,
+  href
+}) => (
+  <Link href="/[ref]" as={href}>
+    <a
+      className={classnames(
+        "fixed flex flex-col justify-center items-center top-0 bottom-0 w-12 text-center text-6xl text-gray-500 hover:text-gray-900 cursor-pointer hover:bg-gray-100 duration-300",
+        {
+          "left-0": type === "prev",
+          "right-0": type === "next"
+        }
+      )}
+    >
+      {type === "prev" ? <MdNavigateBefore /> : <MdNavigateNext />}
+    </a>
+  </Link>
+);
+
 const Ref: NextPage<{
+  reference: string;
   verses: Array<Verse>;
-}> = ({ verses }) => {
-  const [drawerView, setDrawerView] = useState<$DrawerView | null>(null);
+  prev?: string;
+  next?: string;
+}> = props => {
+  const [verses, setVerses] = useState(props.verses);
+  const [marks, setMarks] = useState<Array<Mark> | null>(null);
+
+  useEffect(() => {
+    setVerses(props.verses);
+  }, [props.verses]);
+
   const contextValue = useMemo(
     () => ({
       speakers: unique(
@@ -220,34 +220,103 @@ const Ref: NextPage<{
     [verses]
   );
 
+  const saveAnnotations = async (newAnnotations: Array<Annotation>) => {
+    const response = await fetch("/api/annotations", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(newAnnotations)
+    });
+    if (!response.ok) {
+      throw new Error(response.statusText);
+    }
+    setVerses(prev =>
+      prev.map(verse => ({
+        ...verse,
+        annotations: [
+          ...verse.annotations,
+          ...newAnnotations.filter(note => note.verseId === verse.id)
+        ]
+      }))
+    );
+  };
+
+  const [isSpeakerFormOpen, setIsSpeakerFormOpen] = useState(false);
+
   return (
     <>
-      <div className="flex flex-col h-screen">
-        <AnnotationsContext.Provider value={contextValue}>
-          <div className="bg-red flex flex-row flex-no-wrap">
-            <SpeakerLegend />
-          </div>
-          <div className="flex-grow overflow-y-scroll">
-            <Verses verses={verses} setDrawerView={setDrawerView} />
-          </div>
-        </AnnotationsContext.Provider>
-      </div>
-      <Drawer isOpen={drawerView !== null} close={() => setDrawerView(null)}>
-        {drawerView && <DrawerView view={drawerView} />}
-      </Drawer>
+      {props.prev && <Pagination type="prev" href={props.prev} />}
+      <AnnotationsContext.Provider value={contextValue}>
+        <div className="fixed top-0 left-0">
+          <SpeakerLegend />
+        </div>
+        <Verses verses={verses} setMarks={setMarks} />
+      </AnnotationsContext.Provider>
+      {props.next && <Pagination type="next" href={props.next} />}
+      {marks && (
+        <div className="fixed bottom-0 right-0 pr-4 pb-4">
+          {isSpeakerFormOpen && (
+            <div
+              className="fixed top-0 right-0 bottom-0 left-0"
+              onClick={() => setIsSpeakerFormOpen(false)}
+            />
+          )}
+          <CircleButton
+            themeId="red"
+            onClick={() => {
+              window.getSelection()?.removeAllRanges();
+              setIsSpeakerFormOpen(is => !is);
+            }}
+          >
+            <div className="whitespace-no-wrap">
+              <div className="h-20 w-20 inline-flex align-middle justify-center items-center">
+                <MdRecordVoiceOver />
+              </div>
+              <div
+                className={classnames(
+                  "inline-block align-middle text-base text-black overflow-hidden min-w-0 duration-200",
+                  {
+                    "max-w-64": isSpeakerFormOpen,
+                    "max-w-0": !isSpeakerFormOpen
+                  }
+                )}
+              >
+                <div className="pr-6">
+                  <Select
+                    onClick={e => e.stopPropagation()}
+                    onChange={e => {
+                      const speaker = e.currentTarget.value;
+                      if (speaker) {
+                        saveAnnotations(
+                          buildSpeakerAnnotations(marks, speaker)
+                        );
+                        setMarks(null);
+                      }
+                    }}
+                  >
+                    <option />
+                    <option>isaiah-1</option>
+                    <option>jacob-2</option>
+                    <option>jesus-christ</option>
+                    <option>joseph-1</option>
+                    <option>laman</option>
+                    <option>lehi-1</option>
+                    <option>lemuel</option>
+                    <option>nephi-1</option>
+                  </Select>
+                </div>
+              </div>
+            </div>
+          </CircleButton>
+        </div>
+      )}
     </>
   );
 };
 
 Ref.getInitialProps = async ({ query: { ref } }) => {
-  const res = await fetch(
-    `http://localhost:3000/api/byRef/${encodeURIComponent(ref as string)}`
-  );
-  if (res.ok) {
-    const verses = await res.json();
-    return { verses };
-  }
-  throw new Error(res.statusText);
+  console.log("getInitialProps", ref);
+  const { verses, prev, next } = await fetchVerses(ref as string);
+  return { reference: ref as string, verses, prev, next };
 };
 
 export default Ref;

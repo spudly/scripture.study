@@ -1,22 +1,20 @@
 import { NextApiRequest, NextApiResponse } from "next";
-import getVolumes from "../../utils/getVolumes";
+import getAllBooks from "../../utils/getAllBooks";
+
+const getBooksResponse = () => ({
+  type: "books",
+  books: getAllBooks()
+});
 
 const handleRequest = (req: NextApiRequest, resp: NextApiResponse) => {
   const {
     method,
-    query: { tokens }
+    query: { ref }
   } = req;
   if (method === "GET") {
-    let body;
-    try {
-      body = getVolumes();
-    } catch (error) {
-      resp.status(500).end();
-      return;
-    }
     resp.status(200);
     resp.setHeader("Content-Type", "application/json");
-    resp.send(JSON.stringify(body));
+    resp.send(JSON.stringify(getBooksResponse()));
     return;
   }
   resp.status(500).end();

@@ -45,14 +45,14 @@ export type Book = {
   token: string;
   volumeTitle: string;
   title: string;
-  chapterNumbers: Array<number>;
+  chapters: Array<SlimChapter>;
 };
 
 export type Volume = {
   id: string;
   token: string;
   title: string;
-  bookTitles: Array<string>;
+  books: Array<{ id: string; title: string }>;
 };
 
 export type Volumes = {
@@ -85,3 +85,40 @@ export type MicroTheme = {
 };
 
 export type DrawerView = { type: "CREATE_ANNOTATIONS"; marks: Array<Mark> };
+
+export type Unstyled<T extends keyof JSX.IntrinsicElements> = Omit<
+  JSX.IntrinsicElements[T],
+  "className" | "style"
+>;
+
+export type SlimVolume = { id: string; title: string };
+export type SlimBook = { id: string; title: string; numChapters: number };
+export type SlimChapter = { id: string; number: number; numVerses: number };
+export type SlimVerse = { id: string; number: number };
+
+export type SlimBookAndChapter = { book: SlimBook; chapter: SlimChapter };
+
+export type SlimBookAndChapterAndVerse = SlimBookAndChapter & {
+  verse: SlimVerse;
+};
+
+export type ApiResponse =
+  | { type: "volumes"; volumes: Volume[] }
+  | { type: "volume"; volume: Volume }
+  | { type: "book"; book: Book }
+  | {
+      type: "chapter";
+      verses: Verse[];
+      prev: SlimBookAndChapter;
+      next: SlimBookAndChapter;
+    }
+  | {
+      type: "verses";
+      verses: Verse[];
+    }
+  | {
+      type: "verse";
+      verse: Verse;
+      prev: SlimBookAndChapterAndVerse;
+      next: SlimBookAndChapterAndVerse;
+    };

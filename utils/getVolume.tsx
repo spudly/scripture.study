@@ -1,5 +1,5 @@
 import findOrThrow from "./findOrThrow";
-import getVolumes from "./getVolumes";
+import getVolumes from "./getAllVolumes";
 import memoize from "./memoize";
 
 const getVolume = memoize((volumeToken: string) =>

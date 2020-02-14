@@ -1,31 +1,36 @@
 import React, { useEffect } from "react";
 import { NextPage } from "next";
-import { Verse as $Verse, Mark, MarkRange, DrawerView } from "../utils/types";
+import { Verse as $Verse, Mark } from "../utils/types";
 import debounce from "../utils/debounce";
 import Verse from "./Verse";
 import getMarks from "../utils/createMarks";
+import isEmptySelection from "../utils/isEmptySelection";
 
 const Verses: NextPage<{
   verses: Array<$Verse>;
-  setDrawerView: (view: DrawerView) => void;
-}> = ({ verses, setDrawerView }) => {
+  setMarks: (marks: Array<Mark> | null) => void;
+}> = ({ verses, setMarks }) => {
   useEffect(() => {
-    const handleSelectionChange = debounce(() => {
+    const handleSelectionChange = () => {
       const selection = window.getSelection();
       if (selection) {
+        if (isEmptySelection(selection)) {
+          // setMarks(null);
+          return;
+        }
         const marks = getMarks(verses, selection);
         if (marks) {
-          setDrawerView({ type: "CREATE_ANNOTATIONS", marks });
+          setMarks(marks);
         }
       }
-    }, 200);
+    };
     document.addEventListener("selectionchange", handleSelectionChange);
     return () =>
       document.removeEventListener("selectionchange", handleSelectionChange);
   }, []);
 
   return (
-    <div className="w-screen flex-grow flex flex-col overflow-auto">
+    <div className="mx-4 sm:mx-24 flex-grow flex flex-col overflow-auto min-h-screen justify-center">
       {verses.map(verse => (
         <Verse key={verse.number} verse={verse} />
       ))}

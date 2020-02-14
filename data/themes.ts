@@ -1,7 +1,7 @@
 import { MicroTheme, StateMicroTheme } from "../utils/types";
 
-const themes: Array<MicroTheme> = [
-  {
+const themes = {
+  yellow: {
     default: {
       bgColor: "bg-yellow-200",
       textColor: "text-yellow-900",
@@ -17,8 +17,8 @@ const themes: Array<MicroTheme> = [
       textColor: "active:text-yellow-900",
       borderColor: "active:border-yellow-900"
     }
-  },
-  {
+  } as MicroTheme,
+  blue: {
     default: {
       bgColor: "bg-blue-200",
       textColor: "text-blue-900",
@@ -34,8 +34,8 @@ const themes: Array<MicroTheme> = [
       textColor: "active:text-blue-900",
       borderColor: "active:border-blue-900"
     }
-  },
-  {
+  } as MicroTheme,
+  green: {
     default: {
       bgColor: "bg-green-200",
       textColor: "text-green-900",
@@ -51,8 +51,8 @@ const themes: Array<MicroTheme> = [
       textColor: "active:text-green-900",
       borderColor: "active:border-green-900"
     }
-  },
-  {
+  } as MicroTheme,
+  red: {
     default: {
       bgColor: "bg-red-200",
       textColor: "text-red-900",
@@ -68,23 +68,30 @@ const themes: Array<MicroTheme> = [
       textColor: "active:text-red-900",
       borderColor: "active:border-red-900"
     }
-  }
-];
+  } as MicroTheme
+};
 
 type Options = {
   states?: Array<keyof MicroTheme>;
   colors?: Array<keyof StateMicroTheme>;
 };
 
-const theme = (
-  index: number,
+export type ThemeName = keyof typeof themes;
+
+export const themeNames = Object.keys(themes) as Array<ThemeName>;
+
+export const theme = (
+  themeId: number | ThemeName,
   {
     states = ["default", "hover", "active"],
     colors = ["bgColor", "textColor", "borderColor"]
   }: Options = {}
-) =>
-  states.flatMap(state =>
-    colors.map(color => themes[index % themes.length][state][color])
+) => {
+  const name =
+    typeof themeId === "string"
+      ? themeId
+      : themeNames[themeId % themeNames.length];
+  return states.flatMap(state =>
+    colors.map(color => themes[name][state][color])
   );
-
-export default theme;
+};
