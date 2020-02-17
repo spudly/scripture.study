@@ -1,23 +1,20 @@
 import { NextApiRequest, NextApiResponse } from "next";
 import { promises as fsPromises } from "fs";
-import { Annotation } from "../../utils/types";
+import { Mark } from "../../utils/types";
 
 const { readFile, writeFile } = fsPromises;
-const annotationsFile = `${process.env.ROOT}/data/annotations.json`;
+const marksFile = `${process.env.ROOT}/data/marks.json`;
 
-const addAnnotations = async (annotations: Array<Annotation>) => {
-  const savedAnnotations = JSON.parse(await readFile(annotationsFile, "utf-8"));
-  await writeFile(
-    annotationsFile,
-    JSON.stringify([...savedAnnotations, ...annotations])
-  );
+const addMarks = async (marks: Array<Mark>) => {
+  const savedMarks = JSON.parse(await readFile(marksFile, "utf-8"));
+  await writeFile(marksFile, JSON.stringify([...savedMarks, ...marks]));
 };
 
 const handleRequest = async (req: NextApiRequest, resp: NextApiResponse) => {
   const { method, body } = req;
   if (method === "POST") {
     try {
-      await addAnnotations(body as Array<Annotation>);
+      await addMarks(body as Array<Mark>);
     } catch (error) {
       resp.status(500).send(error.stack);
       return;

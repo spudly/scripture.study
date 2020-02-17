@@ -1,4 +1,4 @@
-import { Verse as $Verse, Mark, MarkRange } from "./types";
+import { Verse as $Verse, BaseMark } from "./types";
 import getClosestVerseElement from "./getClosestVerseElement";
 import getMarkedVerses from "./getHighlightedVerses";
 import getTextOffsetRelativeToContainer from "./getTextOffsetRelativeToContainer";
@@ -7,7 +7,7 @@ import isEmptySelection from "./isEmptySelection";
 const createMarks = (
   verses: Array<$Verse>,
   selection: Selection
-): Array<Mark> | null => {
+): Array<BaseMark> | null => {
   if (isEmptySelection(selection)) {
     return null;
   }
@@ -38,7 +38,7 @@ const createMarks = (
       range?.endOffset
     ) - `${lastVerse.number} `.length;
   const marks = markedVerses.map(
-    (v, index): Mark => {
+    (v, index): BaseMark => {
       const isFirst = index === 0;
       const isLast = index === markedVerses.length - 1;
       return {

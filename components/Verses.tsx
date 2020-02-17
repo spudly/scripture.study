@@ -1,15 +1,15 @@
 import React, { useEffect } from "react";
 import { NextPage } from "next";
-import { Verse as $Verse, Mark } from "../utils/types";
-import debounce from "../utils/debounce";
+import { Verse as $Verse, Mark, BaseMark } from "../utils/types";
 import Verse from "./Verse";
 import getMarks from "../utils/createMarks";
 import isEmptySelection from "../utils/isEmptySelection";
 
 const Verses: NextPage<{
   verses: Array<$Verse>;
-  setMarks: (marks: Array<Mark> | null) => void;
-}> = ({ verses, setMarks }) => {
+  setMarks: (marks: Array<BaseMark> | null) => void;
+  selectMark: (annotatonId: string) => void;
+}> = ({ verses, setMarks, selectMark }) => {
   useEffect(() => {
     const handleSelectionChange = () => {
       const selection = window.getSelection();
@@ -30,9 +30,9 @@ const Verses: NextPage<{
   }, []);
 
   return (
-    <div className="mx-4 sm:mx-24 flex-grow flex flex-col overflow-auto min-h-screen justify-center">
+    <div className="mx-4 sm:mx-32 flex-grow flex flex-col overflow-auto min-h-screen justify-center">
       {verses.map(verse => (
-        <Verse key={verse.number} verse={verse} />
+        <Verse key={verse.number} verse={verse} selectMark={selectMark} />
       ))}
     </div>
   );

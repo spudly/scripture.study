@@ -13,15 +13,15 @@ import Link from "next/link";
 import fetch from "isomorphic-unfetch";
 import {
   Verse,
+  BaseMark,
   Mark,
-  Annotation,
   ApiResponse,
   SlimBookAndChapter,
   SlimBookAndChapterAndVerse,
   SlimVerse
 } from "../utils/types";
 import Verses from "../components/Verses";
-import AnnotationsContext from "../contexts/AnnotationsContext";
+import MarksContext from "../contexts/MarksContext";
 import SpeakerLegend from "../components/SpeakerLegend";
 import unique from "../utils/unique";
 import {
@@ -31,7 +31,9 @@ import {
   MdDone,
   MdRecordVoiceOver,
   MdNavigateBefore,
-  MdNavigateNext
+  MdNavigateNext,
+  MdEdit,
+  MdDelete
 } from "react-icons/md";
 import classnames from "classnames";
 import uuid from "uuid/v4";
@@ -113,10 +115,10 @@ const Button: FC<Unstyled<"button"> & {
 
 const IconButton: FC<Unstyled<"button">> = props => <button {...props} />;
 
-const buildSpeakerAnnotations = (
-  marks: Array<Mark>,
+const buildSpeakerMarks = (
+  marks: Array<BaseMark>,
   speaker: string
-): Array<Annotation> =>
+): Array<Mark> =>
   marks.map(mark => ({
     ...mark,
     id: uuid(),
@@ -202,7 +204,7 @@ const Ref: NextPage<{
   next?: string;
 }> = props => {
   const [verses, setVerses] = useState(props.verses);
-  const [marks, setMarks] = useState<Array<Mark> | null>(null);
+  const [marks, setMarks] = useState<Array<BaseMark> | null>(null);
 
   useEffect(() => {
     setVerses(props.verses);
@@ -212,7 +214,7 @@ const Ref: NextPage<{
     () => ({
       speakers: unique(
         verses
-          .flatMap((v: Verse) => v.annotations)
+          .flatMap((v: Verse) => v.marks)
           .filter(note => note.type === "speaker")
           .map(note => note.speaker)
       )
@@ -220,11 +222,11 @@ const Ref: NextPage<{
     [verses]
   );
 
-  const saveAnnotations = async (newAnnotations: Array<Annotation>) => {
-    const response = await fetch("/api/annotations", {
+  const saveMarks = async (newMarks: Array<Mark>) => {
+    const response = await fetch("/api/marks", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(newAnnotations)
+      body: JSON.stringify(newMarks)
     });
     if (!response.ok) {
       throw new Error(response.statusText);
@@ -232,89 +234,125 @@ const Ref: NextPage<{
     setVerses(prev =>
       prev.map(verse => ({
         ...verse,
-        annotations: [
-          ...verse.annotations,
-          ...newAnnotations.filter(note => note.verseId === verse.id)
+        marks: [
+          ...verse.marks,
+          ...newMarks.filter(note => note.verseId === verse.id)
         ]
       }))
     );
   };
 
   const [isSpeakerFormOpen, setIsSpeakerFormOpen] = useState(false);
+  const [selectedMarkId, setSelectedMarkId] = useState<string | null>(null);
+
+  const deleteMark = async (id: string) => {
+    const response = await fetch(`/api/marks/${encodeURIComponent(id)}`, {
+      method: "DELETE"
+    });
+    if (!response.ok) {
+      throw new Error(response.statusText);
+    }
+    // TODO: handle error
+  };
 
   return (
     <>
       {props.prev && <Pagination type="prev" href={props.prev} />}
-      <AnnotationsContext.Provider value={contextValue}>
-        <div className="fixed top-0 left-0">
+      <MarksContext.Provider value={contextValue}>
+        <div className="fixed top-0 left-0 ml-4">
           <SpeakerLegend />
         </div>
-        <Verses verses={verses} setMarks={setMarks} />
-      </AnnotationsContext.Provider>
+        <Verses
+          verses={verses}
+          setMarks={setMarks}
+          selectMark={setSelectedMarkId}
+        />
+      </MarksContext.Provider>
       {props.next && <Pagination type="next" href={props.next} />}
-      {marks && (
-        <div className="fixed bottom-0 right-0 pr-4 pb-4">
-          {isSpeakerFormOpen && (
-            <div
-              className="fixed top-0 right-0 bottom-0 left-0"
-              onClick={() => setIsSpeakerFormOpen(false)}
-            />
-          )}
-          <CircleButton
-            themeId="red"
-            onClick={() => {
-              window.getSelection()?.removeAllRanges();
-              setIsSpeakerFormOpen(is => !is);
-            }}
-          >
-            <div className="whitespace-no-wrap">
-              <div className="h-20 w-20 inline-flex align-middle justify-center items-center">
-                <MdRecordVoiceOver />
-              </div>
-              <div
-                className={classnames(
-                  "inline-block align-middle text-base text-black overflow-hidden min-w-0 duration-200",
-                  {
-                    "max-w-64": isSpeakerFormOpen,
-                    "max-w-0": !isSpeakerFormOpen
-                  }
-                )}
+      <div className="fixed bottom-0 right-0 pr-4 pb-4">
+        {selectedMarkId && (
+          <>
+            <div>
+              <CircleButton themeId="blue" onClick={() => alert("TODO")}>
+                <MdEdit />
+              </CircleButton>
+            </div>
+            <div>
+              <CircleButton
+                themeId="red"
+                onClick={() => deleteMark(selectedMarkId)}
               >
-                <div className="pr-6">
-                  <Select
-                    onClick={e => e.stopPropagation()}
-                    onChange={e => {
-                      const speaker = e.currentTarget.value;
-                      if (speaker) {
-                        saveAnnotations(
-                          buildSpeakerAnnotations(marks, speaker)
-                        );
-                        setMarks(null);
-                      }
-                    }}
-                  >
-                    <option />
-                    <option>isaiah-1</option>
-                    <option>jacob-2</option>
-                    <option>jesus-christ</option>
-                    <option>joseph-1</option>
-                    <option>laman</option>
-                    <option>lehi-1</option>
-                    <option>lemuel</option>
-                    <option>nephi-1</option>
-                  </Select>
+                <MdDelete />
+              </CircleButton>
+            </div>
+          </>
+        )}
+        {marks && (
+          <div>
+            {isSpeakerFormOpen && (
+              <div
+                className="fixed top-0 right-0 bottom-0 left-0"
+                onClick={() => setIsSpeakerFormOpen(false)}
+              />
+            )}
+            <CircleButton
+              themeId="yellow"
+              onClick={() => {
+                window.getSelection()?.removeAllRanges();
+                setIsSpeakerFormOpen(is => !is);
+              }}
+            >
+              <div className="whitespace-no-wrap">
+                <div className="h-20 w-20 inline-flex align-middle justify-center items-center">
+                  <MdRecordVoiceOver />
+                </div>
+                <div
+                  className={classnames(
+                    "inline-block align-middle text-base text-black overflow-hidden min-w-0 duration-200",
+                    {
+                      "max-w-64": isSpeakerFormOpen,
+                      "max-w-0": !isSpeakerFormOpen
+                    }
+                  )}
+                >
+                  <div className="pr-6">
+                    <Select
+                      onClick={e => e.stopPropagation()}
+                      onChange={e => {
+                        const speaker = e.currentTarget.value;
+                        if (speaker) {
+                          saveMarks(buildSpeakerMarks(marks, speaker));
+                          setMarks(null);
+                        }
+                      }}
+                    >
+                      <option />
+                      <option>angel</option>
+                      <option>isaiah-1</option>
+                      <option>holy-ghost</option>
+                      <option>jacob-2</option>
+                      <option>jesus-christ</option>
+                      <option>john-the-baptist</option>
+                      <option>joseph-1</option>
+                      <option>laban</option>
+                      <option>laman</option>
+                      <option>lehi-1</option>
+                      <option>lemuel</option>
+                      <option>nephi-1</option>
+                      <option>sariah</option>
+                    </Select>
+                  </div>
                 </div>
               </div>
-            </div>
-          </CircleButton>
-        </div>
-      )}
+            </CircleButton>
+          </div>
+        )}
+      </div>
     </>
   );
 };
 
 Ref.getInitialProps = async ({ query: { ref } }) => {
-  console.log("getInitialProps", ref);
   const { verses, prev, next } = await fetchVerses(ref as string);
   return { reference: ref as string, verses, prev, next };
 };

@@ -1,7 +1,7 @@
 import parseReference from "./parseReference";
 import allVerses from "../data/verses.json";
 import { Verse, RawVerse } from "./types";
-import annotateVerse from "./populateVerseAnnotations";
+import annotateVerse from "./populateVerseMarks";
 
 const getVerses = (filter: (v: RawVerse) => boolean): Verse[] =>
   (allVerses as Array<RawVerse>).filter(filter).map<Verse>(v =>
@@ -13,7 +13,7 @@ const getVerses = (filter: (v: RawVerse) => boolean): Verse[] =>
       chapter: v.chapter_number,
       number: v.verse_number,
       text: v.scripture_text,
-      annotations: []
+      marks: []
     })
   );
 

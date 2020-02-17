@@ -28,7 +28,7 @@ export type Verse = {
   chapter: number;
   number: number;
   text: string;
-  annotations: Array<Annotation>;
+  marks: Array<Mark>;
 };
 
 export type Chapter = {
@@ -61,12 +61,12 @@ export type Volumes = {
 
 export type MarkRange = [number] | [number, number];
 
-export type Mark = {
+export type BaseMark = {
   verseId: string;
   range?: MarkRange;
 };
 
-export type Annotation = Mark & {
+export type Mark = BaseMark & {
   id: string;
   type: "speaker";
   speaker: string;

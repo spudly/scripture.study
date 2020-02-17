@@ -1,6 +1,6 @@
 import { FC, useContext } from "react";
 import classnames from "classnames";
-import AnnotationsContext from "../contexts/AnnotationsContext";
+import MarksContext from "../contexts/MarksContext";
 import CircleButton from "./CircleButton";
 
 const scrollToSpeaker = (speaker: string) => {
@@ -11,7 +11,7 @@ const scrollToSpeaker = (speaker: string) => {
 };
 
 const SpeakerLegend: FC<{}> = () => {
-  const { speakers } = useContext(AnnotationsContext);
+  const { speakers } = useContext(MarksContext);
 
   return (
     <>

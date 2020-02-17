@@ -1,7 +1,7 @@
-import { Annotation } from "./types";
+import { Mark } from "./types";
 
-const sortAnnotations = (annotations: Annotation[]) =>
-  annotations.sort((a, b) => {
+const sortMarks = (marks: Mark[]) =>
+  marks.sort((a, b) => {
     if (!a.range && !b.range) {
       return 0;
     }
@@ -14,4 +14,4 @@ const sortAnnotations = (annotations: Annotation[]) =>
     return a.range[0] - b.range[0];
   });
 
-export default sortAnnotations;
+export default sortMarks;
