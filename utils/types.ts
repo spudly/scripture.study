@@ -20,39 +20,38 @@ export type RawVerse = {
   verse_short_title: string;
 };
 
-export type Verse = {
+export type Volume = {
   id: string;
-  token: string;
-  volumeTitle: string;
-  bookTitle: string;
-  chapter: number;
-  number: number;
-  text: string;
-  marks: Array<Mark>;
+  title: string;
+  longTitle: string;
+  shortTitle: string;
 };
 
-export type Chapter = {
+export type Verse = {
   id: string;
-  token: string;
-  volumeTitle: string;
-  bookTitle: string;
   number: number;
-  verseNumbers: Array<number>;
+  text: string;
+  title: string;
+  shortTitle: string;
+  volumeId: string;
+  bookId: string;
+  chapterId: string;
 };
 
 export type Book = {
   id: string;
-  token: string;
-  volumeTitle: string;
+  volumeId: string;
   title: string;
-  chapters: Array<SlimChapter>;
+  longTitle: string;
+  subtitle: string;
+  shortTitble: string;
 };
 
-export type Volume = {
+export type Chapter = {
   id: string;
-  token: string;
-  title: string;
-  books: Array<{ id: string; title: string }>;
+  bookId: string;
+  volumeId: string;
+  number: number;
 };
 
 export type Volumes = {
@@ -61,16 +60,18 @@ export type Volumes = {
 
 export type MarkRange = [number] | [number, number];
 
-export type BaseMark = {
+export type VerseSelection = {
   verseId: string;
   range?: MarkRange;
 };
 
-export type Mark = BaseMark & {
+export type Mark = VerseSelection & {
   id: string;
   type: "speaker";
-  speaker: string;
+  speakerId: string;
 };
+
+export type Person = { id: string; name: string };
 
 export type StateMicroTheme = {
   bgColor: string;
@@ -122,3 +123,5 @@ export type ApiResponse =
       prev: SlimBookAndChapterAndVerse;
       next: SlimBookAndChapterAndVerse;
     };
+
+export type GraphQlContext = {};

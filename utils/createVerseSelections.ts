@@ -1,13 +1,13 @@
-import { Verse as $Verse, BaseMark } from "./types";
+import { Verse as $Verse, VerseSelection } from "./types";
 import getClosestVerseElement from "./getClosestVerseElement";
-import getMarkedVerses from "./getHighlightedVerses";
+import getSelectedVerses from "./getSelectedVerses";
 import getTextOffsetRelativeToContainer from "./getTextOffsetRelativeToContainer";
 import isEmptySelection from "./isEmptySelection";
 
-const createMarks = (
-  verses: Array<$Verse>,
+const createVerseSelections = (
+  verses: Array<Pick<$Verse, "id" | "number" | "text">>,
   selection: Selection
-): Array<BaseMark> | null => {
+): Array<VerseSelection> | null => {
   if (isEmptySelection(selection)) {
     return null;
   }
@@ -17,9 +17,9 @@ const createMarks = (
   if (!startQuote || !endQuote) {
     return null;
   }
-  const markedVerses = getMarkedVerses(verses, startQuote, endQuote);
-  const firstVerse = markedVerses[0];
-  const lastVerse = markedVerses[markedVerses.length - 1];
+  const selectedVerses = getSelectedVerses(verses, startQuote, endQuote);
+  const firstVerse = selectedVerses[0];
+  const lastVerse = selectedVerses[selectedVerses.length - 1];
   if (!firstVerse || !lastVerse) {
     return null;
   }
@@ -37,10 +37,10 @@ const createMarks = (
       range?.endContainer,
       range?.endOffset
     ) - `${lastVerse.number} `.length;
-  const marks = markedVerses.map(
-    (v, index): BaseMark => {
+  const verseSelections = selectedVerses.map(
+    (v, index): VerseSelection => {
       const isFirst = index === 0;
-      const isLast = index === markedVerses.length - 1;
+      const isLast = index === selectedVerses.length - 1;
       return {
         verseId: v.id,
         range:
@@ -56,10 +56,10 @@ const createMarks = (
       };
     }
   );
-  if (marks.length) {
-    return marks;
+  if (verseSelections.length) {
+    return verseSelections;
   }
   return null;
 };
 
-export default createMarks;
+export default createVerseSelections;

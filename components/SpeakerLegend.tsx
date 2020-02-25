@@ -1,29 +1,28 @@
 import { FC, useContext } from "react";
-import classnames from "classnames";
 import MarksContext from "../contexts/MarksContext";
 import CircleButton from "./CircleButton";
 
-const scrollToSpeaker = (speaker: string) => {
+const scrollToSpeaker = (speakerId: string) => {
   const firstBySpeaker = document.querySelector(
-    `[data-speakers~="${speaker}"]`
+    `[data-speaker-ids~="${speakerId}"]`
   );
   firstBySpeaker?.scrollIntoView({ behavior: "smooth" });
 };
 
 const SpeakerLegend: FC<{}> = () => {
-  const { speakers } = useContext(MarksContext);
+  const { speakerIds } = useContext(MarksContext);
 
   return (
     <>
-      {speakers.map((speaker, index) => (
-        <div key={speaker}>
+      {speakerIds.map((speakerId, index) => (
+        <div key={speakerId}>
           <CircleButton
             themeId={index}
-            title={speaker}
-            onClick={() => scrollToSpeaker(speaker)}
+            title={speakerId}
+            onClick={() => scrollToSpeaker(speakerId)}
           >
-            {speaker[0]}
-            {speaker.match(/\d+$/)?.[0]}
+            {speakerId[0]}
+            {speakerId.match(/\d+$/)?.[0]}
           </CircleButton>
         </div>
       ))}

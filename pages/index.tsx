@@ -1,15 +1,27 @@
 import React, { FC } from "react";
-import { NextPage } from "next";
-import fetch from "isomorphic-unfetch";
+import { useQuery } from "@apollo/react-hooks";
 import { Volume } from "../utils/types";
 import normalize from "../utils/normalize";
+import { gql } from "apollo-boost";
 
-const Index: NextPage<{
-  volumes: Array<Volume>;
-}> = ({ volumes }) => {
-  return (
+const Index: FC<{}> = () => {
+  const { loading, error, data } = useQuery<{
+    volumes: Array<{ id: string; title: string }>;
+  }>(gql`
+    {
+      volumes {
+        id
+        title
+      }
+    }
+  `);
+  return error ? (
+    <>Error</>
+  ) : loading ? (
+    <>Loading</>
+  ) : data ? (
     <div className="flex h-screen">
-      {volumes.map(v => (
+      {data.volumes.map(v => (
         <a
           key={v.id}
           href={normalize(v.title)}
@@ -19,16 +31,7 @@ const Index: NextPage<{
         </a>
       ))}
     </div>
-  );
-};
-
-Index.getInitialProps = async () => {
-  const res = await fetch("http://localhost:3000/api/volumes");
-  if (res.ok) {
-    const { volumes } = await res.json();
-    return { volumes };
-  }
-  throw new Error(res.statusText);
+  ) : null;
 };
 
 export default Index;

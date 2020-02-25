@@ -1,4 +1,3 @@
-import normalize from "./normalize";
 import getAllBooks from "./getAllBooks";
 import getVerses from "./getVerses";
 import { Book, Verse } from "./types";
@@ -28,55 +27,33 @@ const parseVerseRef = (ref: string): Array<number> => {
   return verses;
 };
 
-type Result = { book: Book; chapter: Book["chapters"][0]; verses?: Verse[] };
+const normalize = (ref: string) =>
+  ref
+    .replace(/^[a-z]/, match => match.toUpperCase())
+    .replace(
+      /([^a-z])([a-z])/gi,
+      (_, p1, p2) => `${p1} ${(p2 || "").toUpperCase()}`
+    )
+    .replace(/(\D)(\d)/g, "$1 $2")
+    .replace(/\s{2,}/g, " ");
 
-const getBook = (title: string) => {
-  const book = getAllBooks().find(b => normalize(b.title) === normalize(title));
-  if (!book) {
-    throw new Error(`No such book: ${title}`);
+const parseRef = (ref: string) => {
+  const match = ref
+    .trim()
+    .toLowerCase()
+    .replace(/\s/g, "")
+    .match(/^(\d*)([a-z]+)(\d+)(?:[.:]([\d,-]+))?$/);
+  if (!match) {
+    throw new Error(`no match for "${ref}"`);
   }
-  return book;
-};
-
-const getChapter = (number: number, book: Book) => {
-  const chapter = book.chapters.find(c => c.number === number);
-  if (!chapter) {
-    throw new Error(`No such chapter ${book.title} ${number}`);
+  const [, bookNum, bookName, chapterRef, versesRef] = match;
+  const book = normalize(bookNum ? `${bookNum} ${bookName}` : bookName);
+  const chapter = Number(chapterRef);
+  if (versesRef) {
+    const verses = parseVerseRef(versesRef);
+    return { book, chapter, verses };
   }
-  return chapter;
+  return { book, chapter };
 };
 
-const parseScriptureRef = (ref: string) => {
-  const results: Array<Result> = [];
-  normalize(ref)
-    .split(";")
-    .forEach(subRef => {
-      const match = subRef
-        .trim()
-        .toLowerCase()
-        .match(/^(\d*)([a-z]+)(\d+)(?:[.:]([\d,-]+))?$/);
-      if (!match) {
-        throw new Error(`no match for \`  ${ref}\``);
-      }
-      const [, bookNum, bookName, chapterRef, versesRef] = match;
-      const book = getBook(bookNum ? `${bookNum} ${bookName}` : bookName);
-      const chapter = getChapter(Number(chapterRef), book);
-
-      if (versesRef) {
-        const verseNumbers = parseVerseRef(versesRef);
-        const verses = getVerses(
-          v =>
-            v.book_title === book?.title &&
-            v.chapter_number === chapter?.number &&
-            verseNumbers.includes(v.verse_number)
-        );
-        results.push({ book, chapter, verses });
-      } else {
-        results.push({ book, chapter });
-      }
-    });
-  return results;
-};
-
-// export { Result };
-export default parseScriptureRef;
+export default parseRef;

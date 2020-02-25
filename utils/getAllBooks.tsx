@@ -8,7 +8,7 @@ const getAllBooks = memoize(
     for (const v of verses as Array<RawVerse>) {
       if (!map.has(v.book_id)) {
         map.set(v.book_id, {
-          id: v.book_title,
+          id: String(v.book_id),
           token: v.book_lds_url,
           volumeTitle: v.volume_title,
           title: v.book_title,

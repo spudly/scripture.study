@@ -1,11 +1,11 @@
 import { Verse as $Verse } from "./types";
 import getVerseId from "./getVerseIdFromElement";
 
-const getHighlightedVerses = (
-  verses: Array<$Verse>,
+const getSelectedVerses = <VERSE extends Pick<$Verse, "id">>(
+  verses: Array<VERSE>,
   startContainer: HTMLElement,
   endContainer: HTMLElement
-) => {
+): Array<VERSE> => {
   const startId = getVerseId(startContainer);
   const endId = getVerseId(endContainer);
   if (!startId || !endId) {
@@ -16,4 +16,4 @@ const getHighlightedVerses = (
   return verses.slice(startVerseIndex, endVerseIndex + 1);
 };
 
-export default getHighlightedVerses;
+export default getSelectedVerses;

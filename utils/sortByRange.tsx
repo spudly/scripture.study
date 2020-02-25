@@ -1,7 +1,7 @@
-import { Mark } from "./types";
-
-const sortMarks = (marks: Mark[]) =>
-  marks.sort((a, b) => {
+const sortByRange = <ITEM extends { range?: Array<number> }>(
+  items: Array<ITEM>
+): Array<ITEM> =>
+  items.sort((a, b) => {
     if (!a.range && !b.range) {
       return 0;
     }
@@ -14,4 +14,4 @@ const sortMarks = (marks: Mark[]) =>
     return a.range[0] - b.range[0];
   });
 
-export default sortMarks;
+export default sortByRange;
