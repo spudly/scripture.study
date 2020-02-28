@@ -28,7 +28,7 @@ const VerseFragment: FC<{
   );
   return marks.length ? (
     <a
-      data-speaker-ids={speakerIds.join(",")}
+      data-speaker-ids={speakerIds.join(" ")}
       // TODO: for now, we'll support selecting a single mark. eventually it'd be nice to prompt the user to choose which mark they want to select.
       onClick={() => selectMark(marks[marks.length - 1].id)}
     >

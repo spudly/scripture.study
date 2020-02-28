@@ -3,6 +3,7 @@ import { useQuery } from "@apollo/react-hooks";
 import { Volume } from "../utils/types";
 import normalize from "../utils/normalize";
 import { gql } from "apollo-boost";
+import Spinner from "../components/Spinner";
 
 const Index: FC<{}> = () => {
   const { loading, error, data } = useQuery<{
@@ -18,7 +19,7 @@ const Index: FC<{}> = () => {
   return error ? (
     <>Error</>
   ) : loading ? (
-    <>Loading</>
+    <Spinner />
   ) : data ? (
     <div className="flex h-screen">
       {data.volumes.map(v => (

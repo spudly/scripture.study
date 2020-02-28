@@ -17,7 +17,6 @@ import { VerseSelection } from "../utils/types";
 import Pagination from "../components/Pagination";
 import DeleteMarkButton from "./DeleteMarkButton";
 import CreateMarkButton from "../components/CreateMarkButton";
-import { NextPage } from "next";
 
 const getUrl = ({
   book,
@@ -139,13 +138,17 @@ const Reference: FC<Props> = ({ reference }) => {
       >;
     };
   }>(USE_REFERENCE_QUERY, { variables: { reference } });
-  const [createMarks] = useMutation(CREATE_MARKS_QUERY, {
+  const [createMarks, { loading: isCreating }] = useMutation(
+    CREATE_MARKS_QUERY,
+    {
+      refetchQueries: ["reference"],
+      awaitRefetchQueries: true
+    }
+  );
+  const [deleteMark, { loading: isDeleting }] = useMutation(DELETE_MARK_QUERY, {
     refetchQueries: ["reference"],
-    awaitRefetchQueries: true
-  });
-  const [deleteMark] = useMutation(DELETE_MARK_QUERY, {
-    refetchQueries: ["reference"],
-    awaitRefetchQueries: true
+    awaitRefetchQueries: true,
+    onCompleted: () => setSelectedMarkId(null)
   });
 
   const contextValue = useMemo(
@@ -183,6 +186,7 @@ const Reference: FC<Props> = ({ reference }) => {
           <div>
             <DeleteMarkButton
               selectedMarkId={selectedMarkId}
+              isDeleting={isDeleting}
               deleteMark={async (id: string) => {
                 await deleteMark({ variables: { id } });
                 // refetch();
@@ -193,6 +197,7 @@ const Reference: FC<Props> = ({ reference }) => {
         {selections.length ? (
           <div>
             <CreateMarkButton
+              isCreating={isCreating}
               selections={selections}
               createMarks={async (newMarks: Array<Mark>) => {
                 await createMarks({ variables: { marks: newMarks } });

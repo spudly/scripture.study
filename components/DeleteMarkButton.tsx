@@ -1,13 +1,19 @@
 import React, { FC } from "react";
 import { MdDelete } from "react-icons/md";
 import CircleButton from "./CircleButton";
+import Spinner from "./Spinner";
 
 const DeleteMarkButton: FC<{
   selectedMarkId: string;
   deleteMark: (id: string) => void;
-}> = ({ selectedMarkId, deleteMark }) => (
-  <CircleButton themeId="red" onClick={() => deleteMark(selectedMarkId)}>
-    <MdDelete />
+  isDeleting: boolean;
+}> = ({ selectedMarkId, deleteMark, isDeleting }) => (
+  <CircleButton
+    themeId="red"
+    onClick={() => deleteMark(selectedMarkId)}
+    disabled={isDeleting}
+  >
+    {isDeleting ? <Spinner /> : <MdDelete />}
   </CircleButton>
 );
 

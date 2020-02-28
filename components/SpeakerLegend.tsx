@@ -12,6 +12,8 @@ const scrollToSpeaker = (speakerId: string) => {
 const SpeakerLegend: FC<{}> = () => {
   const { speakerIds } = useContext(MarksContext);
 
+  // TODO: put the speaker objects in the context instead of just the speaker ids so that we can use the `name` field
+
   return (
     <>
       {speakerIds.map((speakerId, index) => (

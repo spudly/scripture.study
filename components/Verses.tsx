@@ -32,16 +32,18 @@ const Verses: NextPage<{
 
   return (
     <div className="mx-4 sm:mx-32 flex-grow flex flex-col overflow-auto min-h-screen justify-center">
-      {verses.map(verse => (
-        <Verse
-          key={verse.id}
-          id={verse.id}
-          number={verse.number}
-          text={verse.text}
-          selectMark={selectMark}
-          marks={marks.filter(m => m.verseId === verse.id)}
-        />
-      ))}
+      {verses
+        .sort((a, b) => a.number - b.number)
+        .map(verse => (
+          <Verse
+            key={verse.id}
+            id={verse.id}
+            number={verse.number}
+            text={verse.text}
+            selectMark={selectMark}
+            marks={marks.filter(m => m.verseId === verse.id)}
+          />
+        ))}
     </div>
   );
 };

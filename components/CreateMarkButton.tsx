@@ -1,11 +1,14 @@
 import React, { useState, FC } from "react";
-import { Mark } from "../utils/types";
+import { Mark, Person } from "../utils/types";
 import { MdRecordVoiceOver } from "react-icons/md";
 import classnames from "classnames";
 import CircleButton from "../components/CircleButton";
 import { VerseSelection } from "../utils/types";
 import Select from "../components/Select";
 import uuid from "uuid/v4";
+import Spinner from "./Spinner";
+import { gql } from "apollo-boost";
+import { useQuery } from "@apollo/react-hooks";
 
 const buildSpeakerMarks = (
   selections: Array<VerseSelection>,
@@ -18,11 +21,30 @@ const buildSpeakerMarks = (
     speakerId
   }));
 
+const PEOPLE_QUERY = gql`
+  query people {
+    people {
+      id
+      name
+    }
+  }
+`;
+
 const CreateMarkButton: FC<{
   selections: Array<VerseSelection>;
   createMarks: (marks: Array<Mark>) => void;
-}> = ({ selections, createMarks }) => {
+  isCreating?: boolean;
+}> = ({ selections, createMarks, isCreating }) => {
   const [isOpen, setIsOpen] = useState(false);
+  const {
+    loading: isLoadingPeople,
+    data: { people = undefined } = {}
+  } = useQuery<{
+    people: Array<Person>;
+  }>(PEOPLE_QUERY);
+
+  console.log({ isLoadingPeople, people });
+
   return (
     <>
       {isOpen && (
@@ -37,10 +59,15 @@ const CreateMarkButton: FC<{
           window.getSelection()?.removeAllRanges();
           setIsOpen(is => !is);
         }}
+        disabled={isCreating || isLoadingPeople}
       >
         <div className="whitespace-no-wrap">
           <div className="h-20 w-20 inline-flex align-middle justify-center items-center">
-            <MdRecordVoiceOver />
+            {isLoadingPeople || isCreating ? (
+              <Spinner />
+            ) : (
+              <MdRecordVoiceOver />
+            )}
           </div>
           <div
             className={classnames(
@@ -57,25 +84,15 @@ const CreateMarkButton: FC<{
                 onChange={e => {
                   const speaker = e.currentTarget.value;
                   if (speaker) {
+                    setIsOpen(false);
                     createMarks(buildSpeakerMarks(selections, speaker));
                   }
                 }}
               >
-                {/* TODO: fetch these qith graphql */}
                 <option />
-                <option>angel</option>
-                <option>isaiah-1</option>
-                <option>holy-ghost</option>
-                <option>jacob-2</option>
-                <option>jesus-christ</option>
-                <option>john-the-baptist</option>
-                <option>joseph-1</option>
-                <option>laban</option>
-                <option>laman</option>
-                <option>lehi-1</option>
-                <option>lemuel</option>
-                <option>nephi-1</option>
-                <option>sariah</option>
+                {(people ?? []).map(({ id, name }) => (
+                  <option value={id}>{name}</option>
+                ))}
               </Select>
             </div>
           </div>
