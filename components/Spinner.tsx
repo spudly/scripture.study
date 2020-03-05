@@ -1,5 +1,15 @@
-const Spinner = () => (
-  <svg viewBox="0 0 100 100" fill="currentColor" className="h-4 w-4">
+import React, { FC } from "react";
+import classnames from "classnames";
+
+const Spinner: FC<{ grow?: boolean }> = ({ grow }) => (
+  <svg
+    viewBox="0 0 100 100"
+    fill="currentColor"
+    className={classnames("opacity-25", {
+      "h-4 w-4": !grow,
+      "flex-1": grow
+    })}
+  >
     <path
       d="M31.6,3.5C5.9,13.6-6.6,42.7,3.5,68.4c10.1,25.7,39.2,38.3,64.9,28.1l-3.1-7.9c-21.3,8.4-45.4-2-53.8-23.3
   c-8.4-21.3,2-45.4,23.3-53.8L31.6,3.5z"

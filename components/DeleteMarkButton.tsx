@@ -13,7 +13,7 @@ const DeleteMarkButton: FC<{
     onClick={() => deleteMark(selectedMarkId)}
     disabled={isDeleting}
   >
-    {isDeleting ? <Spinner /> : <MdDelete />}
+    {isDeleting ? <Spinner grow /> : <MdDelete />}
   </CircleButton>
 );
 
