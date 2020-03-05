@@ -1,7 +1,3 @@
-import getAllBooks from "./getAllBooks";
-import getVerses from "./getVerses";
-import { Book, Verse } from "./types";
-
 const simpleRange = (from: number, to: number): Array<number> => {
   let values: Array<number> = [];
   for (let i = from; i <= to; i++) {
