@@ -1,25 +1,14 @@
 import React, { useState, FC } from "react";
 import { Mark, Person } from "../utils/types";
-import { MdRecordVoiceOver } from "react-icons/md";
+import { MdEdit } from "react-icons/md";
 import classnames from "classnames";
-import CircleButton from "../components/CircleButton";
+import CircleButton from "./CircleButton";
 import { VerseSelection } from "../utils/types";
-import Select from "../components/Select";
+import Select from "./Select";
 import uuid from "uuid/v4";
 import Spinner from "./Spinner";
 import { gql } from "apollo-boost";
 import { useQuery } from "@apollo/react-hooks";
-
-const buildSpeakerMarks = (
-  selections: Array<VerseSelection>,
-  speakerId: string
-): Array<Mark> =>
-  selections.map(selection => ({
-    ...selection,
-    id: uuid(),
-    type: "speaker",
-    speakerId
-  }));
 
 const PEOPLE_QUERY = gql`
   query people {
@@ -36,11 +25,11 @@ const byName = (a: Person, b: Person) => {
   return aName < bName ? -1 : aName > bName ? 1 : 0;
 };
 
-const CreateMarkButton: FC<{
-  selections: Array<VerseSelection>;
-  createMarks: (marks: Array<Mark>) => void;
-  isCreating?: boolean;
-}> = ({ selections, createMarks, isCreating }) => {
+const EditMarksButton: FC<{
+  marks: Mark[];
+  updateMarks: (marks: Array<Pick<Mark, "id" | "speakerId">>) => void;
+  isUpdating?: boolean;
+}> = ({ marks, updateMarks, isUpdating }) => {
   const [isOpen, setIsOpen] = useState(false);
   const {
     loading: isLoadingPeople,
@@ -48,8 +37,6 @@ const CreateMarkButton: FC<{
   } = useQuery<{
     people: Array<Person>;
   }>(PEOPLE_QUERY);
-
-  console.log({ isLoadingPeople, people });
 
   return (
     <>
@@ -60,20 +47,13 @@ const CreateMarkButton: FC<{
         />
       )}
       <CircleButton
-        themeId="yellow"
-        onClick={() => {
-          window.getSelection()?.removeAllRanges();
-          setIsOpen(is => !is);
-        }}
-        disabled={isCreating || isLoadingPeople}
+        themeId="blue"
+        onClick={() => setIsOpen(is => !is)}
+        disabled={isUpdating || isLoadingPeople}
       >
         <div className="whitespace-no-wrap">
           <div className="h-20 w-20 inline-flex align-middle justify-center items-center">
-            {isLoadingPeople || isCreating ? (
-              <Spinner grow />
-            ) : (
-              <MdRecordVoiceOver />
-            )}
+            {isLoadingPeople || isUpdating ? <Spinner grow /> : <MdEdit />}
           </div>
           <div
             className={classnames(
@@ -88,16 +68,18 @@ const CreateMarkButton: FC<{
               <Select
                 onClick={e => e.stopPropagation()}
                 onChange={e => {
-                  const speaker = e.currentTarget.value;
-                  if (speaker) {
+                  const speakerId = e.currentTarget.value;
+                  if (speakerId) {
                     setIsOpen(false);
-                    createMarks(buildSpeakerMarks(selections, speaker));
+                    updateMarks(marks.map(m => ({ id: m.id, speakerId })));
                   }
                 }}
               >
                 <option />
                 {(people ?? []).sort(byName).map(({ id, name }) => (
-                  <option value={id}>{name}</option>
+                  <option key={id} value={id}>
+                    {name}
+                  </option>
                 ))}
               </Select>
             </div>
@@ -108,4 +90,4 @@ const CreateMarkButton: FC<{
   );
 };
 
-export default CreateMarkButton;
+export default EditMarksButton;

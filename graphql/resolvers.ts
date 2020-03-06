@@ -169,17 +169,44 @@ const resolvers: IResolvers<unknown, Context> = {
         };
       }
     },
-    async deleteMark(
+    async deleteMarks(
       _,
-      { id }: { id: string },
+      { ids }: { ids: string[] },
       { dataSources: { marks } }
     ): Promise<MutationResponse> {
       try {
-        await marks.collection.findOneAndDelete({ id });
+        await marks.collection.deleteMany({ id: { $in: ids } });
         return {
           code: 0,
           success: true,
-          message: "Successfully deleted mark"
+          message: "Successfully deleted marks"
+        };
+      } catch (error) {
+        return {
+          code: ERROR_CODES.UNEXPECTED,
+          success: false,
+          message: error.stack
+        };
+      }
+    },
+    async updateMarks(
+      _,
+      { marks: newMarks }: { marks: Array<{ id: string; speakerId: string }> },
+      { dataSources: { marks } }
+    ): Promise<MutationResponse> {
+      try {
+        await Promise.all(
+          newMarks.map(m =>
+            marks.collection.findOneAndUpdate(
+              { id: m.id },
+              { $set: { speakerId: m.speakerId } }
+            )
+          )
+        );
+        return {
+          code: 0,
+          success: true,
+          message: "Successfully deleted marks"
         };
       } catch (error) {
         return {

@@ -1,4 +1,10 @@
-import React, { FC, ReactNode, useContext } from "react";
+import React, {
+  FC,
+  ReactNode,
+  useContext,
+  Dispatch,
+  SetStateAction
+} from "react";
 import classnames from "classnames";
 import { Mark, Verse as $Verse } from "../utils/types";
 import MarksContext from "../contexts/MarksContext";
@@ -10,17 +16,29 @@ const VerseFragment: FC<{
   children: ReactNode;
   isVerseNumber?: boolean;
   marks: Array<Pick<Mark, "id" | "type" | "speakerId">>;
-  selectMark: (markid: string) => void;
-}> = ({ isVerseNumber = false, children, selectMark, marks }) => {
+  selectMarks: Dispatch<SetStateAction<string[]>>;
+  selectedMarkIds: Array<string>;
+}> = ({
+  isVerseNumber = false,
+  children,
+  selectMarks,
+  marks,
+  selectedMarkIds
+}) => {
   const { speakerIds: allSpeakerIds } = useContext(MarksContext);
   const speakerIds = marks.flatMap(m =>
     m.type === "speaker" ? [m.speakerId] : []
   );
   const lastSpeakerId = speakerIds[speakerIds.length - 1];
+  const lastMark = marks[marks.length - 1];
   const classes = classnames(
     lastSpeakerId &&
       theme(allSpeakerIds.indexOf(lastSpeakerId), {
-        states: isVerseNumber ? ["default"] : undefined,
+        states: isVerseNumber
+          ? ["default"]
+          : selectedMarkIds.includes(lastMark.id)
+          ? ["activated"]
+          : undefined,
         colors: ["bgColor", "textColor"]
       }),
     "py-4",
@@ -30,7 +48,14 @@ const VerseFragment: FC<{
     <a
       data-speaker-ids={speakerIds.join(" ")}
       // TODO: for now, we'll support selecting a single mark. eventually it'd be nice to prompt the user to choose which mark they want to select.
-      onClick={() => selectMark(marks[marks.length - 1].id)}
+      onClick={e => {
+        const markId = marks[marks.length - 1].id;
+        if (e.ctrlKey) {
+          selectMarks(markIds => [...(markIds ?? []), markId]);
+        } else {
+          selectMarks([markId]);
+        }
+      }}
     >
       <mark className={classes}>{children}</mark>
     </a>
@@ -44,8 +69,9 @@ const Verse: FC<{
   number: $Verse["number"];
   text: $Verse["text"];
   marks: Array<Pick<Mark, "id" | "type" | "speakerId" | "range">>;
-  selectMark: (markId: string) => void;
-}> = ({ id, text, number, marks, selectMark }) => {
+  selectMarks: Dispatch<SetStateAction<string[]>>;
+  selectedMarkIds: Array<string>;
+}> = ({ id, text, number, marks, selectMarks, selectedMarkIds }) => {
   const sortedMarks = sortByRange(marks);
   const breakpoints = unique([
     0,
@@ -67,7 +93,8 @@ const Verse: FC<{
       <VerseFragment
         marks={getMarksAt(0)}
         isVerseNumber
-        selectMark={selectMark}
+        selectMarks={selectMarks}
+        selectedMarkIds={selectedMarkIds}
       >
         {number}{" "}
       </VerseFragment>
@@ -80,7 +107,8 @@ const Verse: FC<{
           <VerseFragment
             key={breakpoint}
             marks={getMarksAt(breakpoint)}
-            selectMark={selectMark}
+            selectMarks={selectMarks}
+            selectedMarkIds={selectedMarkIds}
           >
             {text.slice(from, to)}
           </VerseFragment>

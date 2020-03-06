@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React, { useEffect, Dispatch, SetStateAction } from "react";
 import { NextPage } from "next";
 import { Verse as $Verse, Mark, VerseSelection } from "../utils/types";
 import Verse from "./Verse";
@@ -9,8 +9,9 @@ const Verses: NextPage<{
   verses: Array<Pick<$Verse, "id" | "number" | "text">>;
   marks: Array<Pick<Mark, "id" | "type" | "speakerId" | "verseId" | "range">>;
   setSelections: (selections: Array<VerseSelection>) => void;
-  selectMark: (annotatonId: string) => void;
-}> = ({ verses, marks, setSelections, selectMark }) => {
+  selectMarks: Dispatch<SetStateAction<string[]>>;
+  selectedMarkIds: Array<string>;
+}> = ({ verses, marks, setSelections, selectMarks, selectedMarkIds }) => {
   useEffect(() => {
     const handleSelectionChange = () => {
       const selection = window.getSelection();
@@ -40,8 +41,9 @@ const Verses: NextPage<{
             id={verse.id}
             number={verse.number}
             text={verse.text}
-            selectMark={selectMark}
+            selectMarks={selectMarks}
             marks={marks.filter(m => m.verseId === verse.id)}
+            selectedMarkIds={selectedMarkIds}
           />
         ))}
     </div>

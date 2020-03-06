@@ -19,7 +19,7 @@ const Index: FC<{}> = () => {
   return error ? (
     <>Error</>
   ) : loading ? (
-    <Spinner />
+    <Spinner grow />
   ) : data ? (
     <div className="flex h-screen">
       {data.volumes.map(v => (

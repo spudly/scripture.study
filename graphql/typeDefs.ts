@@ -84,7 +84,7 @@ const typeDefs = gql`
     message: String!
   }
 
-  input MarksInput {
+  input NewMark {
     id: String!
     type: String!
     verseId: String!
@@ -92,9 +92,15 @@ const typeDefs = gql`
     speakerId: String!
   }
 
+  input MarkUpdate {
+    id: String!
+    speakerId: String!
+  }
+
   type Mutation {
-    createMarks(marks: [MarksInput!]): MutationResponse
-    deleteMark(id: String!): MutationResponse
+    createMarks(marks: [NewMark!]): MutationResponse
+    deleteMarks(ids: [String!]!): MutationResponse
+    updateMarks(marks: [MarkUpdate!]): MutationResponse
   }
 `;
 

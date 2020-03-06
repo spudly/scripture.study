@@ -16,6 +16,11 @@ const themes = {
       bgColor: "active:bg-yellow-400",
       textColor: "active:text-yellow-900",
       borderColor: "active:border-yellow-900"
+    },
+    activated: {
+      bgColor: "bg-yellow-400",
+      textColor: "text-yellow-900",
+      borderColor: "border-yellow-900"
     }
   } as MicroTheme,
   green: {
@@ -24,6 +29,7 @@ const themes = {
       textColor: "text-green-900",
       borderColor: "border-green-900"
     },
+
     hover: {
       bgColor: "hover:bg-green-300",
       textColor: "hover:text-green-900",
@@ -33,6 +39,11 @@ const themes = {
       bgColor: "active:bg-green-400",
       textColor: "active:text-green-900",
       borderColor: "active:border-green-900"
+    },
+    activated: {
+      bgColor: "bg-green-400",
+      textColor: "text-green-900",
+      borderColor: "border-green-900"
     }
   } as MicroTheme,
   blue: {
@@ -50,6 +61,11 @@ const themes = {
       bgColor: "active:bg-blue-400",
       textColor: "active:text-blue-900",
       borderColor: "active:border-blue-900"
+    },
+    activated: {
+      bgColor: "bg-blue-400",
+      textColor: "text-blue-900",
+      borderColor: "border-blue-900"
     }
   } as MicroTheme,
   orange: {
@@ -67,6 +83,11 @@ const themes = {
       bgColor: "active:bg-orange-400",
       textColor: "active:text-orange-900",
       borderColor: "active:border-orange-900"
+    },
+    activated: {
+      bgColor: "bg-orange-400",
+      textColor: "text-orange-900",
+      borderColor: "border-orange-900"
     }
   } as MicroTheme,
   red: {
@@ -84,6 +105,11 @@ const themes = {
       bgColor: "active:bg-red-400",
       textColor: "active:text-red-900",
       borderColor: "active:border-red-900"
+    },
+    activated: {
+      bgColor: "bg-red-400",
+      textColor: "text-red-900",
+      borderColor: "border-red-900"
     }
   } as MicroTheme,
   purple: {
@@ -101,6 +127,11 @@ const themes = {
       bgColor: "active:bg-purple-400",
       textColor: "active:text-purple-900",
       borderColor: "active:border-purple-900"
+    },
+    activated: {
+      bgColor: "bg-purple-400",
+      textColor: "text-purple-900",
+      borderColor: "border-purple-900"
     }
   } as MicroTheme
 };

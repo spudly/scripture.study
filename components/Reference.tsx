@@ -15,8 +15,10 @@ import { gql } from "apollo-boost";
 import { useQuery, useMutation } from "@apollo/react-hooks";
 import { VerseSelection } from "../utils/types";
 import Pagination from "../components/Pagination";
-import DeleteMarkButton from "./DeleteMarkButton";
+import DeleteMarksButton from "./DeleteMarksButton";
+import EditMarkButton from "./EditMarksButton";
 import CreateMarkButton from "../components/CreateMarkButton";
+import Spinner from "./Spinner";
 
 const getUrl = ({
   book,
@@ -26,53 +28,6 @@ const getUrl = ({
   `/${book.title.replace(/\s/g, "")}${chapter.number}${
     verse?.number ? `.${verse?.number}` : ""
   }`;
-
-const fetchVerses = async (
-  ref: string
-): Promise<{ verses: Array<Verse>; prev?: string; next?: string }> => {
-  const res = await fetch(
-    `http://localhost:3000/api/ref/${encodeURIComponent(ref as string)}`
-  );
-  if (!res.ok) {
-    throw new Error(res.statusText);
-  }
-  const result: ApiResponse = await res.json();
-  switch (result.type) {
-    case "chapter": {
-      const { prev, next } = result;
-      return { verses: result.verses, prev: getUrl(prev), next: getUrl(next) };
-    }
-    case "verses":
-      return { verses: result.verses };
-    case "verse": {
-      const { prev, next } = result;
-      return { verses: [result.verse], prev: getUrl(prev), next: getUrl(next) };
-    }
-    default:
-      return { verses: [] };
-  }
-};
-
-const api = {
-  async createMarks(newMarks: Array<Mark>) {
-    const response = await fetch("/api/marks", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(newMarks)
-    });
-    if (!response.ok) {
-      throw new Error(response.statusText);
-    }
-  },
-  async deleteMark(id: string) {
-    const response = await fetch(`/api/marks/${encodeURIComponent(id)}`, {
-      method: "DELETE"
-    });
-    if (!response.ok) {
-      throw new Error(response.statusText);
-    }
-  }
-};
 
 const USE_REFERENCE_QUERY = gql`
   query reference($reference: String!) {
@@ -96,16 +51,24 @@ const USE_REFERENCE_QUERY = gql`
 `;
 
 const CREATE_MARKS_QUERY = gql`
-  mutation createMarks($marks: [MarksInput!]!) {
+  mutation createMarks($marks: [NewMark!]!) {
     createMarks(marks: $marks) {
       success
     }
   }
 `;
 
+const UPDATE_MARKS_QUERY = gql`
+  mutation updateMarks($marks: [MarkUpdate!]!) {
+    updateMarks(marks: $marks) {
+      success
+    }
+  }
+`;
+
 const DELETE_MARK_QUERY = gql`
-  mutation deleteMark($id: String!) {
-    deleteMark(id: $id) {
+  mutation deleteMarks($ids: [String!]!) {
+    deleteMarks(ids: $ids) {
       success
     }
   }
@@ -115,9 +78,18 @@ type Props = {
   reference: string;
 };
 
+type UseReferenceQueryResult = {
+  reference: {
+    prev?: string;
+    next?: string;
+    verses: Array<Pick<Verse, "id" | "number" | "text">>;
+    marks: Array<Mark>;
+  };
+};
+
 const Reference: FC<Props> = ({ reference }) => {
   const [selections, setSelections] = useState<Array<VerseSelection>>([]);
-  const [selectedMarkId, setSelectedMarkId] = useState<string | null>(null);
+  const [selectedMarkIds, setSelectedMarkIds] = useState<string[]>([]);
   const {
     data: {
       reference: {
@@ -126,18 +98,11 @@ const Reference: FC<Props> = ({ reference }) => {
         verses = [],
         marks = []
       } = {}
-    } = {},
-    refetch
-  } = useQuery<{
-    reference: {
-      prev?: string;
-      next?: string;
-      verses: Array<Pick<Verse, "id" | "number" | "text">>;
-      marks: Array<
-        Pick<Mark, "id" | "type" | "speakerId" | "verseId" | "range">
-      >;
-    };
-  }>(USE_REFERENCE_QUERY, { variables: { reference } });
+    } = {}
+  } = useQuery<UseReferenceQueryResult>(USE_REFERENCE_QUERY, {
+    variables: { reference }
+  });
+  const selectedMarks = marks.filter(m => selectedMarkIds.includes(m.id));
   const [createMarks, { loading: isCreating }] = useMutation(
     CREATE_MARKS_QUERY,
     {
@@ -145,11 +110,22 @@ const Reference: FC<Props> = ({ reference }) => {
       awaitRefetchQueries: true
     }
   );
-  const [deleteMark, { loading: isDeleting }] = useMutation(DELETE_MARK_QUERY, {
-    refetchQueries: ["reference"],
-    awaitRefetchQueries: true,
-    onCompleted: () => setSelectedMarkId(null)
-  });
+  const [deleteMarks, { loading: isDeleting }] = useMutation(
+    DELETE_MARK_QUERY,
+    {
+      refetchQueries: ["reference"],
+      awaitRefetchQueries: true,
+      onCompleted: () => setSelectedMarkIds([])
+    }
+  );
+  const [updateMarks, { loading: isUpdating }] = useMutation(
+    UPDATE_MARKS_QUERY,
+    {
+      refetchQueries: ["reference"],
+      awaitRefetchQueries: true,
+      onCompleted: () => setSelectedMarkIds([])
+    }
+  );
 
   const contextValue = useMemo(
     () => ({
@@ -163,12 +139,12 @@ const Reference: FC<Props> = ({ reference }) => {
   );
 
   if (!verses) {
-    return <>loading...</>;
+    return <Spinner grow />;
   }
 
   return (
     <>
-      {prev && <Pagination type="prev" href={prev} />}
+      {/* {prev && <Pagination type="prev" href={prev} />} */}
       <MarksContext.Provider value={contextValue}>
         <div className="fixed top-0 left-0 ml-4">
           <SpeakerLegend />
@@ -177,24 +153,35 @@ const Reference: FC<Props> = ({ reference }) => {
           verses={verses}
           marks={marks}
           setSelections={setSelections}
-          selectMark={setSelectedMarkId}
+          selectMarks={setSelectedMarkIds}
+          selectedMarkIds={selectedMarkIds}
         />
       </MarksContext.Provider>
-      {next && <Pagination type="next" href={next} />}
-      <div className="fixed bottom-0 right-0 pr-4 pb-4">
-        {selectedMarkId && (
-          <div>
-            <DeleteMarkButton
-              selectedMarkId={selectedMarkId}
-              isDeleting={isDeleting}
-              deleteMark={async (id: string) => {
-                await deleteMark({ variables: { id } });
-                // refetch();
-              }}
-            />
-          </div>
+      {/* {next && <Pagination type="next" href={next} />} */}
+      <div className="fixed bottom-0 right-0 pr-4 pb-4 text-right">
+        {selectedMarks.length !== 0 && (
+          <>
+            <div>
+              <EditMarkButton
+                marks={selectedMarks}
+                isUpdating={isUpdating}
+                updateMarks={async (
+                  marks: Array<Pick<Mark, "id" | "speakerId">>
+                ) => updateMarks({ variables: { marks } })}
+              />
+            </div>
+            <div>
+              <DeleteMarksButton
+                selectedMarkIds={selectedMarkIds}
+                isDeleting={isDeleting}
+                deleteMarks={async (ids: string[]) =>
+                  deleteMarks({ variables: { ids } })
+                }
+              />
+            </div>
+          </>
         )}
-        {selections.length ? (
+        {selections.length !== 0 && (
           <div>
             <CreateMarkButton
               isCreating={isCreating}
@@ -202,11 +189,10 @@ const Reference: FC<Props> = ({ reference }) => {
               createMarks={async (newMarks: Array<Mark>) => {
                 await createMarks({ variables: { marks: newMarks } });
                 setSelections([]);
-                // refetch();
               }}
             />
           </div>
-        ) : null}
+        )}
       </div>
     </>
   );
