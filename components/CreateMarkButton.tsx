@@ -49,8 +49,6 @@ const CreateMarkButton: FC<{
     people: Array<Person>;
   }>(PEOPLE_QUERY);
 
-  console.log({ isLoadingPeople, people });
-
   return (
     <>
       {isOpen && (
@@ -61,10 +59,7 @@ const CreateMarkButton: FC<{
       )}
       <CircleButton
         themeId="yellow"
-        onClick={() => {
-          window.getSelection()?.removeAllRanges();
-          setIsOpen(is => !is);
-        }}
+        onClick={e => setIsOpen(is => !is)}
         disabled={isCreating || isLoadingPeople}
       >
         <div className="whitespace-no-wrap">
@@ -97,7 +92,9 @@ const CreateMarkButton: FC<{
               >
                 <option />
                 {(people ?? []).sort(byName).map(({ id, name }) => (
-                  <option value={id}>{name}</option>
+                  <option key={id} value={id}>
+                    {name}
+                  </option>
                 ))}
               </Select>
             </div>

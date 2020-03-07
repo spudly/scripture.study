@@ -15,7 +15,7 @@ const SpeakerLegend: FC<{}> = () => {
   // TODO: put the speaker objects in the context instead of just the speaker ids so that we can use the `name` field
 
   return (
-    <>
+    <div className="fixed top-0 left-0 p-4 flex flex-row sm:flex-col w-full h-auto sm:w-auto sm:h-full overflow-x-auto sm:overflow-y-auto">
       {speakerIds.map((speakerId, index) => (
         <div key={speakerId}>
           <CircleButton
@@ -28,7 +28,7 @@ const SpeakerLegend: FC<{}> = () => {
           </CircleButton>
         </div>
       ))}
-    </>
+    </div>
   );
 };
 

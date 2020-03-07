@@ -48,7 +48,10 @@ const EditMarksButton: FC<{
       )}
       <CircleButton
         themeId="blue"
-        onClick={() => setIsOpen(is => !is)}
+        onClick={e => {
+          e.stopPropagation();
+          setIsOpen(is => !is);
+        }}
         disabled={isUpdating || isLoadingPeople}
       >
         <div className="whitespace-no-wrap">

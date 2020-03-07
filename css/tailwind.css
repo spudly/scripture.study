@@ -4,3 +4,12 @@
 /* purgecss end ignore */
 
 @import "tailwindcss/utilities";
+
+@responsive {
+  .scroll-margin-t-0 {
+    scroll-margin-top: 0;
+  }
+  .scroll-margin-t-32 {
+    scroll-margin-top: 8rem;
+  }
+}

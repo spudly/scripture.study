@@ -32,7 +32,7 @@ const Verses: NextPage<{
   }, [verses]);
 
   return (
-    <div className="mx-4 sm:mx-32 flex-grow flex flex-col overflow-auto min-h-screen justify-center">
+    <div className="mx-4 mt-32 sm:mt-0 sm:mx-32 flex-grow flex flex-col overflow-auto min-h-screen justify-center">
       {verses
         .sort((a, b) => a.number - b.number)
         .map(verse => (

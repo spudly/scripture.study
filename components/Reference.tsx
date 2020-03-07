@@ -1,4 +1,4 @@
-import React, { useMemo, useState, FC } from "react";
+import React, { useMemo, useState, FC, SyntheticEvent } from "react";
 import fetch from "isomorphic-unfetch";
 import {
   Verse,
@@ -143,12 +143,20 @@ const Reference: FC<Props> = ({ reference }) => {
   }
 
   return (
-    <>
+    <div
+      className="flex-1 flex flex-col"
+      onClick={e => {
+        const selection = window.getSelection();
+        if (selection?.type !== "Range") {
+          window.getSelection()?.removeAllRanges();
+          setSelections([]);
+        }
+        setSelectedMarkIds([]);
+      }}
+    >
       {/* {prev && <Pagination type="prev" href={prev} />} */}
       <MarksContext.Provider value={contextValue}>
-        <div className="fixed top-0 left-0 ml-4">
-          <SpeakerLegend />
-        </div>
+        <SpeakerLegend />
         <Verses
           verses={verses}
           marks={marks}
@@ -194,7 +202,7 @@ const Reference: FC<Props> = ({ reference }) => {
           </div>
         )}
       </div>
-    </>
+    </div>
   );
 };
 

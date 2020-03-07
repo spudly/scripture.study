@@ -49,6 +49,7 @@ const VerseFragment: FC<{
       data-speaker-ids={speakerIds.join(" ")}
       // TODO: for now, we'll support selecting a single mark. eventually it'd be nice to prompt the user to choose which mark they want to select.
       onClick={e => {
+        e.stopPropagation();
         const markId = marks[marks.length - 1].id;
         if (e.ctrlKey) {
           selectMarks(markIds => [...(markIds ?? []), markId]);
@@ -88,7 +89,7 @@ const Verse: FC<{
     <blockquote
       data-verse={id}
       key={id}
-      className="content-center text-4xl font-serif my-6 leading-loose text-justify"
+      className="content-center text-4xl font-serif mb-6 leading-loose text-justify"
     >
       <VerseFragment
         marks={getMarksAt(0)}
