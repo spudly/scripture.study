@@ -5,7 +5,8 @@ import {
   Mark,
   ApiResponse,
   SlimBookAndChapter,
-  SlimVerse
+  SlimVerse,
+  Person
 } from "../utils/types";
 import Verses from "../components/Verses";
 import MarksContext from "../contexts/MarksContext";
@@ -54,6 +55,7 @@ const CREATE_MARKS_QUERY = gql`
   mutation createMarks($marks: [NewMark!]!) {
     createMarks(marks: $marks) {
       success
+      message
     }
   }
 `;
@@ -62,6 +64,7 @@ const UPDATE_MARKS_QUERY = gql`
   mutation updateMarks($marks: [MarkUpdate!]!) {
     updateMarks(marks: $marks) {
       success
+      message
     }
   }
 `;
@@ -70,6 +73,7 @@ const DELETE_MARK_QUERY = gql`
   mutation deleteMarks($ids: [String!]!) {
     deleteMarks(ids: $ids) {
       success
+      message
     }
   }
 `;
@@ -87,6 +91,15 @@ type UseReferenceQueryResult = {
   };
 };
 
+const PEOPLE_QUERY = gql`
+  query people {
+    people {
+      id
+      name
+    }
+  }
+`;
+
 const Reference: FC<Props> = ({ reference }) => {
   const [selections, setSelections] = useState<Array<VerseSelection>>([]);
   const [selectedMarkIds, setSelectedMarkIds] = useState<string[]>([]);
@@ -102,6 +115,9 @@ const Reference: FC<Props> = ({ reference }) => {
   } = useQuery<UseReferenceQueryResult>(USE_REFERENCE_QUERY, {
     variables: { reference }
   });
+  const { data: { people = undefined } = {} } = useQuery<{
+    people: Array<Person>;
+  }>(PEOPLE_QUERY);
   const selectedMarks = marks.filter(m => selectedMarkIds.includes(m.id));
   const [createMarks, { loading: isCreating }] = useMutation(
     CREATE_MARKS_QUERY,
@@ -138,7 +154,7 @@ const Reference: FC<Props> = ({ reference }) => {
     [marks]
   );
 
-  if (!verses) {
+  if (!verses || !people) {
     return <Spinner grow />;
   }
 
@@ -156,7 +172,7 @@ const Reference: FC<Props> = ({ reference }) => {
     >
       {/* {prev && <Pagination type="prev" href={prev} />} */}
       <MarksContext.Provider value={contextValue}>
-        <SpeakerLegend />
+        <SpeakerLegend people={people} />
         <Verses
           verses={verses}
           marks={marks}
@@ -194,10 +210,11 @@ const Reference: FC<Props> = ({ reference }) => {
             <CreateMarkButton
               isCreating={isCreating}
               selections={selections}
-              createMarks={async (newMarks: Array<Mark>) => {
+              createMarks={async (newMarks: Array<Omit<Mark, "id">>) => {
                 await createMarks({ variables: { marks: newMarks } });
                 setSelections([]);
               }}
+              people={people}
             />
           </div>
         )}

@@ -1,23 +1,11 @@
-export type RawVerse = {
-  volume_id: number;
-  book_id: number;
-  chapter_id: number;
-  verse_id: number;
-  volume_title: string;
-  book_title: string;
-  volume_long_title: string;
-  book_long_title: string;
-  volume_subtitle: string;
-  book_subtitle: string;
-  volume_short_title: string;
-  book_short_title: string;
-  volume_lds_url: string;
-  book_lds_url: string;
-  chapter_number: number;
-  verse_number: number;
-  scripture_text: string;
-  verse_title: string;
-  verse_short_title: string;
+import { ObjectID } from "mongodb";
+
+export type VolumeDoc = {
+  _id: ObjectID;
+  title: string;
+  longTitle: string;
+  shortTitle: string;
+  sortPosition: number;
 };
 
 export type Volume = {
@@ -25,6 +13,18 @@ export type Volume = {
   title: string;
   longTitle: string;
   shortTitle: string;
+  sortPosition: number;
+};
+
+export type VerseDoc = {
+  _id: ObjectID;
+  number: number;
+  text: string;
+  title: string;
+  shortTitle: string;
+  volumeId: ObjectID;
+  bookId: ObjectID;
+  chapterId: ObjectID;
 };
 
 export type Verse = {
@@ -38,13 +38,31 @@ export type Verse = {
   chapterId: string;
 };
 
+export type BookDoc = {
+  _id: ObjectID;
+  volumeId: ObjectID;
+  title: string;
+  longTitle: string;
+  subtitle: string;
+  shortTitle: string;
+  sortPosition: number;
+};
+
 export type Book = {
   id: string;
   volumeId: string;
   title: string;
   longTitle: string;
   subtitle: string;
-  shortTitble: string;
+  shortTitle: string;
+  sortPosition: number;
+};
+
+export type ChapterDoc = {
+  _id: ObjectID;
+  bookId: ObjectID;
+  volumeId: ObjectID;
+  number: number;
 };
 
 export type Chapter = {
@@ -65,11 +83,23 @@ export type VerseSelection = {
   range?: MarkRange;
 };
 
-export type Mark = VerseSelection & {
+export type MarkDoc = {
+  _id: ObjectID;
+  type: "speaker";
+  speakerId: ObjectID;
+  verseId: ObjectID;
+  range?: MarkRange;
+};
+
+export type Mark = {
   id: string;
   type: "speaker";
   speakerId: string;
+  verseId: string;
+  range?: MarkRange;
 };
+
+export type PersonDoc = { _id: ObjectID; name: string };
 
 export type Person = { id: string; name: string };
 

@@ -85,7 +85,6 @@ const typeDefs = gql`
   }
 
   input NewMark {
-    id: String!
     type: String!
     verseId: String!
     range: [Int!]

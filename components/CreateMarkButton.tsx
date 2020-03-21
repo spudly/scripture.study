@@ -5,30 +5,17 @@ import classnames from "classnames";
 import CircleButton from "../components/CircleButton";
 import { VerseSelection } from "../utils/types";
 import Select from "../components/Select";
-import uuid from "uuid/v4";
 import Spinner from "./Spinner";
-import { gql } from "apollo-boost";
-import { useQuery } from "@apollo/react-hooks";
 
 const buildSpeakerMarks = (
   selections: Array<VerseSelection>,
   speakerId: string
-): Array<Mark> =>
+): Array<Omit<Mark, "id">> =>
   selections.map(selection => ({
     ...selection,
-    id: uuid(),
     type: "speaker",
     speakerId
   }));
-
-const PEOPLE_QUERY = gql`
-  query people {
-    people {
-      id
-      name
-    }
-  }
-`;
 
 const byName = (a: Person, b: Person) => {
   const aName = a.name.toLowerCase();
@@ -38,16 +25,11 @@ const byName = (a: Person, b: Person) => {
 
 const CreateMarkButton: FC<{
   selections: Array<VerseSelection>;
-  createMarks: (marks: Array<Mark>) => void;
+  createMarks: (marks: Array<Omit<Mark, "id">>) => void;
   isCreating?: boolean;
-}> = ({ selections, createMarks, isCreating }) => {
+  people: Array<Person>;
+}> = ({ selections, createMarks, isCreating, people }) => {
   const [isOpen, setIsOpen] = useState(false);
-  const {
-    loading: isLoadingPeople,
-    data: { people = undefined } = {}
-  } = useQuery<{
-    people: Array<Person>;
-  }>(PEOPLE_QUERY);
 
   return (
     <>
@@ -60,15 +42,11 @@ const CreateMarkButton: FC<{
       <CircleButton
         themeId="yellow"
         onClick={e => setIsOpen(is => !is)}
-        disabled={isCreating || isLoadingPeople}
+        disabled={isCreating}
       >
         <div className="whitespace-no-wrap">
           <div className="h-20 w-20 inline-flex align-middle justify-center items-center">
-            {isLoadingPeople || isCreating ? (
-              <Spinner grow />
-            ) : (
-              <MdRecordVoiceOver />
-            )}
+            {isCreating ? <Spinner grow /> : <MdRecordVoiceOver />}
           </div>
           <div
             className={classnames(
@@ -91,7 +69,7 @@ const CreateMarkButton: FC<{
                 }}
               >
                 <option />
-                {(people ?? []).sort(byName).map(({ id, name }) => (
+                {people.sort(byName).map(({ id, name }) => (
                   <option key={id} value={id}>
                     {name}
                   </option>

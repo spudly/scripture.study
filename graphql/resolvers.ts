@@ -1,8 +1,21 @@
 import { IResolvers, IResolverObject } from "apollo-server";
-import { Volume, Verse, Book, Chapter, Mark, Person } from "../utils/types";
+import {
+  Volume,
+  Verse,
+  Book,
+  Chapter,
+  Mark,
+  MarkDoc,
+  Person,
+  VolumeDoc,
+  BookDoc,
+  ChapterDoc,
+  VerseDoc,
+  PersonDoc
+} from "../utils/types";
 import parseRef from "../utils/parseReference";
 import getDataSources from "./dataSources";
-import { Db } from "mongodb";
+import { Db, ObjectID } from "mongodb";
 
 type Context = {
   dataSources: ReturnType<typeof getDataSources>;
@@ -19,29 +32,94 @@ const ERROR_CODES = {
   UNEXPECTED: 1
 };
 
+const markDocToMark = (markDoc: MarkDoc): Mark => ({
+  ...markDoc,
+  id: String(markDoc._id),
+  speakerId: String(markDoc.speakerId),
+  verseId: String(markDoc.verseId)
+});
+
+const newMarkToNewMarkDoc = (mark: Omit<Mark, "id">): Omit<MarkDoc, "_id"> => ({
+  ...mark,
+  speakerId: new ObjectID(mark.speakerId),
+  verseId: new ObjectID(mark.verseId)
+});
+
+const volumeDocToVolume = (volumeDoc: VolumeDoc): Volume => ({
+  ...volumeDoc,
+  id: String(volumeDoc._id)
+});
+
+const bookDocToBook = (bookDoc: BookDoc): Book => ({
+  ...bookDoc,
+  id: String(bookDoc._id),
+  volumeId: String(bookDoc.volumeId)
+});
+
+const chapterDocToChapter = (chapterDoc: ChapterDoc): Chapter => ({
+  ...chapterDoc,
+  id: String(chapterDoc._id),
+  volumeId: String(chapterDoc.volumeId),
+  bookId: String(chapterDoc.bookId)
+});
+
+const verseDocToVerse = (verseDoc: VerseDoc): Verse => ({
+  ...verseDoc,
+  id: String(verseDoc._id),
+  volumeId: String(verseDoc.volumeId),
+  bookId: String(verseDoc.bookId),
+  chapterId: String(verseDoc.chapterId)
+});
+
+const personDocToPerson = (personDoc: PersonDoc): Person => ({
+  ...personDoc,
+  id: String(personDoc._id)
+});
+
 const resolvers: IResolvers<unknown, Context> = {
   Query: {
     volumes: async (
       _,
       __,
       { dataSources: { volumes } }
-    ): Promise<Array<Volume>> => volumes.collection.find().toArray(),
+    ): Promise<Array<Volume>> =>
+      volumes.collection
+        .find()
+        .map(volumeDocToVolume)
+        .toArray(),
     books: async (_, __, { dataSources: { books } }): Promise<Array<Book>> =>
-      books.collection.find().toArray(),
+      books.collection
+        .find()
+        .map(bookDocToBook)
+        .toArray(),
     chapters: async (
       _,
       __,
       { dataSources: { chapters } }
-    ): Promise<Array<Chapter>> => chapters.collection.find().toArray(),
+    ): Promise<Array<Chapter>> =>
+      chapters.collection
+        .find()
+        .map(chapterDocToChapter)
+        .toArray(),
     verses: async (_, __, { dataSources: { verses } }): Promise<Array<Verse>> =>
-      verses.collection.find().toArray(),
+      verses.collection
+        .find()
+        .map(verseDocToVerse)
+        .toArray(),
     marks: async (_, __, { dataSources: { marks } }): Promise<Array<Mark>> =>
-      marks.collection.find().toArray(),
+      marks.collection
+        .find()
+        .map(markDocToMark)
+        .toArray(),
     people: async (
       _,
       __,
       { dataSources: { people } }
-    ): Promise<Array<Person>> => people.collection.find().toArray(),
+    ): Promise<Array<Person>> =>
+      people.collection
+        .find()
+        .map(personDocToPerson)
+        .toArray(),
     reference: async (
       _,
       { reference }: { reference: string },
@@ -52,14 +130,14 @@ const resolvers: IResolvers<unknown, Context> = {
         chapter: chapterNumber,
         verses: verseNumbers
       } = parseRef(reference);
-      const book = await books.collection.findOne({
+      const book: BookDoc | null = await books.collection.findOne({
         title: bookTitle
       });
       if (!book) {
-        throw new Error("No such book!");
+        throw new Error(`No such book (${bookTitle})!`);
       }
-      const chapter = await chapters.collection.findOne({
-        bookId: book.id,
+      const chapter: ChapterDoc | null = await chapters.collection.findOne({
+        bookId: book._id,
         number: chapterNumber
       });
       if (!chapter) {
@@ -70,15 +148,17 @@ const resolvers: IResolvers<unknown, Context> = {
         chapter,
         verses: await (verseNumbers
           ? verses.collection.find({
-              bookId: book.id,
-              chapterId: chapter.id,
+              bookId: book._id,
+              chapterId: chapter._id,
               number: { $in: verseNumbers }
             })
           : verses.collection.find({
-              bookId: book.id,
-              chapterId: chapter.id
+              bookId: book._id,
+              chapterId: chapter._id
             })
-        ).toArray()
+        )
+          .map(verseDocToVerse)
+          .toArray()
       };
     }
   },
@@ -96,9 +176,9 @@ const resolvers: IResolvers<unknown, Context> = {
     ): Promise<Array<Mark>> =>
       (
         await marks.collection
-          .find({ verseId: { $in: verses.map(v => v.id) } })
+          .find({ verseId: { $in: verses.map(v => new ObjectID(v.id)) } })
           .toArray()
-      ).map((mark: Mark) => ({ ...mark, range: mark.range ?? undefined }))
+      ).map(markDocToMark)
   } as IResolverObject<
     { book: Book; chapter: Chapter; verses: Array<Verse> },
     Context,
@@ -110,52 +190,70 @@ const resolvers: IResolvers<unknown, Context> = {
       _,
       { dataSources: { chapters } }
     ): Promise<Chapter> =>
-      chapters.collection.findOne({ id: verse.chapterId })!,
+      chapterDocToChapter(await chapters.findOneById(verse.chapterId)!),
     book: async (verse, _, { dataSources: { books } }): Promise<Book> =>
-      books.collection.findOne({ id: verse.bookId })!,
+      bookDocToBook(await books.findOneById(verse.bookId)!),
     volume: async (verse, _, { dataSources: { volumes } }): Promise<Volume> =>
-      volumes.collection.findOne({ id: verse.volumeId })!
+      volumeDocToVolume(await volumes.findOneById(verse.volumeId)!)
   } as IResolverObject<Verse, Context, {}>,
   Chapter: {
     verses: async (chapter, _, { dataSources: { verses } }): Promise<Verse[]> =>
-      verses.getAllByChapterId(chapter.id),
+      (await verses.getAllByChapterId(chapter.id)).map(verseDocToVerse),
     book: async (chapter, _, { dataSources: { books } }): Promise<Book> =>
-      books.collection.findOne({ id: chapter.bookId })!,
+      bookDocToBook(await books.findOneById(chapter.bookId)!),
     volume: async (chapter, _, { dataSources: { volumes } }): Promise<Volume> =>
-      volumes.collection.findOne({ id: chapter.volumeId })!
+      volumeDocToVolume(await volumes.findOneById(chapter.volumeId)!)
   } as IResolverObject<Chapter, Context, {}>,
   Book: {
     chapters: async (
       book,
       _,
       { dataSources: { chapters } }
-    ): Promise<Chapter[]> => chapters.getAllByBookId(book.id),
-    volume: async (book, _, { dataSources: { volumes } }): Promise<Volume> => {
-      return volumes.collection.findOne({ id: book.volumeId })!;
-    }
+    ): Promise<Chapter[]> =>
+      (await chapters.getAllByBookId(book.id)).map(chapterDocToChapter),
+    volume: async (book, _, { dataSources: { volumes } }): Promise<Volume> =>
+      volumeDocToVolume(await volumes.findOneById(book.volumeId)!)
   } as IResolverObject<Book, Context, {}>,
   Volume: {
     books: async (volume, _, { dataSources: { books } }): Promise<Book[]> =>
-      books.getAllByVolumeId(volume.id)
+      (await books.getAllByVolumeId(volume.id)).map(bookDocToBook)
   } as IResolverObject<Volume, Context, {}>,
   Mark: {
-    verse: async (mark, _, { dataSources: { verses } }): Promise<Verse> =>
-      verses.collection.findOne({ id: mark.verseId })!,
-    speaker: async (mark, _, { dataSources: { people } }): Promise<Person> =>
-      people.collection.findOne({ id: mark.speakerId })!
+    verse: async (mark, _, { dataSources: { verses } }): Promise<Verse> => {
+      const verse = await verses.findOneById(mark.verseId);
+      if (verse) {
+        return verseDocToVerse(verse);
+      }
+      throw new Error("Verse not found");
+    },
+    speaker: async (mark, _, { dataSources: { people } }): Promise<Person> => {
+      const speaker = await people.collection.findOne({ id: mark.speakerId });
+      if (speaker) {
+        return personDocToPerson(speaker);
+      }
+      throw new Error("Person not found");
+    }
   } as IResolverObject<Mark, Context, {}>,
   Person: {
     marks: async (person, _, { dataSources: { marks } }): Promise<Mark[]> =>
-      marks.getAllBySpeakerId(person.id)
+      (await marks.getAllBySpeakerId(person.id)).map(markDocToMark)
   } as IResolverObject<Person, Context, {}>,
   Mutation: {
     async createMarks(
       _,
-      { marks: newMarks },
+      { marks: newMarks }: { marks: Array<Mark> },
       { dataSources: { marks } }
     ): Promise<MutationResponse> {
       try {
-        await marks.collection.insertMany(newMarks);
+        const {
+          insertedCount,
+          insertedIds
+        } = await marks.collection.insertMany(
+          newMarks.map(newMarkToNewMarkDoc)
+        );
+        const newDocs = await marks.findManyByIds(
+          Array.from(insertedIds as any)
+        );
         return {
           code: 0,
           success: true,
@@ -175,7 +273,9 @@ const resolvers: IResolvers<unknown, Context> = {
       { dataSources: { marks } }
     ): Promise<MutationResponse> {
       try {
-        await marks.collection.deleteMany({ id: { $in: ids } });
+        await marks.collection.deleteMany({
+          _id: { $in: ids.map(id => new ObjectID(id)) }
+        });
         return {
           code: 0,
           success: true,
@@ -198,8 +298,8 @@ const resolvers: IResolvers<unknown, Context> = {
         await Promise.all(
           newMarks.map(m =>
             marks.collection.findOneAndUpdate(
-              { id: m.id },
-              { $set: { speakerId: m.speakerId } }
+              { id: new ObjectID(m.id) },
+              { $set: { speakerId: new ObjectID(m.speakerId) } }
             )
           )
         );

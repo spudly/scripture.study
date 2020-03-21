@@ -1,4 +1,17 @@
-import { Volume, Verse, Book, Chapter, Mark, Person } from "../utils/types";
+import {
+  Volume,
+  Verse,
+  Book,
+  Chapter,
+  Mark,
+  Person,
+  PersonDoc,
+  BookDoc,
+  ChapterDoc,
+  VerseDoc,
+  MarkDoc,
+  VolumeDoc
+} from "../utils/types";
 import { Db, Collection } from "mongodb";
 import { DataSource, DataSourceConfig } from "apollo-datasource";
 import { InMemoryLRUCache } from "apollo-server-caching";
@@ -87,30 +100,30 @@ class MongoDataSource<DOC> extends DataSource<Context> {
   }
 }
 
-class VolumesDataSource extends MongoDataSource<Volume> {}
+class VolumesDataSource extends MongoDataSource<VolumeDoc> {}
 
-class BooksDataSource extends MongoDataSource<Book> {
-  async getAllByVolumeId(volumeId: string): Promise<Book[]> {
+class BooksDataSource extends MongoDataSource<BookDoc> {
+  async getAllByVolumeId(volumeId: string): Promise<BookDoc[]> {
     return this.collection.find({ volumeId }).toArray();
   }
 }
 
-class ChaptersDataSource extends MongoDataSource<Chapter> {
-  async getAllByBookId(bookId: string): Promise<Chapter[]> {
+class ChaptersDataSource extends MongoDataSource<ChapterDoc> {
+  async getAllByBookId(bookId: string): Promise<ChapterDoc[]> {
     return this.collection.find({ bookId }).toArray();
   }
 }
 
-class VersesDataSource extends MongoDataSource<Verse> {
-  async getAllByChapterId(chapterId: string): Promise<Verse[]> {
+class VersesDataSource extends MongoDataSource<VerseDoc> {
+  async getAllByChapterId(chapterId: string): Promise<VerseDoc[]> {
     return this.collection.find({ chapterId }).toArray();
   }
 }
 
-class PeopleDataSource extends MongoDataSource<Person> {}
+class PeopleDataSource extends MongoDataSource<PersonDoc> {}
 
-class MarksDataSource extends MongoDataSource<Mark> {
-  async getAllBySpeakerId(speakerId: string): Promise<Mark[]> {
+class MarksDataSource extends MongoDataSource<MarkDoc> {
+  async getAllBySpeakerId(speakerId: string): Promise<MarkDoc[]> {
     return this.collection.find({ speakerId }).toArray();
   }
 }

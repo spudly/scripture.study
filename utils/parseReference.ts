@@ -24,21 +24,12 @@ const parseVerseRef = (ref: string): Array<number> => {
 };
 
 const normalize = (ref: string) =>
-  ref
-    .replace(/^[a-z]/, match => match.toUpperCase())
-    .replace(
-      /([^a-z])([a-z])/gi,
-      (_, p1, p2) => `${p1} ${(p2 || "").toUpperCase()}`
-    )
-    .replace(/(\D)(\d)/g, "$1 $2")
-    .replace(/\s{2,}/g, " ");
+  ref.replace(/(\D)(\d)/g, "$1 $2").replace(/\s{2,}/g, " ");
 
 const parseRef = (ref: string) => {
   const match = ref
     .trim()
-    .toLowerCase()
-    .replace(/\s/g, "")
-    .match(/^(\d*)([a-z]+)(\d+)(?:[.:]([\d,-]+))?$/);
+    .match(/^(\d*)([a-z\s]+)\s*(\d+)(?:[.:]([\d,-]+))?$/i);
   if (!match) {
     throw new Error(`no match for "${ref}"`);
   }
