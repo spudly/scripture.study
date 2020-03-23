@@ -36,6 +36,7 @@ export type Verse = {
   volumeId: string;
   bookId: string;
   chapterId: string;
+  marks?: Array<Mark>;
 };
 
 export type BookDoc = {
@@ -155,4 +156,8 @@ export type ApiResponse =
       next: SlimBookAndChapterAndVerse;
     };
 
-export type GraphQlContext = {};
+export type DirectoryEntry = {
+  id: string;
+  href: string;
+  title: string;
+};

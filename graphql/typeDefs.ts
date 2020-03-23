@@ -11,6 +11,7 @@ const typeDefs = gql`
     chapter: Chapter!
     book: Book!
     volume: Volume!
+    marks: [Mark!]!
   }
 
   type Chapter {
@@ -21,6 +22,8 @@ const typeDefs = gql`
     verses: [Verse]!
     book: Book!
     volume: Volume!
+    prev: Chapter
+    next: Chapter
   }
 
   type Book {
@@ -32,6 +35,7 @@ const typeDefs = gql`
     shortTitle: String!
     chapters: [Chapter!]!
     volume: Volume!
+    sortPosition: Int!
   }
 
   type Volume {
@@ -41,6 +45,7 @@ const typeDefs = gql`
     subtitle: String!
     shortTitle: String!
     books: [Book!]!
+    sortPosition: Int!
   }
 
   type Mark {
@@ -59,25 +64,6 @@ const typeDefs = gql`
     marks: [Mark!]!
   }
 
-  type Reference {
-    book: Book
-    chapter: Chapter
-    verses: [Verse!]
-    marks: [Mark!]
-    prev: String
-    next: String
-  }
-
-  type Query {
-    volumes: [Volume!]!
-    books: [Book!]!
-    chapters: [Chapter!]!
-    verses: [Verse!]!
-    marks: [Mark!]!
-    people: [Person!]!
-    reference(reference: String): Reference!
-  }
-
   type MutationResponse {
     code: String!
     success: Boolean!
@@ -94,6 +80,21 @@ const typeDefs = gql`
   input MarkUpdate {
     id: String!
     speakerId: String!
+  }
+
+  type Query {
+    volumes: [Volume!]!
+    volume(title: String!): Volume
+    book(volumeTitle: String!, bookTitle: String!): Book
+    chapter(volumeTitle: String!, bookTitle: String!, number: Int!): Chapter
+    verse(
+      volumeTitle: String!
+      bookTitle: String!
+      chapterNumber: Int!
+      verseNumber: Int!
+    ): Verse
+    people: [Person!]!
+    marks(verseIds: [ID!]!): [Mark!]!
   }
 
   type Mutation {

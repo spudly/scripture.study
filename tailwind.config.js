@@ -1,3 +1,4 @@
+// Defaults: https://github.com/tailwindcss/tailwindcss/blob/master/stubs/defaultConfig.stub.js
 module.exports = {
   theme: {
     minWidth: {
@@ -9,6 +10,7 @@ module.exports = {
     }
   },
   variants: {
-    backgroundColor: ["responsive", "hover", "focus", "active"]
+    backgroundColor: ["responsive", "hover", "focus", "active"],
+    scale: ["responsive", "hover", "focus", "active"]
   }
 };

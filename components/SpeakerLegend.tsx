@@ -1,5 +1,4 @@
-import { FC, useContext } from "react";
-import MarksContext from "../contexts/MarksContext";
+import { FC } from "react";
 import CircleButton from "./CircleButton";
 import { Person } from "../utils/types";
 
@@ -19,9 +18,10 @@ const scrollToSpeaker = (speakerId: string) => {
   firstBySpeaker?.scrollIntoView({ behavior: "smooth" });
 };
 
-const SpeakerLegend: FC<{ people: Array<Person> }> = ({ people }) => {
-  const { speakerIds } = useContext(MarksContext);
-
+const SpeakerLegend: FC<{
+  people: Array<Person>;
+  speakerIds: Array<string>;
+}> = ({ people, speakerIds }) => {
   return (
     <div className="fixed top-0 left-0 p-4 flex flex-row sm:flex-col w-full h-auto sm:w-auto sm:h-full overflow-x-auto sm:overflow-y-auto">
       {speakerIds.map((speakerId, index) => {

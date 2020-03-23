@@ -7,7 +7,6 @@ import React, {
 } from "react";
 import classnames from "classnames";
 import { Mark, Verse as $Verse } from "../utils/types";
-import MarksContext from "../contexts/MarksContext";
 import sortByRange from "../utils/sortByRange";
 import { theme } from "../data/themes";
 import unique from "../utils/unique";
@@ -18,14 +17,15 @@ const VerseFragment: FC<{
   marks: Array<Pick<Mark, "id" | "type" | "speakerId">>;
   selectMarks: Dispatch<SetStateAction<string[]>>;
   selectedMarkIds: Array<string>;
+  speakerIds: Array<string>;
 }> = ({
   isVerseNumber = false,
   children,
   selectMarks,
   marks,
-  selectedMarkIds
+  selectedMarkIds,
+  speakerIds: allSpeakerIds
 }) => {
-  const { speakerIds: allSpeakerIds } = useContext(MarksContext);
   const speakerIds = marks.flatMap(m =>
     m.type === "speaker" ? [m.speakerId] : []
   );
@@ -72,7 +72,16 @@ const Verse: FC<{
   marks: Array<Pick<Mark, "id" | "type" | "speakerId" | "range">>;
   selectMarks: Dispatch<SetStateAction<string[]>>;
   selectedMarkIds: Array<string>;
-}> = ({ id, text, number, marks, selectMarks, selectedMarkIds }) => {
+  speakerIds: Array<string>;
+}> = ({
+  id,
+  text,
+  number,
+  marks,
+  selectMarks,
+  selectedMarkIds,
+  speakerIds
+}) => {
   const sortedMarks = sortByRange(marks);
   const breakpoints = unique([
     0,
@@ -91,14 +100,7 @@ const Verse: FC<{
       key={id}
       className="content-center text-4xl font-serif mb-6 leading-loose text-justify"
     >
-      <VerseFragment
-        marks={getMarksAt(0)}
-        isVerseNumber
-        selectMarks={selectMarks}
-        selectedMarkIds={selectedMarkIds}
-      >
-        {number}{" "}
-      </VerseFragment>
+      <span>{number} </span>
       {breakpoints.reduce((elements, breakpoint, index) => {
         const nextBreakpoint = breakpoints[index + 1] ?? text.length;
         const [from, to = text.length] = [breakpoint, nextBreakpoint];
@@ -110,6 +112,7 @@ const Verse: FC<{
             marks={getMarksAt(breakpoint)}
             selectMarks={selectMarks}
             selectedMarkIds={selectedMarkIds}
+            speakerIds={speakerIds}
           >
             {text.slice(from, to)}
           </VerseFragment>

@@ -5,7 +5,7 @@ import client from "../graphql/client";
 import "../css/tailwind.css";
 
 const App: FC<AppProps> = ({ Component, pageProps }) => (
-  <div className="min-h-screen flex flex-col">
+  <div className="min-h-screen flex flex-col bg-gray-100">
     <ApolloProvider client={client}>
       <Component {...pageProps} />
     </ApolloProvider>

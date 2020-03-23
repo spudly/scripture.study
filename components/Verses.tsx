@@ -11,7 +11,15 @@ const Verses: NextPage<{
   setSelections: (selections: Array<VerseSelection>) => void;
   selectMarks: Dispatch<SetStateAction<string[]>>;
   selectedMarkIds: Array<string>;
-}> = ({ verses, marks, setSelections, selectMarks, selectedMarkIds }) => {
+  speakerIds: Array<string>;
+}> = ({
+  verses,
+  marks,
+  setSelections,
+  selectMarks,
+  selectedMarkIds,
+  speakerIds
+}) => {
   useEffect(() => {
     const handleSelectionChange = () => {
       const selection = window.getSelection();
@@ -44,6 +52,7 @@ const Verses: NextPage<{
             selectMarks={selectMarks}
             marks={marks.filter(m => m.verseId === verse.id)}
             selectedMarkIds={selectedMarkIds}
+            speakerIds={speakerIds}
           />
         ))}
     </div>

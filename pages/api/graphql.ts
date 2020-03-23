@@ -1,15 +1,15 @@
 import { ApolloServer } from "apollo-server-micro";
-import getDataSources from "../../graphql/dataSources";
 import typeDefs from "../../graphql/typeDefs";
 import resolvers from "../../graphql/resolvers";
 import getConnection from "../../db/getConnection";
+import { BookDoc } from "../../utils/types";
 
 const server = new ApolloServer({
   typeDefs,
   resolvers,
-  dataSources: getDataSources,
   context: async () => {
-    return { db: await getConnection() };
+    const db = await getConnection();
+    return { db };
   }
 });
 

@@ -1,38 +1,31 @@
-import React, { FC } from "react";
+import React from "react";
 import { useQuery } from "@apollo/react-hooks";
 import { Volume } from "../utils/types";
 import normalize from "../utils/normalize";
-import { gql } from "apollo-boost";
 import Spinner from "../components/Spinner";
+import * as queries from "../graphql/queries";
+import client from "../graphql/client";
+import { NextPage } from "next";
+import bySortPosition from "../utils/bySortPosition";
+import Directory from "../components/Directory";
 
-const Index: FC<{}> = () => {
-  const { loading, error, data } = useQuery<{
-    volumes: Array<{ id: string; title: string }>;
-  }>(gql`
-    {
-      volumes {
-        id
-        title
-      }
-    }
-  `);
-  return error ? (
-    <>Error</>
-  ) : loading ? (
-    <Spinner grow />
-  ) : data ? (
-    <div className="flex h-screen">
-      {data.volumes.map(v => (
-        <a
-          key={v.id}
-          href={normalize(v.title)}
-          className="block w-24 h-24 border rounded"
-        >
-          {v.title}
-        </a>
-      ))}
-    </div>
-  ) : null;
+const Index: NextPage<{ volumes: Array<Volume> }> = ({ volumes }) => (
+  <Directory
+    entries={volumes.sort(bySortPosition).map(v => ({
+      id: v.id,
+      href: `/${v.title.replace(/\s/g, ".")}`,
+      title: v.title
+    }))}
+  />
+);
+
+Index.getInitialProps = async () => {
+  const {
+    data: { volumes }
+  } = await client.query({ query: queries.getVolumes });
+  return {
+    volumes
+  };
 };
 
 export default Index;
