@@ -22,8 +22,8 @@ const typeDefs = gql`
     verses: [Verse]!
     book: Book!
     volume: Volume!
-    prev: Chapter
-    next: Chapter
+    prev: String
+    next: String
   }
 
   type Book {

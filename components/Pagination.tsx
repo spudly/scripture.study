@@ -7,10 +7,10 @@ const Pagination: FC<{
   type: "prev" | "next";
   href: string;
 }> = ({ type, href }) => (
-  <Link href="/[ref]" as={href}>
+  <Link href="/[volume]/[book]/[chapter]" as={href}>
     <a
       className={classnames(
-        "fixed flex flex-col justify-center items-center top-0 bottom-0 w-12 text-center text-6xl text-gray-500 hover:text-gray-900 cursor-pointer hover:bg-gray-100 duration-300",
+        "fixed flex flex-col justify-center items-center top-0 bottom-0 w-20 text-center text-6xl text-gray-500 hover:text-gray-900 cursor-pointer hover:bg-gray-200 duration-300",
         {
           "left-0": type === "prev",
           "right-0": type === "next"

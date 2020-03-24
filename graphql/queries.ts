@@ -98,6 +98,8 @@ export const getChapter = gql`
         title
         shortTitle
       }
+      prev
+      next
     }
   }
 `;

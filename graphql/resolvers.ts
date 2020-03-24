@@ -15,7 +15,7 @@ import {
 } from "../utils/types";
 import parseRef from "../utils/parseReference";
 import { Db, ObjectID, Collection } from "mongodb";
-import { getChapter } from "./queries";
+import { getChapter, getBook } from "./queries";
 
 type Context = {
   db: Db;
@@ -31,9 +31,9 @@ const ERROR_CODES = {
   UNEXPECTED: 1
 };
 
-const markDocToMark = (markDoc: MarkDoc): Mark => ({
+const markDocToMark = ({ _id, ...markDoc }: MarkDoc): Mark => ({
   ...markDoc,
-  id: String(markDoc._id),
+  id: String(_id),
   speakerId: String(markDoc.speakerId),
   verseId: String(markDoc.verseId)
 });
@@ -44,35 +44,35 @@ const newMarkToNewMarkDoc = (mark: Omit<Mark, "id">): Omit<MarkDoc, "_id"> => ({
   verseId: new ObjectID(mark.verseId)
 });
 
-const volumeDocToVolume = (volumeDoc: VolumeDoc): Volume => ({
+const volumeDocToVolume = ({ _id, ...volumeDoc }: VolumeDoc): Volume => ({
   ...volumeDoc,
-  id: String(volumeDoc._id)
+  id: String(_id)
 });
 
-const bookDocToBook = (bookDoc: BookDoc): Book => ({
+const bookDocToBook = ({ _id, ...bookDoc }: BookDoc): Book => ({
   ...bookDoc,
-  id: String(bookDoc._id),
+  id: String(_id),
   volumeId: String(bookDoc.volumeId)
 });
 
-const chapterDocToChapter = (chapterDoc: ChapterDoc): Chapter => ({
+const chapterDocToChapter = ({ _id, ...chapterDoc }: ChapterDoc): Chapter => ({
   ...chapterDoc,
-  id: String(chapterDoc._id),
+  id: String(_id),
   volumeId: String(chapterDoc.volumeId),
   bookId: String(chapterDoc.bookId)
 });
 
-const verseDocToVerse = (verseDoc: VerseDoc): Verse => ({
+const verseDocToVerse = ({ _id, ...verseDoc }: VerseDoc): Verse => ({
   ...verseDoc,
-  id: String(verseDoc._id),
+  id: String(_id),
   volumeId: String(verseDoc.volumeId),
   bookId: String(verseDoc.bookId),
   chapterId: String(verseDoc.chapterId)
 });
 
-const personDocToPerson = (personDoc: PersonDoc): Person => ({
+const personDocToPerson = ({ _id, ...personDoc }: PersonDoc): Person => ({
   ...personDoc,
-  id: String(personDoc._id)
+  id: String(_id)
 });
 
 const createChapterReference = (bookTitle: string, chapterNumber: number) =>
@@ -191,7 +191,7 @@ const findChapterByBookIdAndNumber = async (
   number: number
 ): Promise<Chapter | null> => {
   const chapterDoc = await db.collection<ChapterDoc>("chapters").findOne({
-    bookId: new Object(bookId),
+    bookId: new ObjectID(bookId),
     number
   });
   if (chapterDoc) {
@@ -283,6 +283,31 @@ const findNextChapter = async (
     return getChapterByBookIdAndNumber(db, nextBook.id, 1);
   }
   return null;
+};
+
+const getChapterUrl = async (db: Db, chapter: Chapter): Promise<string> => {
+  const volume = await getVolumeById(db, chapter.volumeId);
+  const book = await getBookById(db, chapter.bookId);
+  return `/${volume.title.replace(/\s/g, ".")}/${book.title.replace(
+    /\s/g,
+    "."
+  )}/${chapter.number}`;
+};
+
+const findPrevChapterUrl = async (
+  db: Db,
+  chapter: Chapter
+): Promise<string | null> => {
+  const prevChapter = await findPrevChapter(db, chapter);
+  return prevChapter ? getChapterUrl(db, prevChapter) : null;
+};
+
+const findNextChapterUrl = async (
+  db: Db,
+  chapter: Chapter
+): Promise<string | null> => {
+  const prevChapter = await findNextChapter(db, chapter);
+  return prevChapter ? getChapterUrl(db, prevChapter) : null;
 };
 
 const getChaptersByBookId = (db: Db, bookId: string): Promise<Chapter[]> =>
@@ -400,8 +425,8 @@ const resolvers: IResolvers<unknown, Context> = {
     verses: (chapter, _, { db }) => getVersesByChapterId(db, chapter.id),
     book: (chapter, _, { db }) => getBookById(db, chapter.bookId),
     volume: (chapter, _, { db }) => getVolumeById(db, chapter.volumeId),
-    prev: (chapter, _, { db }) => findPrevChapter(db, chapter),
-    next: (chapter, _, { db }) => findNextChapter(db, chapter)
+    prev: (chapter, _, { db }) => findPrevChapterUrl(db, chapter),
+    next: (chapter, _, { db }) => findNextChapterUrl(db, chapter)
   } as IResolverObject<Chapter, Context, {}>,
   Book: {
     chapters: (book, _, { db }) => getChaptersByBookId(db, book.id),

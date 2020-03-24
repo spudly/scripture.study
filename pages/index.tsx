@@ -14,7 +14,7 @@ const Index: NextPage<{ volumes: Array<Volume> }> = ({ volumes }) => (
     entries={volumes.sort(bySortPosition).map(v => ({
       id: v.id,
       href: `/${v.title.replace(/\s/g, ".")}`,
-      title: v.title
+      title: v.longTitle
     }))}
   />
 );

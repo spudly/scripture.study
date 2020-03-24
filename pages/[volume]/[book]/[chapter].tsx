@@ -18,6 +18,7 @@ import Verses from "../../../components/Verses";
 import EditMarksButton from "../../../components/EditMarksButton";
 import DeleteMarksButton from "../../../components/DeleteMarksButton";
 import CreateMarkButton from "../../../components/CreateMarkButton";
+import Pagination from "../../../components/Pagination";
 
 const useCreateMarks = () =>
   useMutation(queries.createMarks, {
@@ -51,11 +52,11 @@ const ChapterPage: NextPage<{
   volume: Volume;
   book: Book;
   chapter: Chapter;
-  prev: Chapter;
-  next: Chapter;
+  prev?: string;
+  next?: string;
   verses: Array<Verse>;
   people: Array<Person>;
-}> = ({ volume, book, chapter, verses, people }) => {
+}> = ({ volume, book, chapter, verses, people, prev, next }) => {
   const [selections, setSelections] = useState<Array<VerseSelection>>([]);
   const [selectedMarkIds, setSelectedMarkIds] = useState<string[]>([]);
   const { data: { marks } = { marks: [] } } = useGetMarks(
@@ -91,11 +92,8 @@ const ChapterPage: NextPage<{
         setSelectedMarkIds([]);
       }}
     >
-      {/* {prev && <Pagination type="prev" href={prev} />} */}
+      {prev && <Pagination type="prev" href={prev} />}
       <SpeakerLegend people={people} speakerIds={speakerIds} />
-      <h1>
-        {book.title} {chapter.number}
-      </h1>
       <Verses
         verses={verses}
         marks={marks}
@@ -104,7 +102,7 @@ const ChapterPage: NextPage<{
         selectedMarkIds={selectedMarkIds}
         speakerIds={speakerIds}
       />
-      {/* {next && <Pagination type="next" href={next} />} */}
+      {next && <Pagination type="next" href={next} />}
       <div className="fixed bottom-0 right-0 pr-4 pb-4 text-right">
         {selectedMarks.length !== 0 && (
           <>
