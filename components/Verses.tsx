@@ -7,7 +7,7 @@ import isEmptySelection from "../utils/isEmptySelection";
 
 const Verses: NextPage<{
   verses: Array<Pick<$Verse, "id" | "number" | "text">>;
-  marks: Array<Pick<Mark, "id" | "type" | "speakerId" | "verseId" | "range">>;
+  marks: Array<Mark>;
   setSelections: (selections: Array<VerseSelection>) => void;
   selectMarks: Dispatch<SetStateAction<string[]>>;
   selectedMarkIds: Array<string>;

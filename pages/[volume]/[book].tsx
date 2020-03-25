@@ -6,11 +6,13 @@ import client from "../../graphql/client";
 import byNumber from "../../utils/byNumber";
 import Directory from "../../components/Directory";
 
-const BookPage: NextPage<{
+type Props = {
   volume: Volume;
   book: Book;
   chapters: Array<Chapter>;
-}> = ({ volume, book, chapters }) => (
+};
+
+const BookPage: NextPage<Props> = ({ volume, book, chapters }) => (
   <Directory
     small
     entries={chapters.sort(byNumber).map(chapter => ({
@@ -26,15 +28,21 @@ const BookPage: NextPage<{
 
 BookPage.getInitialProps = async ({
   query: { volume: volumeRef, book: bookRef }
-}) => {
+}): Promise<Props> => {
   const volumeTitle = (volumeRef as string).replace(/\./g, " ");
   const bookTitle = (bookRef as string).replace(/\./g, " ");
-  const result = await client.query({
+  const result = await client.query<queries.GetBook, queries.GetBookVariables>({
     query: queries.getBook,
     variables: { volumeTitle, bookTitle }
   });
 
-  const { volume, chapters, ...book } = result.data.book;
+  const bookData = result.data.book;
+
+  if (!bookData) {
+    throw new Error("Missing Book Data");
+  }
+
+  const { volume, chapters, ...book } = bookData;
 
   return {
     volume,

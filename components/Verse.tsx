@@ -69,7 +69,7 @@ const Verse: FC<{
   id: $Verse["id"];
   number: $Verse["number"];
   text: $Verse["text"];
-  marks: Array<Pick<Mark, "id" | "type" | "speakerId" | "range">>;
+  marks: Array<Mark>;
   selectMarks: Dispatch<SetStateAction<string[]>>;
   selectedMarkIds: Array<string>;
   speakerIds: Array<string>;

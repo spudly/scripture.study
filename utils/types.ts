@@ -77,27 +77,25 @@ export type Volumes = {
   volumeTitles: Array<string>;
 };
 
-export type MarkRange = [number] | [number, number];
-
 export type VerseSelection = {
   verseId: string;
-  range?: MarkRange;
+  range: Array<number> | null;
 };
 
 export type MarkDoc = {
   _id: ObjectID;
-  type: "speaker";
+  type: string;
   speakerId: ObjectID;
   verseId: ObjectID;
-  range?: MarkRange;
+  range: Array<number> | null;
 };
 
 export type Mark = {
   id: string;
-  type: "speaker";
+  type: string;
   speakerId: string;
   verseId: string;
-  range?: MarkRange;
+  range: Array<number> | null;
 };
 
 export type PersonDoc = { _id: ObjectID; name: string };

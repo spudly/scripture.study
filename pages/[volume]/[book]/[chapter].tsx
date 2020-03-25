@@ -21,42 +21,58 @@ import CreateMarkButton from "../../../components/CreateMarkButton";
 import Pagination from "../../../components/Pagination";
 
 const useCreateMarks = () =>
-  useMutation(queries.createMarks, {
-    refetchQueries: ["GetMarks"],
-    awaitRefetchQueries: true
-  });
-
-const useDeleteMarks = (onCompleted?: () => void) =>
-  useMutation(queries.deleteMarks, {
-    refetchQueries: ["GetMarks"],
-    awaitRefetchQueries: true,
-    onCompleted
-  });
-
-const useUpdateMarks = (onCompleted?: () => void) =>
-  useMutation(queries.updateMarks, {
-    refetchQueries: ["GetMarks"],
-    awaitRefetchQueries: true,
-    onCompleted
-  });
-
-const useGetMarks = (verseIds: Array<string>) =>
-  useQuery<{ marks: Array<Mark> }, { verseIds: Array<string> }>(
-    queries.getMarks,
+  useMutation<queries.CreateMarks, queries.CreateMarksVariables>(
+    queries.createMarks,
     {
-      variables: { verseIds }
+      refetchQueries: ["GetMarks"],
+      awaitRefetchQueries: true
     }
   );
 
-const ChapterPage: NextPage<{
+const useDeleteMarks = (onCompleted?: () => void) =>
+  useMutation<queries.DeleteMarks, queries.DeleteMarksVariables>(
+    queries.deleteMarks,
+    {
+      refetchQueries: ["GetMarks"],
+      awaitRefetchQueries: true,
+      onCompleted
+    }
+  );
+
+const useUpdateMarks = (onCompleted?: () => void) =>
+  useMutation<queries.UpdateMarks, queries.UpdateMarksVariables>(
+    queries.updateMarks,
+    {
+      refetchQueries: ["GetMarks"],
+      awaitRefetchQueries: true,
+      onCompleted
+    }
+  );
+
+const useGetMarks = (verseIds: Array<string>) =>
+  useQuery<queries.GetMarks, queries.GetMarksVariables>(queries.getMarks, {
+    variables: { verseIds }
+  });
+
+type Props = {
   volume: Volume;
   book: Book;
   chapter: Chapter;
-  prev?: string;
-  next?: string;
+  prev: string | null;
+  next: string | null;
   verses: Array<Verse>;
   people: Array<Person>;
-}> = ({ volume, book, chapter, verses, people, prev, next }) => {
+};
+
+const ChapterPage: NextPage<Props> = ({
+  volume,
+  book,
+  chapter,
+  verses,
+  people,
+  prev,
+  next
+}) => {
   const [selections, setSelections] = useState<Array<VerseSelection>>([]);
   const [selectedMarkIds, setSelectedMarkIds] = useState<string[]>([]);
   const { data: { marks } = { marks: [] } } = useGetMarks(
@@ -108,6 +124,7 @@ const ChapterPage: NextPage<{
           <>
             <div>
               <EditMarksButton
+                people={people}
                 marks={selectedMarks}
                 isUpdating={isUpdating}
                 updateMarks={async (
@@ -146,27 +163,30 @@ const ChapterPage: NextPage<{
 
 ChapterPage.getInitialProps = async ({
   query: { volume: volumeRef, book: bookRef, chapter: number }
-}) => {
+}): Promise<Props> => {
   const volumeTitle = (volumeRef as string).replace(/\./g, " ");
   const bookTitle = (bookRef as string).replace(/\./g, " ");
-  const chapterResult = await client.query({
+  const chapterResult = await client.query<
+    queries.GetChapter,
+    queries.GetChapterVariables
+  >({
     query: queries.getChapter,
     variables: { volumeTitle, bookTitle, number: Number(number) }
   });
+
   const {
     data: { people }
-  } = await client.query({
+  } = await client.query<queries.GetPeople, never>({
     query: queries.getPeople
   });
 
-  const {
-    volume,
-    book,
-    verses,
-    prev,
-    next,
-    ...chapter
-  } = chapterResult.data.chapter;
+  const chapterData = chapterResult.data.chapter;
+
+  if (!chapterData) {
+    throw new Error("Missing chapter!");
+  }
+
+  const { volume, book, verses, prev, next, ...chapter } = chapterData;
 
   return {
     volume,

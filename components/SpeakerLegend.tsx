@@ -19,53 +19,40 @@ const scrollToSpeaker = (speakerId: string) => {
   firstBySpeaker?.scrollIntoView({ behavior: "smooth" });
 };
 
-const useShowOnScrollUp = () => {
+const usNavPosition = (height: number) => {
   const didScroll = useRef<boolean>(false);
   const lastPos = useRef<number>(0);
-  const [show, setShow] = useState<boolean>(true);
+  const [y, setY] = useState<number>(0);
 
   useEffect(() => {
-    const handleScroll = () => (didScroll.current = true);
-    window.addEventListener("scroll", handleScroll);
-    const id = window.setInterval(() => {
-      if (didScroll.current) {
-        const pos = document.documentElement.scrollTop;
-        console.log(pos);
-
-        if (pos > lastPos.current) {
-          setShow(false);
-        } else if (pos < lastPos.current) {
-          setShow(true);
-        }
-
-        lastPos.current = pos;
-        didScroll.current = false;
+    const handleScroll = () => {
+      const pos = document.documentElement.scrollTop;
+      if (pos > lastPos.current) {
+        setY(Math.max(-height, -pos));
+      } else if (pos < lastPos.current) {
+        setY(0);
       }
-    }, 250);
-
-    return () => {
-      window.removeEventListener("scroll", handleScroll);
-      clearInterval(id);
+      lastPos.current = pos;
     };
+    window.addEventListener("scroll", handleScroll);
+    return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
-  return show;
+  return y;
 };
 
 const SpeakerLegend: FC<{
   people: Array<Person>;
   speakerIds: Array<string>;
 }> = ({ people, speakerIds }) => {
-  const show = useShowOnScrollUp();
+  const y = usNavPosition(128);
   return (
     <div
-      className={classnames(
-        "fixed left-0 p-4 flex flex-row w-full overflow-x-auto duration-500 overflow-y-hidden transform",
-        {
-          "-translate-y-32": !show,
-          "translate-y-0": show
-        }
-      )}
+      className="fixed left-0 top-0 p-4 flex flex-row w-full overflow-x-auto duration-500"
+      style={{
+        transform: `translateY(${y}px)`,
+        opacity: y === 0 ? 1 : 0
+      }}
     >
       {speakerIds.map((speakerId, index) => {
         const person = people.find(p => p.id === speakerId);

@@ -1,10 +1,6 @@
 import React from "react";
 import { Volume, Book } from "../utils/types";
-import {
-  getVolume,
-  GetVolumeData,
-  GetVolumeVariables
-} from "../graphql/queries";
+import * as queries from "../graphql/queries";
 import client from "../graphql/client";
 import { NextPage } from "next";
 import bySortPosition from "../utils/bySortPosition";
@@ -38,8 +34,11 @@ VolumePage.getInitialProps = async ({
   res
 }): Promise<Props> => {
   const title = (volumeRef as string).replace(/\./g, " ");
-  const result = await client.query<GetVolumeData, GetVolumeVariables>({
-    query: getVolume,
+  const result = await client.query<
+    queries.GetVolume,
+    queries.GetVolumeVariables
+  >({
+    query: queries.getVolume,
     variables: {
       title
     }

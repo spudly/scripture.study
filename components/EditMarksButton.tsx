@@ -3,21 +3,8 @@ import { Mark, Person } from "../utils/types";
 import { MdEdit } from "react-icons/md";
 import classnames from "classnames";
 import CircleButton from "./CircleButton";
-import { VerseSelection } from "../utils/types";
 import Select from "./Select";
-import uuid from "uuid/v4";
 import Spinner from "./Spinner";
-import { gql } from "apollo-boost";
-import { useQuery } from "@apollo/react-hooks";
-
-const PEOPLE_QUERY = gql`
-  query people {
-    people {
-      id
-      name
-    }
-  }
-`;
 
 const byName = (a: Person, b: Person) => {
   const aName = a.name.toLowerCase();
@@ -29,14 +16,9 @@ const EditMarksButton: FC<{
   marks: Mark[];
   updateMarks: (marks: Array<Pick<Mark, "id" | "speakerId">>) => void;
   isUpdating?: boolean;
-}> = ({ marks, updateMarks, isUpdating }) => {
+  people: Array<Person>;
+}> = ({ marks, updateMarks, isUpdating, people }) => {
   const [isOpen, setIsOpen] = useState(false);
-  const {
-    loading: isLoadingPeople,
-    data: { people = undefined } = {}
-  } = useQuery<{
-    people: Array<Person>;
-  }>(PEOPLE_QUERY);
 
   return (
     <>
@@ -52,11 +34,11 @@ const EditMarksButton: FC<{
           e.stopPropagation();
           setIsOpen(is => !is);
         }}
-        disabled={isUpdating || isLoadingPeople}
+        disabled={isUpdating}
       >
         <div className="whitespace-no-wrap">
           <div className="h-20 w-20 inline-flex align-middle justify-center items-center">
-            {isLoadingPeople || isUpdating ? <Spinner grow /> : <MdEdit />}
+            {isUpdating ? <Spinner grow /> : <MdEdit />}
           </div>
           <div
             className={classnames(
@@ -79,7 +61,7 @@ const EditMarksButton: FC<{
                 }}
               >
                 <option />
-                {(people ?? []).sort(byName).map(({ id, name }) => (
+                {people.sort(byName).map(({ id, name }) => (
                   <option key={id} value={id}>
                     {name}
                   </option>

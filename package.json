@@ -5,7 +5,8 @@
   "main": "index.js",
   "scripts": {
     "dev": "next",
-    "build": "next build",
+    "apollo-codegen": "apollo client:codegen types -c apollo.config.client.js --target=typescript --globalTypesFile=graphql/types/globalTypes.ts",
+    "build": "npm run apollo-codegen && next build",
     "start": "next start",
     "test": "jest"
   },
@@ -23,6 +24,8 @@
     "autoprefixer": "^9.7.4",
     "classnames": "^2.2.6",
     "graphql": "^14.6.0",
+    "graphql-import-node": "0.0.4",
+    "graphql-tag": "^2.10.3",
     "isomorphic-unfetch": "^3.0.0",
     "mongodb": "^3.5.3",
     "next": "^9.2.1",
@@ -44,6 +47,7 @@
     "@types/node": "^13.7.0",
     "@types/react": "^16.9.19",
     "@types/react-dom": "^16.9.5",
+    "apollo": "^2.25.0",
     "jest": "^25.1.0",
     "typescript": "^3.7.5"
   },

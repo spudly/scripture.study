@@ -1,4 +1,4 @@
-const sortByRange = <ITEM extends { range?: Array<number> }>(
+const sortByRange = <ITEM extends { range: Array<number> | null }>(
   items: Array<ITEM>
 ): Array<ITEM> =>
   items.sort((a, b) => {

@@ -52,7 +52,7 @@ const createVerseSelections = (
             ? [firstVerseOffset]
             : isLast
             ? [0, lastVerseOffset]
-            : undefined
+            : null
       };
     }
   );
