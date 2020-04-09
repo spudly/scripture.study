@@ -1,63 +1,20 @@
-import React, { useState, useMemo } from "react";
+import React from "react";
 import { NextPage } from "next";
 import {
   Book,
-  Chapter,
+  Chapter as $Chapter,
   Volume,
   Verse,
-  VerseSelection,
-  Person,
-  Mark
+  Person
 } from "../../../utils/types";
 import * as queries from "../../../graphql/queries";
 import client from "../../../graphql/client";
-import { useMutation, useQuery } from "@apollo/react-hooks";
-import unique from "../../../utils/unique";
-import SpeakerLegend from "../../../components/SpeakerLegend";
-import Verses from "../../../components/Verses";
-import EditMarksButton from "../../../components/EditMarksButton";
-import DeleteMarksButton from "../../../components/DeleteMarksButton";
-import CreateMarkButton from "../../../components/CreateMarkButton";
-import Pagination from "../../../components/Pagination";
-
-const useCreateMarks = () =>
-  useMutation<queries.CreateMarks, queries.CreateMarksVariables>(
-    queries.createMarks,
-    {
-      refetchQueries: ["GetMarks"],
-      awaitRefetchQueries: true
-    }
-  );
-
-const useDeleteMarks = (onCompleted?: () => void) =>
-  useMutation<queries.DeleteMarks, queries.DeleteMarksVariables>(
-    queries.deleteMarks,
-    {
-      refetchQueries: ["GetMarks"],
-      awaitRefetchQueries: true,
-      onCompleted
-    }
-  );
-
-const useUpdateMarks = (onCompleted?: () => void) =>
-  useMutation<queries.UpdateMarks, queries.UpdateMarksVariables>(
-    queries.updateMarks,
-    {
-      refetchQueries: ["GetMarks"],
-      awaitRefetchQueries: true,
-      onCompleted
-    }
-  );
-
-const useGetMarks = (verseIds: Array<string>) =>
-  useQuery<queries.GetMarks, queries.GetMarksVariables>(queries.getMarks, {
-    variables: { verseIds }
-  });
+import Chapter from "../../../components/Chapter";
 
 type Props = {
   volume: Volume;
   book: Book;
-  chapter: Chapter;
+  chapter: $Chapter;
   prev: string | null;
   next: string | null;
   verses: Array<Verse>;
@@ -72,94 +29,17 @@ const ChapterPage: NextPage<Props> = ({
   people,
   prev,
   next
-}) => {
-  const [selections, setSelections] = useState<Array<VerseSelection>>([]);
-  const [selectedMarkIds, setSelectedMarkIds] = useState<string[]>([]);
-  const { data: { marks } = { marks: [] } } = useGetMarks(
-    verses.map(v => v.id)
-  );
-  const speakerIds = useMemo(
-    () =>
-      unique(
-        (marks || [])
-          .filter(mark => mark.type === "speaker")
-          .map(mark => mark.speakerId)
-      ),
-    [marks]
-  );
-  const selectedMarks = marks.filter(m => selectedMarkIds.includes(m.id));
-  const [createMarks, { loading: isCreating }] = useCreateMarks();
-  const [deleteMarks, { loading: isDeleting }] = useDeleteMarks(() =>
-    setSelectedMarkIds([])
-  );
-  const [updateMarks, { loading: isUpdating }] = useUpdateMarks(() =>
-    setSelectedMarkIds([])
-  );
-
-  return (
-    <div
-      className="flex-1 flex flex-col"
-      onClick={e => {
-        const selection = window.getSelection();
-        if (selection?.type !== "Range") {
-          window.getSelection()?.removeAllRanges();
-          setSelections([]);
-        }
-        setSelectedMarkIds([]);
-      }}
-    >
-      {prev && <Pagination type="prev" href={prev} />}
-      <SpeakerLegend people={people} speakerIds={speakerIds} />
-      <Verses
-        verses={verses}
-        marks={marks}
-        setSelections={setSelections}
-        selectMarks={setSelectedMarkIds}
-        selectedMarkIds={selectedMarkIds}
-        speakerIds={speakerIds}
-      />
-      {next && <Pagination type="next" href={next} />}
-      <div className="fixed bottom-0 right-0 pr-4 pb-4 text-right">
-        {selectedMarks.length !== 0 && (
-          <>
-            <div>
-              <EditMarksButton
-                people={people}
-                marks={selectedMarks}
-                isUpdating={isUpdating}
-                updateMarks={async (
-                  marks: Array<Pick<Mark, "id" | "speakerId">>
-                ) => updateMarks({ variables: { marks } })}
-              />
-            </div>
-            <div>
-              <DeleteMarksButton
-                selectedMarkIds={selectedMarkIds}
-                isDeleting={isDeleting}
-                deleteMarks={async (ids: string[]) =>
-                  deleteMarks({ variables: { ids } })
-                }
-              />
-            </div>
-          </>
-        )}
-        {selections.length !== 0 && (
-          <div>
-            <CreateMarkButton
-              isCreating={isCreating}
-              selections={selections}
-              createMarks={async (newMarks: Array<Omit<Mark, "id">>) => {
-                await createMarks({ variables: { marks: newMarks } });
-                setSelections([]);
-              }}
-              people={people}
-            />
-          </div>
-        )}
-      </div>
-    </div>
-  );
-};
+}) => (
+  <Chapter
+    volume={volume}
+    book={book}
+    chapter={chapter}
+    verses={verses}
+    people={people}
+    prev={prev}
+    next={next}
+  />
+);
 
 ChapterPage.getInitialProps = async ({
   query: { volume: volumeRef, book: bookRef, chapter: number }

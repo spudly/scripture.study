@@ -35,7 +35,7 @@ const CreateMarkButton: FC<{
     <>
       {isOpen && (
         <div
-          className="fixed top-0 right-0 bottom-0 left-0"
+          className="fixed z-10 top-0 right-0 bottom-0 left-0"
           onClick={() => setIsOpen(false)}
         />
       )}
@@ -69,9 +69,9 @@ const CreateMarkButton: FC<{
                 }}
               >
                 <option />
-                {people.sort(byName).map(({ id, name }) => (
+                {people.sort(byName).map(({ id, name, description }) => (
                   <option key={id} value={id}>
-                    {name}
+                    {description ? `${name}, ${description}` : name}
                   </option>
                 ))}
               </Select>

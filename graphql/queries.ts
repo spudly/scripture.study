@@ -107,6 +107,7 @@ export const getPeople = gql`
     people {
       id
       name
+      description
     }
   }
 `;

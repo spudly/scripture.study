@@ -1,13 +1,13 @@
-const getTextNodes = (container: HTMLElement): Array<Node> => {
+const getTextNodes = (container: HTMLElement): Array<Text> => {
   const walker = document.createTreeWalker(
     container,
     NodeFilter.SHOW_TEXT,
     null,
     false
   );
-  const nodes: Array<Node> = [];
-  let node: Node | null;
-  while ((node = walker.nextNode())) {
+  const nodes: Array<Text> = [];
+  let node: Text | null;
+  while ((node = walker.nextNode() as Text)) {
     nodes.push(node);
   }
   return nodes;

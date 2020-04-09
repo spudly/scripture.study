@@ -6,10 +6,28 @@ import React, {
   SetStateAction
 } from "react";
 import classnames from "classnames";
-import { Mark, Verse as $Verse } from "../utils/types";
+import { Mark, Verse as $Verse, Person } from "../utils/types";
 import sortByRange from "../utils/sortByRange";
 import { theme } from "../data/themes";
 import unique from "../utils/unique";
+import { MdRecordVoiceOver } from "react-icons/md";
+
+const SpeakerIndicator: FC<{ speaker: Person }> = ({
+  speaker: { name, description }
+}) => (
+  <div
+    className="inline-block w-16 h-16 mx-2 align-middle overflow-hidden select-none"
+    data-selection-ignore
+    title={description ? `${name}, ${description}` : name}
+  >
+    <div className="flex justify-center">
+      <MdRecordVoiceOver />
+    </div>
+    <div className="text-xs text-center truncate uppercase leading-none flex-1 min-w-0 pt-1">
+      {name}
+    </div>
+  </div>
+);
 
 const VerseFragment: FC<{
   children: ReactNode;
@@ -18,13 +36,15 @@ const VerseFragment: FC<{
   selectMarks: Dispatch<SetStateAction<string[]>>;
   selectedMarkIds: Array<string>;
   speakerIds: Array<string>;
+  allSpeakers: Array<Person>;
 }> = ({
   isVerseNumber = false,
   children,
   selectMarks,
   marks,
   selectedMarkIds,
-  speakerIds: allSpeakerIds
+  speakerIds: allSpeakerIds,
+  allSpeakers
 }) => {
   const speakerIds = marks.flatMap(m =>
     m.type === "speaker" ? [m.speakerId] : []
@@ -45,21 +65,32 @@ const VerseFragment: FC<{
     { "cursor-pointer": marks.length != 0 }
   );
   return marks.length ? (
-    <a
-      data-speaker-ids={speakerIds.join(" ")}
-      // TODO: for now, we'll support selecting a single mark. eventually it'd be nice to prompt the user to choose which mark they want to select.
-      onClick={e => {
-        e.stopPropagation();
-        const markId = marks[marks.length - 1].id;
-        if (e.ctrlKey) {
-          selectMarks(markIds => [...(markIds ?? []), markId]);
-        } else {
-          selectMarks([markId]);
-        }
-      }}
-    >
-      <mark className={classes}>{children}</mark>
-    </a>
+    <>
+      <a
+        data-speaker-ids={speakerIds.join(" ")}
+        // TODO: for now, we'll support selecting a single mark. eventually it'd be nice to prompt the user to choose which mark they want to select.
+        onClick={e => {
+          e.stopPropagation();
+          const markId = marks[marks.length - 1].id;
+          if (e.ctrlKey) {
+            selectMarks(markIds => [...(markIds ?? []), markId]);
+          } else {
+            selectMarks([markId]);
+          }
+        }}
+      >
+        <mark className={classes}>
+          {speakerIds.map(id => (
+            <SpeakerIndicator
+              key={id}
+              speaker={allSpeakers.find(s => s.id === id)!}
+            />
+          ))}
+
+          {children}
+        </mark>
+      </a>
+    </>
   ) : (
     <>{children}</>
   );
@@ -73,6 +104,7 @@ const Verse: FC<{
   selectMarks: Dispatch<SetStateAction<string[]>>;
   selectedMarkIds: Array<string>;
   speakerIds: Array<string>;
+  allSpeakers: Array<Person>;
 }> = ({
   id,
   text,
@@ -80,7 +112,8 @@ const Verse: FC<{
   marks,
   selectMarks,
   selectedMarkIds,
-  speakerIds
+  speakerIds,
+  allSpeakers
 }) => {
   const sortedMarks = sortByRange(marks);
   const breakpoints = unique([
@@ -98,9 +131,9 @@ const Verse: FC<{
     <blockquote
       data-verse={id}
       key={id}
-      className="content-center text-4xl font-serif mb-6 leading-loose text-justify"
+      className="content-center mb-6 text-4xl leading-loose text-justify"
     >
-      <span>{number} </span>
+      <span className="select-none">{number} </span>
       {breakpoints.reduce((elements, breakpoint, index) => {
         const nextBreakpoint = breakpoints[index + 1] ?? text.length;
         const [from, to = text.length] = [breakpoint, nextBreakpoint];
@@ -113,6 +146,7 @@ const Verse: FC<{
             selectMarks={selectMarks}
             selectedMarkIds={selectedMarkIds}
             speakerIds={speakerIds}
+            allSpeakers={allSpeakers}
           >
             {text.slice(from, to)}
           </VerseFragment>

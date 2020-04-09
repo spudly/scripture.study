@@ -98,9 +98,13 @@ export type Mark = {
   range: Array<number> | null;
 };
 
-export type PersonDoc = { _id: ObjectID; name: string };
+export type PersonDoc = {
+  _id: ObjectID;
+  name: string;
+  description?: string | null;
+};
 
-export type Person = { id: string; name: string };
+export type Person = { id: string; name: string; description?: string | null };
 
 export type StateMicroTheme = {
   bgColor: string;

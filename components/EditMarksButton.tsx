@@ -61,9 +61,10 @@ const EditMarksButton: FC<{
                 }}
               >
                 <option />
-                {people.sort(byName).map(({ id, name }) => (
+                {people.sort(byName).map(({ id, name, description }) => (
                   <option key={id} value={id}>
                     {name}
+                    {description && <>, {description}</>}
                   </option>
                 ))}
               </Select>

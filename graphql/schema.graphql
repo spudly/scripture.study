@@ -60,6 +60,7 @@ type Mark {
 type Person {
   id: String!
   name: String!
+  description: String
   marks: [Mark!]!
 }
 
