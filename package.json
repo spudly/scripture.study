@@ -7,7 +7,7 @@
     "dev": "next",
     "apollo-codegen": "apollo client:codegen types -c apollo.config.client.js --target=typescript --globalTypesFile=graphql/types/globalTypes.ts",
     "build": "npm run apollo-codegen && next build",
-    "start": "next start",
+    "start": "next start -p $PORT",
     "test": "jest"
   },
   "keywords": [],

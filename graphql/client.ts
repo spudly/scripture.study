@@ -7,7 +7,7 @@ const client = new ApolloClient({
       ? `http://localhost:${process.env.PORT ?? 3000}`
       : ""
   }/api/graphql`,
-  fetch
+  fetch,
 });
 
 export default client;
