@@ -1,10 +1,11 @@
 import React from "react";
 import { Volume, Book } from "../utils/types";
 import * as queries from "../graphql/queries";
-import client from "../graphql/client";
+import getClient from "../graphql/client";
 import { NextPage } from "next";
 import bySortPosition from "../utils/bySortPosition";
 import Directory from "../components/Directory";
+import getBaseUrl from "../utils/getBaseUrl";
 
 type Props = {
   volume?: Volume;
@@ -17,13 +18,13 @@ const VolumePage: NextPage<Props> = ({ volume, books }) => {
   }
   return (
     <Directory
-      entries={books.sort(bySortPosition).map(book => ({
+      entries={books.sort(bySortPosition).map((book) => ({
         id: book.id,
         href: `/${volume.title.replace(/\s/g, ".")}/${book.title.replace(
           /\s/g,
           "."
         )}`,
-        title: book.title
+        title: book.title,
       }))}
     />
   );
@@ -31,17 +32,19 @@ const VolumePage: NextPage<Props> = ({ volume, books }) => {
 
 VolumePage.getInitialProps = async ({
   query: { volume: volumeRef },
-  res
+  req,
+  res,
 }): Promise<Props> => {
   const title = (volumeRef as string).replace(/\./g, " ");
+  const client = getClient(getBaseUrl(req));
   const result = await client.query<
     queries.GetVolume,
     queries.GetVolumeVariables
   >({
     query: queries.getVolume,
     variables: {
-      title
-    }
+      title,
+    },
   });
 
   const volumeData = result.data.volume;
@@ -57,7 +60,7 @@ VolumePage.getInitialProps = async ({
 
   return {
     volume: volume as Volume,
-    books
+    books,
   };
 };
 

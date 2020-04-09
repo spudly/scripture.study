@@ -2,9 +2,10 @@ import React from "react";
 import { NextPage } from "next";
 import { Book, Chapter, Volume } from "../../utils/types";
 import * as queries from "../../graphql/queries";
-import client from "../../graphql/client";
+import getClient from "../../graphql/client";
 import byNumber from "../../utils/byNumber";
 import Directory from "../../components/Directory";
+import getBaseUrl from "../../utils/getBaseUrl";
 
 type Props = {
   volume: Volume;
@@ -15,25 +16,27 @@ type Props = {
 const BookPage: NextPage<Props> = ({ volume, book, chapters }) => (
   <Directory
     small
-    entries={chapters.sort(byNumber).map(chapter => ({
+    entries={chapters.sort(byNumber).map((chapter) => ({
       id: chapter.id,
       href: `/${volume.title.replace(/\s/g, ".")}/${book.title.replace(
         /\s/g,
         "."
       )}/${chapter.number}`,
-      title: String(chapter.number)
+      title: String(chapter.number),
     }))}
   />
 );
 
 BookPage.getInitialProps = async ({
-  query: { volume: volumeRef, book: bookRef }
+  req,
+  query: { volume: volumeRef, book: bookRef },
 }): Promise<Props> => {
   const volumeTitle = (volumeRef as string).replace(/\./g, " ");
   const bookTitle = (bookRef as string).replace(/\./g, " ");
+  const client = getClient(getBaseUrl(req));
   const result = await client.query<queries.GetBook, queries.GetBookVariables>({
     query: queries.getBook,
-    variables: { volumeTitle, bookTitle }
+    variables: { volumeTitle, bookTitle },
   });
 
   const bookData = result.data.book;
@@ -47,7 +50,7 @@ BookPage.getInitialProps = async ({
   return {
     volume,
     book,
-    chapters
+    chapters,
   };
 };
 

@@ -5,11 +5,12 @@ import {
   Chapter as $Chapter,
   Volume,
   Verse,
-  Person
+  Person,
 } from "../../../utils/types";
 import * as queries from "../../../graphql/queries";
-import client from "../../../graphql/client";
+import getClient from "../../../graphql/client";
 import Chapter from "../../../components/Chapter";
+import getBaseUrl from "../../../utils/getBaseUrl";
 
 type Props = {
   volume: Volume;
@@ -28,7 +29,7 @@ const ChapterPage: NextPage<Props> = ({
   verses,
   people,
   prev,
-  next
+  next,
 }) => (
   <Chapter
     volume={volume}
@@ -42,22 +43,24 @@ const ChapterPage: NextPage<Props> = ({
 );
 
 ChapterPage.getInitialProps = async ({
-  query: { volume: volumeRef, book: bookRef, chapter: number }
+  req,
+  query: { volume: volumeRef, book: bookRef, chapter: number },
 }): Promise<Props> => {
   const volumeTitle = (volumeRef as string).replace(/\./g, " ");
   const bookTitle = (bookRef as string).replace(/\./g, " ");
+  const client = getClient(getBaseUrl(req));
   const chapterResult = await client.query<
     queries.GetChapter,
     queries.GetChapterVariables
   >({
     query: queries.getChapter,
-    variables: { volumeTitle, bookTitle, number: Number(number) }
+    variables: { volumeTitle, bookTitle, number: Number(number) },
   });
 
   const {
-    data: { people }
+    data: { people },
   } = await client.query<queries.GetPeople, never>({
-    query: queries.getPeople
+    query: queries.getPeople,
   });
 
   const chapterData = chapterResult.data.chapter;
@@ -75,7 +78,7 @@ ChapterPage.getInitialProps = async ({
     verses,
     prev,
     next,
-    people
+    people,
   };
 };
 
