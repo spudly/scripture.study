@@ -1,81 +1,73 @@
-import React, {
-  useEffect,
-  Dispatch,
-  SetStateAction,
-  useState,
-  useMemo
-} from "react";
-import { NextPage } from "next";
-import { Verse as $Verse, Mark, VerseSelection, Person } from "../utils/types";
-import Verse from "./Verse";
-import createVerseSelections from "../utils/createVerseSelections";
-import isEmptySelection from "../utils/isEmptySelection";
-import { useMutation, useQuery } from "@apollo/react-hooks";
-import * as queries from "../graphql/queries";
-import unique from "../utils/unique";
-import EditMarksButton from "./EditMarksButton";
-import DeleteMarksButton from "./DeleteMarksButton";
-import CreateMarkButton from "./CreateMarkButton";
+import React, {useEffect, useState, useMemo} from 'react';
+import {NextPage} from 'next';
+import {Verse as $Verse, Mark, VerseSelection, Person} from '../utils/types';
+import Verse from './Verse';
+import createVerseSelections from '../utils/createVerseSelections';
+import isEmptySelection from '../utils/isEmptySelection';
+import {useMutation, useQuery} from '@apollo/react-hooks';
+import * as queries from '../graphql/queries';
+import unique from '../utils/unique';
+import EditMarksButton from './EditMarksButton';
+import DeleteMarksButton from './DeleteMarksButton';
+import CreateMarkButton from './CreateMarkButton';
 
 const useCreateMarks = () =>
   useMutation<queries.CreateMarks, queries.CreateMarksVariables>(
     queries.createMarks,
     {
-      refetchQueries: ["GetMarks"],
-      awaitRefetchQueries: true
-    }
+      refetchQueries: ['GetMarks'],
+      awaitRefetchQueries: true,
+    },
   );
 
 const useDeleteMarks = (onCompleted?: () => void) =>
   useMutation<queries.DeleteMarks, queries.DeleteMarksVariables>(
     queries.deleteMarks,
     {
-      refetchQueries: ["GetMarks"],
+      refetchQueries: ['GetMarks'],
       awaitRefetchQueries: true,
-      onCompleted
-    }
+      onCompleted,
+    },
   );
 
 const useUpdateMarks = (onCompleted?: () => void) =>
   useMutation<queries.UpdateMarks, queries.UpdateMarksVariables>(
     queries.updateMarks,
     {
-      refetchQueries: ["GetMarks"],
+      refetchQueries: ['GetMarks'],
       awaitRefetchQueries: true,
-      onCompleted
-    }
+      onCompleted,
+    },
   );
 
 const useGetMarks = (verseIds: Array<string>) =>
   useQuery<queries.GetMarks, queries.GetMarksVariables>(queries.getMarks, {
-    variables: { verseIds }
+    variables: {verseIds},
   });
 
 const Verses: NextPage<{
-  verses: Array<Pick<$Verse, "id" | "number" | "text">>;
+  verses: Array<Pick<$Verse, 'id' | 'number' | 'text'>>;
   allSpeakers: Array<Person>;
-}> = ({ verses, allSpeakers }) => {
+}> = ({verses, allSpeakers}) => {
   const [selections, setSelections] = useState<Array<VerseSelection>>([]);
   const [selectedMarkIds, setSelectedMarkIds] = useState<string[]>([]);
-  const { data: { marks } = { marks: [] } } = useGetMarks(
-    verses.map(v => v.id)
-  );
+  const {data: {marks} = {marks: []}} = useGetMarks(verses.map((v) => v.id));
   const speakerIds = useMemo(
     () =>
       unique(
         (marks || [])
-          .filter(mark => mark.type === "speaker")
-          .map(mark => mark.speakerId)
+          .filter((mark) => mark.type === 'speaker')
+          .map((mark) => mark.speakerId),
       ),
-    [marks]
+    [marks],
   );
-  const selectedMarks = marks.filter(m => selectedMarkIds.includes(m.id));
-  const [createMarks, { loading: isCreating }] = useCreateMarks();
-  const [deleteMarks, { loading: isDeleting }] = useDeleteMarks(() =>
-    setSelectedMarkIds([])
+  const selectedMarks = marks.filter((m) => selectedMarkIds.includes(m.id));
+  const [createMarks, {loading: isCreating}] = useCreateMarks();
+  const [deleteMarks, {loading: isDeleting}] = useDeleteMarks(() =>
+    setSelectedMarkIds([]),
   );
-  const [updateMarks, { loading: isUpdating }] = useUpdateMarks(() =>
-    setSelectedMarkIds([])
+  const [updateMarks, {loading: isUpdating}] = useUpdateMarks(() =>
+    setSelectedMarkIds([]),
   );
   useEffect(() => {
     const handleSelectionChange = () => {
@@ -91,17 +83,17 @@ const Verses: NextPage<{
         }
       }
     };
-    document.addEventListener("selectionchange", handleSelectionChange);
+    document.addEventListener('selectionchange', handleSelectionChange);
     return () =>
-      document.removeEventListener("selectionchange", handleSelectionChange);
+      document.removeEventListener('selectionchange', handleSelectionChange);
   }, [verses]);
 
   return (
     <div
       className="flex-grow flex flex-col overflow-auto min-h-screen justify-center relative"
-      onClick={e => {
+      onClick={(e) => {
         const selection = window.getSelection();
-        if (selection?.type !== "Range") {
+        if (selection?.type !== 'Range') {
           window.getSelection()?.removeAllRanges();
           setSelections([]);
         }
@@ -110,14 +102,14 @@ const Verses: NextPage<{
     >
       {verses
         .sort((a, b) => a.number - b.number)
-        .map(verse => (
+        .map((verse) => (
           <Verse
             key={verse.id}
             id={verse.id}
             number={verse.number}
             text={verse.text}
             selectMarks={setSelectedMarkIds}
-            marks={marks.filter(m => m.verseId === verse.id)}
+            marks={marks.filter((m) => m.verseId === verse.id)}
             selectedMarkIds={selectedMarkIds}
             speakerIds={speakerIds}
             allSpeakers={allSpeakers}
@@ -132,8 +124,8 @@ const Verses: NextPage<{
                 marks={selectedMarks}
                 isUpdating={isUpdating}
                 updateMarks={async (
-                  marks: Array<Pick<Mark, "id" | "speakerId">>
-                ) => updateMarks({ variables: { marks } })}
+                  marks: Array<Pick<Mark, 'id' | 'speakerId'>>,
+                ) => updateMarks({variables: {marks}})}
               />
             </div>
             <div>
@@ -141,7 +133,7 @@ const Verses: NextPage<{
                 selectedMarkIds={selectedMarkIds}
                 isDeleting={isDeleting}
                 deleteMarks={async (ids: string[]) =>
-                  deleteMarks({ variables: { ids } })
+                  deleteMarks({variables: {ids}})
                 }
               />
             </div>
@@ -152,8 +144,8 @@ const Verses: NextPage<{
             <CreateMarkButton
               isCreating={isCreating}
               selections={selections}
-              createMarks={async (newMarks: Array<Omit<Mark, "id">>) => {
-                await createMarks({ variables: { marks: newMarks } });
+              createMarks={async (newMarks: Array<Omit<Mark, 'id'>>) => {
+                await createMarks({variables: {marks: newMarks}});
                 setSelections([]);
               }}
               people={allSpeakers}

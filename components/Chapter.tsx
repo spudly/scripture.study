@@ -1,14 +1,8 @@
-import { FC } from "react";
-import Spacer from "./Spacer";
-import Verses from "./Verses";
-import Pagination from "./Pagination";
-import {
-  Volume,
-  Book,
-  Chapter as $Chapter,
-  Verse,
-  Person,
-} from "../utils/types";
+import React, {FC} from 'react';
+import Spacer from './Spacer';
+import Verses from './Verses';
+import Pagination from './Pagination';
+import {Volume, Book, Chapter as $Chapter, Verse, Person} from '../utils/types';
 
 type Props = {
   volume: Volume;
@@ -37,7 +31,7 @@ const Chapter: FC<Props> = ({
         </h1>
       )}
       <h2 className="text-center text-4xl uppercase font-serif select-none">
-        {chapter.number === 1 ? "Chapter" : book.title} {chapter.number}
+        {chapter.number === 1 ? 'Chapter' : book.title} {chapter.number}
       </h2>
 
       <Spacer y={8} />

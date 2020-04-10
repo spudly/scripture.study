@@ -1,10 +1,10 @@
-import { useEffect, Ref, RefObject } from "react";
+import {useEffect, RefObject} from 'react';
 
 enum Direction {
-  UP = "UP",
-  DOWN = "DOWN",
-  LEFT = "LEFT",
-  RIGHT = "RIGHT",
+  UP = 'UP',
+  DOWN = 'DOWN',
+  LEFT = 'LEFT',
+  RIGHT = 'RIGHT',
 }
 
 type Options = {
@@ -15,11 +15,11 @@ type Options = {
 
 const useSwipe = (
   elRef: RefObject<Window>,
-  onSwipe: (details: { direction: Direction }) => void,
-  { threshold = 150, restraint = 100, allowedTime = 300 }: Options = {}
+  onSwipe: (details: {direction: Direction}) => void,
+  {threshold = 150, restraint = 100, allowedTime = 300}: Options = {},
 ) => {
   useEffect(() => {
-    let start = { x: 0, y: 0, time: 0 };
+    let start = {x: 0, y: 0, time: 0};
 
     const el = elRef.current;
     if (!el) {
@@ -28,7 +28,7 @@ const useSwipe = (
     const handleTouchStart = (e: TouchEvent) => {
       e.preventDefault();
       const touch = e.changedTouches[0];
-      start = { x: touch.pageX, y: touch.pageY, time: Date.now() };
+      start = {x: touch.pageX, y: touch.pageY, time: Date.now()};
     };
 
     // const handleTouchMove = (e: TouchEvent) => e.preventDefault(); // prevents scrolling. do we really want this?
@@ -36,7 +36,7 @@ const useSwipe = (
     const handleTouchEnd = (e: TouchEvent) => {
       e.preventDefault();
       const touch = e.changedTouches[0];
-      const dist = { x: touch.pageX - start.x, y: touch.pageY - start.y };
+      const dist = {x: touch.pageX - start.x, y: touch.pageY - start.y};
       const elapsed = Date.now() - start.time;
       let direction: Direction | null = null;
       if (elapsed <= allowedTime) {
@@ -50,20 +50,20 @@ const useSwipe = (
         }
       }
       if (direction != null) {
-        onSwipe({ direction });
+        onSwipe({direction});
       }
     };
 
-    el.addEventListener("touchstart", handleTouchStart);
+    el.addEventListener('touchstart', handleTouchStart);
     // el.addEventListener("touchmove", handleTouchMove);
-    el.addEventListener("touchend", handleTouchEnd);
+    el.addEventListener('touchend', handleTouchEnd);
     return () => {
-      el.removeEventListener("touchstart", handleTouchStart);
+      el.removeEventListener('touchstart', handleTouchStart);
       // el.removeEventListener("touchmove", handleTouchMove);
-      el.removeEventListener("touchend", handleTouchEnd);
+      el.removeEventListener('touchend', handleTouchEnd);
     };
-  }, [elRef, threshold, restraint, allowedTime]);
+  }, [elRef, threshold, restraint, allowedTime, onSwipe]);
 };
 
-export { Direction };
+export {Direction};
 export default useSwipe;

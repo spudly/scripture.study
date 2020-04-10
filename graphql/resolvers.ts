@@ -1,4 +1,4 @@
-import { IResolvers, IResolverObject } from "apollo-server";
+import {IResolvers, IResolverObject} from 'apollo-server';
 import {
   Volume,
   Verse,
@@ -11,11 +11,9 @@ import {
   BookDoc,
   ChapterDoc,
   VerseDoc,
-  PersonDoc
-} from "../utils/types";
-import parseRef from "../utils/parseReference";
-import { Db, ObjectID, Collection } from "mongodb";
-import { getChapter, getBook } from "./queries";
+  PersonDoc,
+} from '../utils/types';
+import {Db, ObjectID} from 'mongodb';
 
 type Context = {
   db: Db;
@@ -28,71 +26,64 @@ type MutationResponse = {
 };
 
 const ERROR_CODES = {
-  UNEXPECTED: 1
+  UNEXPECTED: 1,
 };
 
-const markDocToMark = ({ _id, ...markDoc }: MarkDoc): Mark => ({
+const markDocToMark = ({_id, ...markDoc}: MarkDoc): Mark => ({
   ...markDoc,
   id: String(_id),
   speakerId: String(markDoc.speakerId),
-  verseId: String(markDoc.verseId)
+  verseId: String(markDoc.verseId),
 });
 
-const newMarkToNewMarkDoc = (mark: Omit<Mark, "id">): Omit<MarkDoc, "_id"> => ({
+const newMarkToNewMarkDoc = (mark: Omit<Mark, 'id'>): Omit<MarkDoc, '_id'> => ({
   ...mark,
   speakerId: new ObjectID(mark.speakerId),
-  verseId: new ObjectID(mark.verseId)
+  verseId: new ObjectID(mark.verseId),
 });
 
-const volumeDocToVolume = ({ _id, ...volumeDoc }: VolumeDoc): Volume => ({
+const volumeDocToVolume = ({_id, ...volumeDoc}: VolumeDoc): Volume => ({
   ...volumeDoc,
-  id: String(_id)
+  id: String(_id),
 });
 
-const bookDocToBook = ({ _id, ...bookDoc }: BookDoc): Book => ({
+const bookDocToBook = ({_id, ...bookDoc}: BookDoc): Book => ({
   ...bookDoc,
   id: String(_id),
-  volumeId: String(bookDoc.volumeId)
+  volumeId: String(bookDoc.volumeId),
 });
 
-const chapterDocToChapter = ({ _id, ...chapterDoc }: ChapterDoc): Chapter => ({
+const chapterDocToChapter = ({_id, ...chapterDoc}: ChapterDoc): Chapter => ({
   ...chapterDoc,
   id: String(_id),
   volumeId: String(chapterDoc.volumeId),
-  bookId: String(chapterDoc.bookId)
+  bookId: String(chapterDoc.bookId),
 });
 
-const verseDocToVerse = ({ _id, ...verseDoc }: VerseDoc): Verse => ({
+const verseDocToVerse = ({_id, ...verseDoc}: VerseDoc): Verse => ({
   ...verseDoc,
   id: String(_id),
   volumeId: String(verseDoc.volumeId),
   bookId: String(verseDoc.bookId),
-  chapterId: String(verseDoc.chapterId)
+  chapterId: String(verseDoc.chapterId),
 });
 
-const personDocToPerson = ({ _id, ...personDoc }: PersonDoc): Person => ({
+const personDocToPerson = ({_id, ...personDoc}: PersonDoc): Person => ({
   ...personDoc,
-  id: String(_id)
+  id: String(_id),
 });
-
-const createChapterReference = (bookTitle: string, chapterNumber: number) =>
-  `${bookTitle} ${chapterNumber - 1}`.replace(/\s/g, ".");
 
 const getAllVolumes = async (db: Db): Promise<Array<Volume>> =>
-  db
-    .collection<VolumeDoc>("volumes")
-    .find()
-    .map(volumeDocToVolume)
-    .toArray();
+  db.collection<VolumeDoc>('volumes').find().map(volumeDocToVolume).toArray();
 
 const findVolumeByTitle = async (
   db: Db,
-  title: string
+  title: string,
 ): Promise<Volume | null> => {
   const volumeDoc: VolumeDoc | null = await db
-    .collection<VolumeDoc>("volumes")
+    .collection<VolumeDoc>('volumes')
     .findOne({
-      title
+      title,
     });
   if (volumeDoc) {
     return volumeDocToVolume(volumeDoc);
@@ -103,15 +94,15 @@ const findVolumeByTitle = async (
 const findBookByTitle = async (
   db: Db,
   volumeTitle: string,
-  bookTitle: string
+  bookTitle: string,
 ): Promise<Book | null> => {
   const volume = await findVolumeByTitle(db, volumeTitle);
   if (!volume) {
     return null;
   }
   const bookDoc = await db
-    .collection<BookDoc>("books")
-    .findOne({ volumeId: new ObjectID(volume.id), title: bookTitle });
+    .collection<BookDoc>('books')
+    .findOne({volumeId: new ObjectID(volume.id), title: bookTitle});
   if (bookDoc) {
     return bookDocToBook(bookDoc);
   }
@@ -122,15 +113,15 @@ const findChapterByTitle = async (
   db: Db,
   volumeTitle: string,
   bookTitle: string,
-  number: number
+  number: number,
 ): Promise<Chapter | null> => {
   const book = await findBookByTitle(db, volumeTitle, bookTitle);
   if (!book) {
     return null;
   }
-  const chapterDoc = await db.collection<ChapterDoc>("chapters").findOne({
+  const chapterDoc = await db.collection<ChapterDoc>('chapters').findOne({
     bookId: new ObjectID(book.id),
-    number
+    number,
   });
   if (chapterDoc) {
     return chapterDocToChapter(chapterDoc);
@@ -139,16 +130,12 @@ const findChapterByTitle = async (
 };
 
 const getAllPeople = (db: Db): Promise<Array<Person>> =>
-  db
-    .collection<PersonDoc>("people")
-    .find()
-    .map(personDocToPerson)
-    .toArray();
+  db.collection<PersonDoc>('people').find().map(personDocToPerson).toArray();
 
 const getChapterById = async (db: Db, id: string): Promise<Chapter> => {
   const chapterDoc = await db
-    .collection<ChapterDoc>("chapters")
-    .findOne({ _id: new ObjectID(id) });
+    .collection<ChapterDoc>('chapters')
+    .findOne({_id: new ObjectID(id)});
   if (!chapterDoc) {
     throw new Error(`Missing chapter (id: ${id})`);
   }
@@ -157,8 +144,8 @@ const getChapterById = async (db: Db, id: string): Promise<Chapter> => {
 
 const getBookById = async (db: Db, id: string): Promise<Book> => {
   const bookDoc = await db
-    .collection<BookDoc>("books")
-    .findOne({ _id: new ObjectID(id) });
+    .collection<BookDoc>('books')
+    .findOne({_id: new ObjectID(id)});
   if (!bookDoc) {
     throw new Error(`Missing Book: (id: ${id})`);
   }
@@ -167,8 +154,8 @@ const getBookById = async (db: Db, id: string): Promise<Book> => {
 
 const getVolumeById = async (db: Db, id: string): Promise<Volume> => {
   const volumeDoc = await db
-    .collection<VolumeDoc>("volumes")
-    .findOne({ _id: new ObjectID(id) });
+    .collection<VolumeDoc>('volumes')
+    .findOne({_id: new ObjectID(id)});
   if (!volumeDoc) {
     throw new Error(`Missing Volume: (id: ${id})`);
   }
@@ -177,22 +164,22 @@ const getVolumeById = async (db: Db, id: string): Promise<Volume> => {
 
 const getVersesByChapterId = (
   db: Db,
-  chapterId: string
+  chapterId: string,
 ): Promise<Array<Verse>> =>
   db
-    .collection<VerseDoc>("verses")
-    .find({ chapterId: new ObjectID(chapterId) })
+    .collection<VerseDoc>('verses')
+    .find({chapterId: new ObjectID(chapterId)})
     .map(verseDocToVerse)
     .toArray();
 
 const findChapterByBookIdAndNumber = async (
   db: Db,
   bookId: string,
-  number: number
+  number: number,
 ): Promise<Chapter | null> => {
-  const chapterDoc = await db.collection<ChapterDoc>("chapters").findOne({
+  const chapterDoc = await db.collection<ChapterDoc>('chapters').findOne({
     bookId: new ObjectID(bookId),
-    number
+    number,
   });
   if (chapterDoc) {
     return chapterDocToChapter(chapterDoc);
@@ -203,7 +190,7 @@ const findChapterByBookIdAndNumber = async (
 const getChapterByBookIdAndNumber = async (
   db: Db,
   bookId: string,
-  number: number
+  number: number,
 ): Promise<Chapter> => {
   const chapter = await findChapterByBookIdAndNumber(db, bookId, number);
   if (!chapter) {
@@ -214,11 +201,9 @@ const getChapterByBookIdAndNumber = async (
 
 const findBookBySortPosition = async (
   db: Db,
-  sortPosition: number
+  sortPosition: number,
 ): Promise<Book | null> => {
-  const bookDoc = await db
-    .collection<BookDoc>("books")
-    .findOne({ sortPosition });
+  const bookDoc = await db.collection<BookDoc>('books').findOne({sortPosition});
   if (!bookDoc) {
     return null;
   }
@@ -227,7 +212,7 @@ const findBookBySortPosition = async (
 
 const getBookBySortPosition = async (
   db: Db,
-  sortPosition: number
+  sortPosition: number,
 ): Promise<Book> => {
   const book = await findBookBySortPosition(db, sortPosition);
   if (!book) {
@@ -238,12 +223,12 @@ const getBookBySortPosition = async (
 
 const getLastChapterByBookId = async (
   db: Db,
-  bookId: string
+  bookId: string,
 ): Promise<Chapter> => {
   const [chapterDoc] = await db
-    .collection<ChapterDoc>("chapters")
-    .find({ bookId: new ObjectID(bookId) })
-    .sort({ number: -1 })
+    .collection<ChapterDoc>('chapters')
+    .find({bookId: new ObjectID(bookId)})
+    .sort({number: -1})
     .limit(1)
     .toArray();
 
@@ -252,7 +237,7 @@ const getLastChapterByBookId = async (
 
 const findPrevChapter = async (
   db: Db,
-  chapter: Chapter
+  chapter: Chapter,
 ): Promise<Chapter | null> => {
   if (chapter.number > 1) {
     return getChapterByBookIdAndNumber(db, chapter.bookId, chapter.number - 1);
@@ -267,12 +252,12 @@ const findPrevChapter = async (
 
 const findNextChapter = async (
   db: Db,
-  chapter: Chapter
+  chapter: Chapter,
 ): Promise<Chapter | null> => {
   const nextChapter = await findChapterByBookIdAndNumber(
     db,
     chapter.bookId,
-    chapter.number + 1
+    chapter.number + 1,
   );
   if (nextChapter) {
     return nextChapter;
@@ -288,15 +273,15 @@ const findNextChapter = async (
 const getChapterUrl = async (db: Db, chapter: Chapter): Promise<string> => {
   const volume = await getVolumeById(db, chapter.volumeId);
   const book = await getBookById(db, chapter.bookId);
-  return `/${volume.title.replace(/\s/g, ".")}/${book.title.replace(
+  return `/${volume.title.replace(/\s/g, '.')}/${book.title.replace(
     /\s/g,
-    "."
+    '.',
   )}/${chapter.number}`;
 };
 
 const findPrevChapterUrl = async (
   db: Db,
-  chapter: Chapter
+  chapter: Chapter,
 ): Promise<string | null> => {
   const prevChapter = await findPrevChapter(db, chapter);
   return prevChapter ? getChapterUrl(db, prevChapter) : null;
@@ -304,7 +289,7 @@ const findPrevChapterUrl = async (
 
 const findNextChapterUrl = async (
   db: Db,
-  chapter: Chapter
+  chapter: Chapter,
 ): Promise<string | null> => {
   const prevChapter = await findNextChapter(db, chapter);
   return prevChapter ? getChapterUrl(db, prevChapter) : null;
@@ -312,144 +297,144 @@ const findNextChapterUrl = async (
 
 const getChaptersByBookId = (db: Db, bookId: string): Promise<Chapter[]> =>
   db
-    .collection<ChapterDoc>("chapters")
-    .find({ bookId: new ObjectID(bookId) })
+    .collection<ChapterDoc>('chapters')
+    .find({bookId: new ObjectID(bookId)})
     .map(chapterDocToChapter)
     .toArray();
 
 const getBooksByVolumeId = (db: Db, volumeId: string): Promise<Book[]> =>
   db
-    .collection<BookDoc>("books")
-    .find({ volumeId: new ObjectID(volumeId) })
+    .collection<BookDoc>('books')
+    .find({volumeId: new ObjectID(volumeId)})
     .map(bookDocToBook)
     .toArray();
 
 const getVerseById = async (db: Db, id: string): Promise<Verse> => {
   const verse = await db
-    .collection<VerseDoc>("verses")
-    .findOne({ _id: new ObjectID(id) });
+    .collection<VerseDoc>('verses')
+    .findOne({_id: new ObjectID(id)});
   if (verse) {
     return verseDocToVerse(verse);
   }
-  throw new Error("Verse not found");
+  throw new Error('Verse not found');
 };
 
 const getSpeakerById = async (db: Db, id: string): Promise<Person> => {
   const speaker = await db
-    .collection<PersonDoc>("people")
-    .findOne({ _id: new ObjectID(id) });
+    .collection<PersonDoc>('people')
+    .findOne({_id: new ObjectID(id)});
   if (speaker) {
     return personDocToPerson(speaker);
   }
-  throw new Error("Person not found");
+  throw new Error('Person not found');
 };
 
 const getMarksBySpeakerId = async (
   db: Db,
-  speakerId: string
+  speakerId: string,
 ): Promise<Mark[]> =>
   db
-    .collection<MarkDoc>("marks")
-    .find({ speakerId: new ObjectID(speakerId) })
+    .collection<MarkDoc>('marks')
+    .find({speakerId: new ObjectID(speakerId)})
     .map(markDocToMark)
     .toArray();
 
 const mutate = async (
   fn: () => Promise<unknown>,
-  successMsg: string
+  successMsg: string,
 ): Promise<MutationResponse> => {
   try {
     await fn();
     return {
       code: 0,
       success: true,
-      message: successMsg
+      message: successMsg,
     };
   } catch (error) {
     return {
       code: ERROR_CODES.UNEXPECTED,
       success: false,
-      message: error.stack
+      message: error.stack,
     };
   }
 };
 
-const createMarks = (db: Db, marks: Array<Omit<Mark, "id">>) =>
-  db.collection<MarkDoc>("marks").insertMany(marks.map(newMarkToNewMarkDoc));
+const createMarks = (db: Db, marks: Array<Omit<Mark, 'id'>>) =>
+  db.collection<MarkDoc>('marks').insertMany(marks.map(newMarkToNewMarkDoc));
 
 const deleteMarks = (db: Db, markIds: Array<string>) =>
-  db.collection<MarkDoc>("marks").deleteMany({
-    _id: { $in: markIds.map(id => new ObjectID(id)) }
+  db.collection<MarkDoc>('marks').deleteMany({
+    _id: {$in: markIds.map((id) => new ObjectID(id))},
   });
 
-const updateMarks = (db: Db, marks: Array<Pick<Mark, "id" | "speakerId">>) =>
+const updateMarks = (db: Db, marks: Array<Pick<Mark, 'id' | 'speakerId'>>) =>
   Promise.all(
-    marks.map(mark =>
+    marks.map((mark) =>
       db
-        .collection<MarkDoc>("marks")
+        .collection<MarkDoc>('marks')
         .findOneAndUpdate(
-          { id: new ObjectID(mark.id) },
-          { $set: { speakerId: new ObjectID(mark.speakerId) } }
-        )
-    )
+          {id: new ObjectID(mark.id)},
+          {$set: {speakerId: new ObjectID(mark.speakerId)}},
+        ),
+    ),
   );
 
 const getMarksByVerseIds = (
   db: Db,
-  verseIds: Array<string>
+  verseIds: Array<string>,
 ): Promise<Array<Mark>> =>
   db
-    .collection<MarkDoc>("marks")
-    .find({ verseId: { $in: verseIds.map(verseId => new ObjectID(verseId)) } })
+    .collection<MarkDoc>('marks')
+    .find({verseId: {$in: verseIds.map((verseId) => new ObjectID(verseId))}})
     .map(markDocToMark)
     .toArray();
 
 const resolvers: IResolvers<unknown, Context> = {
   Query: {
-    volumes: (_, __, { db }) => getAllVolumes(db),
-    volume: (_, { title }, { db }) => findVolumeByTitle(db, title),
-    book: (_, { volumeTitle, bookTitle }, { db }) =>
+    volumes: (_, __, {db}) => getAllVolumes(db),
+    volume: (_, {title}, {db}) => findVolumeByTitle(db, title),
+    book: (_, {volumeTitle, bookTitle}, {db}) =>
       findBookByTitle(db, volumeTitle, bookTitle),
-    chapter: (_, { volumeTitle, bookTitle, number }, { db }) =>
+    chapter: (_, {volumeTitle, bookTitle, number}, {db}) =>
       findChapterByTitle(db, volumeTitle, bookTitle, number),
-    people: (_, __, { db }) => getAllPeople(db),
-    marks: (_, { verseIds }, { db }) => getMarksByVerseIds(db, verseIds)
+    people: (_, __, {db}) => getAllPeople(db),
+    marks: (_, {verseIds}, {db}) => getMarksByVerseIds(db, verseIds),
   },
   Verse: {
-    chapter: (verse, _, { db }) => getChapterById(db, verse.chapterId),
-    book: (verse, _, { db }) => getBookById(db, verse.bookId),
-    volume: (verse, _, { db }) => getVolumeById(db, verse.volumeId),
-    marks: (verse, _, { db }) => getMarksByVerseIds(db, [verse.id])
+    chapter: (verse, _, {db}) => getChapterById(db, verse.chapterId),
+    book: (verse, _, {db}) => getBookById(db, verse.bookId),
+    volume: (verse, _, {db}) => getVolumeById(db, verse.volumeId),
+    marks: (verse, _, {db}) => getMarksByVerseIds(db, [verse.id]),
   } as IResolverObject<Verse, Context, {}>,
   Chapter: {
-    verses: (chapter, _, { db }) => getVersesByChapterId(db, chapter.id),
-    book: (chapter, _, { db }) => getBookById(db, chapter.bookId),
-    volume: (chapter, _, { db }) => getVolumeById(db, chapter.volumeId),
-    prev: (chapter, _, { db }) => findPrevChapterUrl(db, chapter),
-    next: (chapter, _, { db }) => findNextChapterUrl(db, chapter)
+    verses: (chapter, _, {db}) => getVersesByChapterId(db, chapter.id),
+    book: (chapter, _, {db}) => getBookById(db, chapter.bookId),
+    volume: (chapter, _, {db}) => getVolumeById(db, chapter.volumeId),
+    prev: (chapter, _, {db}) => findPrevChapterUrl(db, chapter),
+    next: (chapter, _, {db}) => findNextChapterUrl(db, chapter),
   } as IResolverObject<Chapter, Context, {}>,
   Book: {
-    chapters: (book, _, { db }) => getChaptersByBookId(db, book.id),
-    volume: (book, _, { db }) => getVolumeById(db, book.volumeId)
+    chapters: (book, _, {db}) => getChaptersByBookId(db, book.id),
+    volume: (book, _, {db}) => getVolumeById(db, book.volumeId),
   } as IResolverObject<Book, Context, {}>,
   Volume: {
-    books: (volume, _, { db }) => getBooksByVolumeId(db, volume.id)
+    books: (volume, _, {db}) => getBooksByVolumeId(db, volume.id),
   } as IResolverObject<Volume, Context, {}>,
   Mark: {
-    verse: (mark, _, { db }) => getVerseById(db, mark.verseId),
-    speaker: (mark, _, { db }) => getSpeakerById(db, mark.speakerId)
+    verse: (mark, _, {db}) => getVerseById(db, mark.verseId),
+    speaker: (mark, _, {db}) => getSpeakerById(db, mark.speakerId),
   } as IResolverObject<Mark, Context, {}>,
   Person: {
-    marks: (person, _, { db }) => getMarksBySpeakerId(db, person.id)
+    marks: (person, _, {db}) => getMarksBySpeakerId(db, person.id),
   } as IResolverObject<Person, Context, {}>,
   Mutation: {
-    createMarks: (_, { marks }: { marks: Array<Mark> }, { db }) =>
-      mutate(() => createMarks(db, marks), "created marks"),
-    deleteMarks: (_, { ids }: { ids: string[] }, { db }) =>
-      mutate(() => deleteMarks(db, ids), "deleted marks"),
-    updateMarks: (_, { marks }, { db }) =>
-      mutate(() => updateMarks(db, marks), "updated marks")
-  } as IResolverObject<unknown, Context, { marks: Array<Mark> }>
+    createMarks: (_, {marks}: {marks: Array<Mark>}, {db}) =>
+      mutate(() => createMarks(db, marks), 'created marks'),
+    deleteMarks: (_, {ids}: {ids: string[]}, {db}) =>
+      mutate(() => deleteMarks(db, ids), 'deleted marks'),
+    updateMarks: (_, {marks}, {db}) =>
+      mutate(() => updateMarks(db, marks), 'updated marks'),
+  } as IResolverObject<unknown, Context, {marks: Array<Mark>}>,
 };
 
 export default resolvers;

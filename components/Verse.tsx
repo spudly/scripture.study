@@ -1,19 +1,13 @@
-import React, {
-  FC,
-  ReactNode,
-  useContext,
-  Dispatch,
-  SetStateAction
-} from "react";
-import classnames from "classnames";
-import { Mark, Verse as $Verse, Person } from "../utils/types";
-import sortByRange from "../utils/sortByRange";
-import { theme } from "../data/themes";
-import unique from "../utils/unique";
-import { MdRecordVoiceOver } from "react-icons/md";
+import React, {FC, ReactNode, Dispatch, SetStateAction} from 'react';
+import classnames from 'classnames';
+import {Mark, Verse as $Verse, Person} from '../utils/types';
+import sortByRange from '../utils/sortByRange';
+import {theme} from '../data/themes';
+import unique from '../utils/unique';
+import {MdRecordVoiceOver} from 'react-icons/md';
 
-const SpeakerIndicator: FC<{ speaker: Person }> = ({
-  speaker: { name, description }
+const SpeakerIndicator: FC<{speaker: Person}> = ({
+  speaker: {name, description},
 }) => (
   <div
     className="inline-block w-16 h-16 mx-2 align-middle overflow-hidden select-none"
@@ -32,7 +26,7 @@ const SpeakerIndicator: FC<{ speaker: Person }> = ({
 const VerseFragment: FC<{
   children: ReactNode;
   isVerseNumber?: boolean;
-  marks: Array<Pick<Mark, "id" | "type" | "speakerId">>;
+  marks: Array<Pick<Mark, 'id' | 'type' | 'speakerId'>>;
   selectMarks: Dispatch<SetStateAction<string[]>>;
   selectedMarkIds: Array<string>;
   speakerIds: Array<string>;
@@ -44,10 +38,10 @@ const VerseFragment: FC<{
   marks,
   selectedMarkIds,
   speakerIds: allSpeakerIds,
-  allSpeakers
+  allSpeakers,
 }) => {
-  const speakerIds = marks.flatMap(m =>
-    m.type === "speaker" ? [m.speakerId] : []
+  const speakerIds = marks.flatMap((m) =>
+    m.type === 'speaker' ? [m.speakerId] : [],
   );
   const lastSpeakerId = speakerIds[speakerIds.length - 1];
   const lastMark = marks[marks.length - 1];
@@ -55,35 +49,36 @@ const VerseFragment: FC<{
     lastSpeakerId &&
       theme(allSpeakerIds.indexOf(lastSpeakerId), {
         states: isVerseNumber
-          ? ["default"]
+          ? ['default']
           : selectedMarkIds.includes(lastMark.id)
-          ? ["activated"]
+          ? ['activated']
           : undefined,
-        colors: ["bgColor", "textColor"]
+        colors: ['bgColor', 'textColor'],
       }),
-    "py-4",
-    { "cursor-pointer": marks.length != 0 }
+    'py-4',
+    {'cursor-pointer': marks.length !== 0},
   );
   return marks.length ? (
     <>
+      {/* eslint-disable-next-line jsx-a11y/anchor-is-valid */}
       <a
-        data-speaker-ids={speakerIds.join(" ")}
+        data-speaker-ids={speakerIds.join(' ')}
         // TODO: for now, we'll support selecting a single mark. eventually it'd be nice to prompt the user to choose which mark they want to select.
-        onClick={e => {
+        onClick={(e) => {
           e.stopPropagation();
           const markId = marks[marks.length - 1].id;
           if (e.ctrlKey) {
-            selectMarks(markIds => [...(markIds ?? []), markId]);
+            selectMarks((markIds) => [...(markIds ?? []), markId]);
           } else {
             selectMarks([markId]);
           }
         }}
       >
         <mark className={classes}>
-          {speakerIds.map(id => (
+          {speakerIds.map((id) => (
             <SpeakerIndicator
               key={id}
-              speaker={allSpeakers.find(s => s.id === id)!}
+              speaker={allSpeakers.find((s) => s.id === id)!}
             />
           ))}
 
@@ -97,9 +92,9 @@ const VerseFragment: FC<{
 };
 
 const Verse: FC<{
-  id: $Verse["id"];
-  number: $Verse["number"];
-  text: $Verse["text"];
+  id: $Verse['id'];
+  number: $Verse['number'];
+  text: $Verse['text'];
   marks: Array<Mark>;
   selectMarks: Dispatch<SetStateAction<string[]>>;
   selectedMarkIds: Array<string>;
@@ -113,16 +108,16 @@ const Verse: FC<{
   selectMarks,
   selectedMarkIds,
   speakerIds,
-  allSpeakers
+  allSpeakers,
 }) => {
   const sortedMarks = sortByRange(marks);
   const breakpoints = unique([
     0,
-    ...sortedMarks.flatMap(note => note.range ?? []).sort((a, b) => a - b)
+    ...sortedMarks.flatMap((note) => note.range ?? []).sort((a, b) => a - b),
   ]);
 
   const getMarksAt = (index: number) =>
-    sortedMarks.filter(mark => {
+    sortedMarks.filter((mark) => {
       const [start, end = text.length] = mark.range ?? [0, text.length];
       return index >= start && index < end;
     });
@@ -137,7 +132,6 @@ const Verse: FC<{
       {breakpoints.reduce((elements, breakpoint, index) => {
         const nextBreakpoint = breakpoints[index + 1] ?? text.length;
         const [from, to = text.length] = [breakpoint, nextBreakpoint];
-        const marks = getMarksAt(breakpoint);
         return [
           ...elements,
           <VerseFragment
@@ -149,7 +143,7 @@ const Verse: FC<{
             allSpeakers={allSpeakers}
           >
             {text.slice(from, to)}
-          </VerseFragment>
+          </VerseFragment>,
         ];
       }, [] as Array<ReactNode>)}
     </blockquote>

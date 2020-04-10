@@ -1,5 +1,4 @@
-import { gql } from "apollo-boost";
-import { Volume, Book } from "../utils/types";
+import {gql} from 'apollo-boost';
 
 export const createMarks = gql`
   mutation CreateMarks($marks: [NewMark!]!) {
@@ -9,7 +8,7 @@ export const createMarks = gql`
     }
   }
 `;
-export * from "./types/CreateMarks";
+export * from './types/CreateMarks';
 
 export const deleteMarks = gql`
   mutation DeleteMarks($ids: [String!]!) {
@@ -19,7 +18,7 @@ export const deleteMarks = gql`
     }
   }
 `;
-export * from "./types/DeleteMarks";
+export * from './types/DeleteMarks';
 
 export const getBook = gql`
   query GetBook($volumeTitle: String!, $bookTitle: String!) {
@@ -47,7 +46,7 @@ export const getBook = gql`
     }
   }
 `;
-export * from "./types/GetBook";
+export * from './types/GetBook';
 
 export const getChapter = gql`
   query GetChapter($volumeTitle: String!, $bookTitle: String!, $number: Int!) {
@@ -87,7 +86,7 @@ export const getChapter = gql`
     }
   }
 `;
-export * from "./types/GetChapter";
+export * from './types/GetChapter';
 
 export const getMarks = gql`
   query GetMarks($verseIds: [ID!]!) {
@@ -100,7 +99,7 @@ export const getMarks = gql`
     }
   }
 `;
-export * from "./types/GetMarks";
+export * from './types/GetMarks';
 
 export const getPeople = gql`
   query GetPeople {
@@ -111,7 +110,7 @@ export const getPeople = gql`
     }
   }
 `;
-export * from "./types/GetPeople";
+export * from './types/GetPeople';
 
 export const getVolume = gql`
   query GetVolume($title: String!) {
@@ -133,7 +132,7 @@ export const getVolume = gql`
     }
   }
 `;
-export * from "./types/GetVolume";
+export * from './types/GetVolume';
 
 export const getVolumes = gql`
   query GetVolumes {
@@ -146,7 +145,7 @@ export const getVolumes = gql`
     }
   }
 `;
-export * from "./types/GetVolumes";
+export * from './types/GetVolumes';
 
 export const updateMarks = gql`
   mutation UpdateMarks($marks: [MarkUpdate!]!) {
@@ -156,4 +155,4 @@ export const updateMarks = gql`
     }
   }
 `;
-export * from "./types/UpdateMarks";
+export * from './types/UpdateMarks';

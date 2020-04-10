@@ -1,5 +1,5 @@
 const isEmptySelection = (selection: Selection): boolean => {
-  const range = selection.rangeCount != 0 ? selection?.getRangeAt(0) : null;
+  const range = selection.rangeCount !== 0 ? selection?.getRangeAt(0) : null;
   if (!range) {
     return true;
   }
