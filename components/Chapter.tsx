@@ -43,8 +43,8 @@ const Chapter: FC<Props> = ({
       </p>
 
       <Spacer y={8} />
-      <Verses verses={verses} allSpeakers={people} />
       <Pagination prevHref={prev} nextHref={next} />
+      <Verses verses={verses} allSpeakers={people} />
     </div>
   );
 };
