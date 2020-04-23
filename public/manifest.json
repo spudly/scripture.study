@@ -1,0 +1,22 @@
+{
+  "short_name": "WikiMarks",
+  "name": "WikiMarks",
+  "description": "Crowdsourced Annotations",
+  "icons": [
+    {
+      "src": "/icons/logo-192.png",
+      "type": "image/png",
+      "sizes": "192x192"
+    },
+    {
+      "src": "/icons/logo-512.png",
+      "type": "image/png",
+      "sizes": "512x512"
+    }
+  ],
+  "start_url": "/",
+  "background_color": "#f7fafc",
+  "display": "minimal-ui",
+  "scope": "/",
+  "theme_color": "#bee3f8"
+}

@@ -1,16 +1,17 @@
-import React from "react";
-import { NextPage } from "next";
+import React from 'react';
+import {NextPage} from 'next';
+import Head from 'next/head';
 import {
   Book,
   Chapter as $Chapter,
   Volume,
   Verse,
   Person,
-} from "../../../utils/types";
-import * as queries from "../../../graphql/queries";
-import getClient from "../../../graphql/client";
-import Chapter from "../../../components/Chapter";
-import getBaseUrl from "../../../utils/getBaseUrl";
+} from '../../../utils/types';
+import * as queries from '../../../graphql/queries';
+import getClient from '../../../graphql/client';
+import Chapter from '../../../components/Chapter';
+import getBaseUrl from '../../../utils/getBaseUrl';
 
 type Props = {
   volume: Volume;
@@ -31,34 +32,42 @@ const ChapterPage: NextPage<Props> = ({
   prev,
   next,
 }) => (
-  <Chapter
-    volume={volume}
-    book={book}
-    chapter={chapter}
-    verses={verses}
-    people={people}
-    prev={prev}
-    next={next}
-  />
+  <>
+    <Head>
+      <title>
+        WikiMarks: {book.title} {chapter.number}
+      </title>
+    </Head>
+
+    <Chapter
+      volume={volume}
+      book={book}
+      chapter={chapter}
+      verses={verses}
+      people={people}
+      prev={prev}
+      next={next}
+    />
+  </>
 );
 
 ChapterPage.getInitialProps = async ({
   req,
-  query: { volume: volumeRef, book: bookRef, chapter: number },
+  query: {volume: volumeRef, book: bookRef, chapter: number},
 }): Promise<Props> => {
-  const volumeTitle = (volumeRef as string).replace(/\./g, " ");
-  const bookTitle = (bookRef as string).replace(/\./g, " ");
+  const volumeTitle = (volumeRef as string).replace(/\./g, ' ');
+  const bookTitle = (bookRef as string).replace(/\./g, ' ');
   const client = getClient(getBaseUrl(req));
   const chapterResult = await client.query<
     queries.GetChapter,
     queries.GetChapterVariables
   >({
     query: queries.getChapter,
-    variables: { volumeTitle, bookTitle, number: Number(number) },
+    variables: {volumeTitle, bookTitle, number: Number(number)},
   });
 
   const {
-    data: { people },
+    data: {people},
   } = await client.query<queries.GetPeople, never>({
     query: queries.getPeople,
   });
@@ -66,10 +75,10 @@ ChapterPage.getInitialProps = async ({
   const chapterData = chapterResult.data.chapter;
 
   if (!chapterData) {
-    throw new Error("Missing chapter!");
+    throw new Error('Missing chapter!');
   }
 
-  const { volume, book, verses, prev, next, ...chapter } = chapterData;
+  const {volume, book, verses, prev, next, ...chapter} = chapterData;
 
   return {
     volume,

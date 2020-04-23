@@ -126,7 +126,7 @@ const Verse: FC<{
     <blockquote
       data-verse={id}
       key={id}
-      className="content-center mb-6 text-4xl leading-loose text-justify"
+      className="content-center mb-6 text-4xl leading-loose text-justify font-serif"
     >
       <span className="select-none">{number} </span>
       {breakpoints.reduce((elements, breakpoint, index) => {

@@ -2,3 +2,5 @@ node_modules
 .next
 .now
 .vscode
+public/*.js
+public/*.map

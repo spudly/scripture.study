@@ -24,7 +24,7 @@ const Chapter: FC<Props> = ({
   next,
 }) => {
   return (
-    <div className="flex-1 flex flex-col px-4 sm:px-32 font-serif">
+    <div className="flex-1 flex flex-col px-4 sm:px-32">
       {chapter.number === 1 && (
         <h1 className="text-center text-6xl uppercase font-serif select-none">
           {book.longTitle}
