@@ -43,7 +43,10 @@ const config = {
                 ...(mode === 'production'
                   ? [
                       require('@fullhuman/postcss-purgecss')({
-                        content: ['./src/**/*.tsx'],
+                        content: [
+                          './components/**/*.tsx',
+                          './public/**/*.html',
+                        ],
                         defaultExtractor: (content) =>
                           content.match(/[\w-/:]+(?<!:)/g) || [],
                       }),
