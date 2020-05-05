@@ -8,9 +8,9 @@
   "author": "Stephen Sorensen <shuoink@gmail.com>",
   "main": "index.js",
   "scripts": {
-    "build": "NODE_ENV=production rm -rf build && tsc -p tsconfig.server.json && webpack --json > build/stats.json",
+    "build": "NODE_ENV=production webpack --json > stats.json",
     "depcheck": "depcheck --ignores=\",@commitlint/*,@types/*,prettier,pretty-quick,sort-package-json,typescript,@fullhuman/postcss-purgecss,autoprefixer,tailwindcss,postcss-import,webpack-cli\"",
-    "dev": "NODE_ENV=development PORT=8080 ts-node -P tsconfig.server.json src/index.server.dev.tsx",
+    "dev": "NODE_ENV=development PORT=8080 ts-node index.server.dev.tsx",
     "lint": "eslint . --ext .js,.jsx,.ts,.tsx",
     "start": "node build/index.server.js",
     "test": "echo \"no tests yet\"; exit 0"
@@ -72,6 +72,7 @@
   "devDependencies": {
     "@commitlint/cli": "^8.3.5",
     "@commitlint/config-conventional": "^8.3.4",
+    "@now/node": "^1.5.1",
     "@spudly/eslint-config": "^6.0.0",
     "@types/classnames": "^2.2.9",
     "@types/express": "^4.17.6",

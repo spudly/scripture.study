@@ -1,12 +1,16 @@
 const path = require('path');
 
-module.exports = {
-  entry: './src/index.client.tsx',
+const mode =
+  process.env.NODE_ENV === 'production' ? 'production' : 'development';
+
+/** @type {typeof import("webpack").Configuration} */
+const config = {
+  entry: './index.client.tsx',
   output: {
-    filename: 'public/index.client.js',
-    path: path.resolve(__dirname, 'build'),
+    filename: 'index.client.js',
+    path: path.resolve(__dirname, 'public'),
   },
-  mode: 'production',
+  mode,
   resolve: {
     extensions: ['.tsx', '.ts', '.js'],
   },
@@ -14,8 +18,14 @@ module.exports = {
     rules: [
       {
         test: /\.tsx?$/,
-        use: 'ts-loader',
+        loader: 'ts-loader',
         exclude: /node_modules/,
+        options: {
+          compilerOptions: {
+            noEmit: false,
+            module: 'esnext',
+          },
+        },
       },
       {
         test: /\.css$/,
@@ -30,7 +40,7 @@ module.exports = {
                 require('postcss-import'),
                 require('tailwindcss'),
                 require('autoprefixer'),
-                ...(process.env.NODE_ENV !== 'development'
+                ...(mode === 'production'
                   ? [
                       require('@fullhuman/postcss-purgecss')({
                         content: ['./src/**/*.tsx'],
@@ -47,3 +57,5 @@ module.exports = {
     ],
   },
 };
+
+module.exports = config;

@@ -172,7 +172,7 @@ export type PromiseResult<PROMISE> = PROMISE extends Promise<infer RESULT>
   ? RESULT
   : never;
 
-type ApiFns = typeof import('../api/fns');
+type ApiFns = typeof import('../utils/fns');
 
 export type ApiFnName = keyof ApiFns;
 

@@ -19,7 +19,4 @@ const memoizedGetConnection = async () => {
   return _promise;
 };
 
-console.log('Warming up connection pool...');
-memoizedGetConnection().then(() => console.log('connection pool warmed up'));
-
 export default memoizedGetConnection;

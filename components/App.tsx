@@ -1,10 +1,10 @@
 import React, {FC, Suspense} from 'react';
 import {Switch, Route} from 'react-router';
-import Volumes from './components/Volumes';
-import Books from './components/Books';
-import Chapters from './components/Chapters';
-import Spinner from './components/Spinner';
-import ChapterPage from './components/ChapterPage';
+import Volumes from './Volumes';
+import Books from './Books';
+import Chapters from './Chapters';
+import Spinner from './Spinner';
+import ChapterPage from './ChapterPage';
 
 const App: FC<{}> = () => (
   <div className="min-h-screen flex flex-col bg-gray-100">
