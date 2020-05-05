@@ -4,8 +4,9 @@
     "MONGO_PASSWORD": "@mongo_password"
   },
   "routes": [
+    {"handle": "filesystem"},
     {
-      "src": "/(.*)",
+      "src": "/.*",
       "methods": ["GET"],
       "dest": "/"
     }
