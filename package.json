@@ -30,7 +30,7 @@
       "prettier --write",
       "eslint --fix"
     ],
-    "*.{json,md,htm,html,css}": [
+    "*.{md,htm,html,css}": [
       "prettier --write"
     ],
     "package.json": [

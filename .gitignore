@@ -3,3 +3,4 @@ node_modules
 build
 public/*.js
 stats.json
+*Zone.Identifier

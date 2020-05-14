@@ -9,6 +9,7 @@ import CreateMarkButton from './CreateMarkButton';
 import useFn from '../utils/useFn';
 import Spinner from './Spinner';
 import useMutationFn from '../utils/useMutationFn';
+import ErrorBoundary from './ErrorBoundary';
 
 const Verses: FC<{
   verses: Array<Pick<$Verse, 'id' | 'number' | 'text'>>;
@@ -59,71 +60,73 @@ const Verses: FC<{
   }, [verses]);
 
   return (
-    <Suspense fallback={<Spinner />}>
-      <div
-        className="flex-grow flex flex-col overflow-auto min-h-screen justify-center relative"
-        onClick={(e) => {
-          const selection = window.getSelection();
-          if (selection?.type !== 'Range') {
-            window.getSelection()?.removeAllRanges();
-            setSelections([]);
-          }
-          setSelectedMarkIds([]);
-        }}
-      >
-        {verses
-          .sort((a, b) => a.number - b.number)
-          .map((verse) => (
-            <Verse
-              key={verse.id}
-              id={verse.id}
-              number={verse.number}
-              text={verse.text}
-              selectMarks={setSelectedMarkIds}
-              marksResource={marksResource}
-              selectedMarkIds={selectedMarkIds}
-              speakersResource={speakersResource}
-            />
-          ))}
-        <div className="fixed bottom-0 right-0 pr-4 pb-4 text-right">
-          {selectedMarkIds.length !== 0 && (
-            <>
-              <div>
-                <EditMarksButton
-                  speakersResource={speakersResource}
-                  marksResource={marksResource}
-                  isUpdating={updateMarksStatus.readyState === 'LOADING'}
-                  updateMarks={async (
-                    marks: Array<Pick<Mark, 'id' | 'speakerId'>>,
-                  ) => updateMarks({marks})}
-                />
-              </div>
-              <div>
-                <DeleteMarksButton
-                  selectedMarkIds={selectedMarkIds}
-                  isDeleting={deleteMarksStatus.readyState === 'LOADING'}
-                  deleteMarks={async (ids: string[]) =>
-                    deleteMarks({markIds: ids})
-                  }
-                />
-              </div>
-            </>
-          )}
-          {selections.length !== 0 && (
-            <div>
-              <CreateMarkButton
-                isCreating={createMarksStatus.readyState === 'LOADING'}
-                selections={selections}
-                createMarks={(newMarks: Array<Omit<Mark, 'id'>>) =>
-                  createMarks({marks: newMarks})
-                }
+    <ErrorBoundary grow>
+      <Suspense fallback={<Spinner />}>
+        <div
+          className="flex-grow flex flex-col overflow-auto min-h-screen justify-center relative"
+          onClick={(e) => {
+            const selection = window.getSelection();
+            if (selection?.type !== 'Range') {
+              window.getSelection()?.removeAllRanges();
+              setSelections([]);
+            }
+            setSelectedMarkIds([]);
+          }}
+        >
+          {verses
+            .sort((a, b) => a.number - b.number)
+            .map((verse) => (
+              <Verse
+                key={verse.id}
+                id={verse.id}
+                number={verse.number}
+                text={verse.text}
+                selectMarks={setSelectedMarkIds}
+                marksResource={marksResource}
+                selectedMarkIds={selectedMarkIds}
                 speakersResource={speakersResource}
               />
-            </div>
-          )}
+            ))}
+          <div className="fixed bottom-0 right-0 pr-4 pb-4 text-right">
+            {selectedMarkIds.length !== 0 && (
+              <>
+                <div>
+                  <EditMarksButton
+                    speakersResource={speakersResource}
+                    marksResource={marksResource}
+                    isUpdating={updateMarksStatus.readyState === 'LOADING'}
+                    updateMarks={async (
+                      marks: Array<Pick<Mark, 'id' | 'speakerId'>>,
+                    ) => updateMarks({marks})}
+                  />
+                </div>
+                <div>
+                  <DeleteMarksButton
+                    selectedMarkIds={selectedMarkIds}
+                    isDeleting={deleteMarksStatus.readyState === 'LOADING'}
+                    deleteMarks={async (ids: string[]) =>
+                      deleteMarks({markIds: ids})
+                    }
+                  />
+                </div>
+              </>
+            )}
+            {selections.length !== 0 && (
+              <div>
+                <CreateMarkButton
+                  isCreating={createMarksStatus.readyState === 'LOADING'}
+                  selections={selections}
+                  createMarks={(newMarks: Array<Omit<Mark, 'id'>>) =>
+                    createMarks({marks: newMarks})
+                  }
+                  speakersResource={speakersResource}
+                />
+              </div>
+            )}
+          </div>
         </div>
-      </div>
-    </Suspense>
+      </Suspense>
+    </ErrorBoundary>
   );
 };
 

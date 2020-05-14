@@ -4,70 +4,53 @@ import {useRouteMatch} from 'react-router';
 import byNumber from '../utils/byNumber';
 import Directory from './Directory';
 import Suspender from './Suspender';
-import useFns from '../utils/useFns';
+import ErrorBoundary from './ErrorBoundary';
+import {
+  getVolumeByTitle,
+  getChaptersByBookId,
+  getBookByTitle,
+} from '../sandbox/indexeddb';
+import refToTitle from '../utils/refToTitle';
+import useResource from '../utils/useResource';
 
-const BookPage: FC<{}> = () => {
+const Chapters: FC<{}> = () => {
   const match = useRouteMatch<{volumeRef: string; bookRef: string}>(
     '/:volumeRef/:bookRef',
   )!;
   const {volumeRef, bookRef} = match.params;
-  const resource = useFns({
-    volume: {fn: 'getVolumeByRef', volumeRef},
-    book: {fn: 'getBookByRef', volumeRef, bookRef},
-    chapters: {fn: 'getChaptersByBookRef', volumeRef, bookRef},
-  });
+  const resource = useResource(async () => {
+    const volume = await getVolumeByTitle(refToTitle(volumeRef));
+    const book = await getBookByTitle(refToTitle(bookRef));
+    const chapters = await getChaptersByBookId(book.id);
+    return {volume, book, chapters};
+  }, match.url);
   return (
-    <Suspense fallback={null}>
-      <Suspender resource={resource}>
-        {({volume, book, chapters}) => (
-          <>
-            <Head>
-              <title>WikiMarks: {book.longTitle}</title>
-            </Head>
-            <Directory
-              heading={book.title}
-              small
-              entries={chapters.sort(byNumber).map((chapter) => ({
-                id: chapter.id,
-                href: `/${volume.title.replace(
-                  /\s/g,
-                  '.',
-                )}/${book.title.replace(/\s/g, '.')}/${chapter.number}`,
-                title: String(chapter.number),
-              }))}
-            />
-          </>
-        )}
-      </Suspender>
-    </Suspense>
+    <ErrorBoundary grow>
+      <Suspense fallback={null}>
+        <Suspender resource={resource}>
+          {({volume, book, chapters}) => (
+            <>
+              <Head>
+                <title>WikiMarks: {book.longTitle}</title>
+              </Head>
+              <Directory
+                heading={book.title}
+                small
+                entries={chapters.sort(byNumber).map((chapter) => ({
+                  id: chapter.id,
+                  href: `/${volume.title.replace(
+                    /\s/g,
+                    '.',
+                  )}/${book.title.replace(/\s/g, '.')}/${chapter.number}`,
+                  title: String(chapter.number),
+                }))}
+              />
+            </>
+          )}
+        </Suspender>
+      </Suspense>
+    </ErrorBoundary>
   );
 };
 
-// BookPage.getInitialProps = async ({
-//   req,
-//   query: {volume: volumeRef, book: bookRef},
-// }): Promise<Props> => {
-//   const volumeTitle = (volumeRef as string).replace(/\./g, ' ');
-//   const bookTitle = (bookRef as string).replace(/\./g, ' ');
-//   const client = getClient(getBaseUrl(req));
-//   const result = await client.query<queries.GetBook, queries.GetBookVariables>({
-//     query: queries.getBook,
-//     variables: {volumeTitle, bookTitle},
-//   });
-
-//   const bookData = result.data.book;
-
-//   if (!bookData) {
-//     throw new Error('Missing Book Data');
-//   }
-
-//   const {volume, chapters, ...book} = bookData;
-
-//   return {
-//     volume,
-//     book,
-//     chapters,
-//   };
-// };
-
-export default BookPage;
+export default Chapters;

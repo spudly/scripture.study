@@ -5,21 +5,24 @@ import Books from './Books';
 import Chapters from './Chapters';
 import Spinner from './Spinner';
 import ChapterPage from './ChapterPage';
+import ErrorBoundary from './ErrorBoundary';
 
 const App: FC<{}> = () => (
   <div className="min-h-screen flex flex-col bg-gray-100">
-    <Suspense fallback={<Spinner />}>
-      <Switch>
-        <Route path="/" exact component={Volumes} />
-        <Route path="/:volumeRef" exact component={Books} />
-        <Route path="/:volumeRef/:bookRef" exact component={Chapters} />} />
-        <Route
-          path="/:volumeRef/:bookRef/:chapterRef"
-          exact
-          component={ChapterPage}
-        />
-      </Switch>
-    </Suspense>
+    <ErrorBoundary grow>
+      <Suspense fallback={<Spinner />}>
+        <Switch>
+          <Route path="/" exact component={Volumes} />
+          <Route path="/:volumeRef" exact component={Books} />
+          <Route path="/:volumeRef/:bookRef" exact component={Chapters} />} />
+          <Route
+            path="/:volumeRef/:bookRef/:chapterRef"
+            exact
+            component={ChapterPage}
+          />
+        </Switch>
+      </Suspense>
+    </ErrorBoundary>
   </div>
 );
 

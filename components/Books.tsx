@@ -4,23 +4,19 @@ import Head from './Head';
 import bySortPosition from '../utils/bySortPosition';
 import Directory from './Directory';
 import Suspender from './Suspender';
-import useFns from '../utils/useFns';
+import ErrorBoundary from './ErrorBoundary';
+import refToTitle from '../utils/refToTitle';
+import useVolume from '../utils/useVolume';
+import useBooks from '../utils/useBooks';
+import {Volume} from '../utils/types';
 
-const Books: FC<{}> = () => {
-  const match = useRouteMatch<{volumeRef: string}>('/:volumeRef')!;
-  const {volumeRef} = match.params;
-  const resource = useFns({
-    volume: {fn: 'getVolumeByRef', volumeRef},
-    books: {fn: 'getBooksByVolumeRef', volumeRef},
-  });
+const BooksDirectory: FC<{volume: Volume}> = ({volume}) => {
+  const booksResource = useBooks({volumeId: volume?.id});
   return (
-    <Suspense fallback={null}>
-      <Suspender resource={resource}>
-        {({volume, books}) => (
-          <>
-            <Head>
-              <title>WikiMarks: {volume.longTitle}</title>
-            </Head>
+    <ErrorBoundary grow>
+      <Suspense fallback={null}>
+        <Suspender resource={booksResource}>
+          {(books) => (
             <Directory
               heading={volume.longTitle}
               entries={books.sort(bySortPosition).map((book) => ({
@@ -32,10 +28,32 @@ const Books: FC<{}> = () => {
                 title: book.title,
               }))}
             />
-          </>
-        )}
-      </Suspender>
-    </Suspense>
+          )}
+        </Suspender>
+      </Suspense>
+    </ErrorBoundary>
+  );
+};
+
+const Books: FC<{}> = () => {
+  const match = useRouteMatch<{volumeRef: string}>('/:volumeRef')!;
+  const {volumeRef} = match.params;
+  const volumeResource = useVolume({title: refToTitle(volumeRef)});
+  return (
+    <ErrorBoundary grow>
+      <Suspense fallback={null}>
+        <Suspender resource={volumeResource}>
+          {(volume) => (
+            <>
+              <Head>
+                <title>WikiMarks: {volume?.longTitle ?? 'Not Found'}</title>
+              </Head>
+              {volume && <BooksDirectory volume={volume} />}
+            </>
+          )}
+        </Suspender>
+      </Suspense>
+    </ErrorBoundary>
   );
 };
 

@@ -12,6 +12,7 @@ import sortByRange from '../utils/sortByRange';
 import {theme} from '../utils/themes';
 import unique from '../utils/unique';
 import {MdRecordVoiceOver} from 'react-icons/md';
+import ErrorBoundary from './ErrorBoundary';
 
 const SpeakerIndicator: FC<{
   speakerId: string;
@@ -91,16 +92,17 @@ const VerseFragment: FC<{
         }}
       >
         <mark className={classes}>
-          <Suspense fallback={null}>
-            {speakerIds.map((id) => (
-              <SpeakerIndicator
-                key={id}
-                speakerId={id}
-                speakersResource={speakersResource}
-              />
-            ))}
-          </Suspense>
-
+          <ErrorBoundary grow>
+            <Suspense fallback={null}>
+              {speakerIds.map((id) => (
+                <SpeakerIndicator
+                  key={id}
+                  speakerId={id}
+                  speakersResource={speakersResource}
+                />
+              ))}
+            </Suspense>
+          </ErrorBoundary>
           {children}
         </mark>
       </a>

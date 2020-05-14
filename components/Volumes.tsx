@@ -3,29 +3,32 @@ import bySortPosition from '../utils/bySortPosition';
 import Directory from '../components/Directory';
 import Head from './Head';
 import Suspender from './Suspender';
-import useFns from '../utils/useFns';
 import Spinner from './Spinner';
+import ErrorBoundary from './ErrorBoundary';
+import useVolumes from '../utils/useVolumes';
 
 const Volumes: FC<{}> = () => {
-  const resource = useFns({volumes: {fn: 'getAllVolumes'}});
+  const resource = useVolumes();
   return (
     <>
       <Head>
         <title>WikiMarks: Volumes</title>
       </Head>
-      <Suspense fallback={<Spinner />}>
-        <Suspender resource={resource}>
-          {({volumes}) => (
-            <Directory
-              entries={volumes.sort(bySortPosition).map((v) => ({
-                id: v.id,
-                href: `/${v.title.replace(/\s/g, '.')}`,
-                title: v.longTitle,
-              }))}
-            />
-          )}
-        </Suspender>
-      </Suspense>
+      <ErrorBoundary grow>
+        <Suspense fallback={<Spinner grow />}>
+          <Suspender resource={resource}>
+            {(volumes) => (
+              <Directory
+                entries={volumes.sort(bySortPosition).map((v) => ({
+                  id: v.id,
+                  href: `/${v.title.replace(/\s/g, '.')}`,
+                  title: v.longTitle,
+                }))}
+              />
+            )}
+          </Suspender>
+        </Suspense>
+      </ErrorBoundary>
     </>
   );
 };

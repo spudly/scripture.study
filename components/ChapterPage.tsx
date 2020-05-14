@@ -4,8 +4,19 @@ import Head from './Head';
 import {Book, Chapter as $Chapter, Volume, Verse, Person} from '../utils/types';
 import Chapter from './Chapter';
 import Suspender from './Suspender';
-import useFns from '../utils/useFns';
 import Spinner from './Spinner';
+import ErrorBoundary from './ErrorBoundary';
+import useResource from '../utils/useResource';
+import {
+  getVolumeByTitle,
+  getBookByTitle,
+  getVersesByChapterId,
+  getChapterByNumber,
+  queryPrevChapterUrl,
+  queryNextChapterUrl,
+} from '../sandbox/indexeddb';
+import refToTitle from '../utils/refToTitle';
+import refToNumber from '../utils/refToNumber';
 
 type Props = {
   volume: Volume;
@@ -17,93 +28,53 @@ type Props = {
   people: Array<Person>;
 };
 
-const ChapterPage: FC<Props> = ({
-  volume,
-  book,
-  chapter,
-  verses,
-  people,
-  prev,
-  next,
-}) => {
+const ChapterPage: FC<Props> = () => {
   const match = useRouteMatch<{
     volumeRef: string;
     bookRef: string;
     chapterRef: string;
   }>('/:volumeRef/:bookRef/:chapterRef')!;
   const {volumeRef, bookRef, chapterRef} = match.params;
-  const resource = useFns({
-    volume: {fn: 'getVolumeByRef', volumeRef},
-    book: {fn: 'getBookByRef', volumeRef, bookRef},
-    chapter: {fn: 'getChapterByRef', volumeRef, bookRef, chapterRef},
-    verses: {fn: 'getVersesByChapterRef', volumeRef, bookRef, chapterRef},
-    adjacent: {fn: 'getAdjacentChaptersByRef', volumeRef, bookRef, chapterRef},
-  });
+  const resource = useResource(async () => {
+    const [volume, book] = await Promise.all([
+      getVolumeByTitle(refToTitle(volumeRef)),
+      getBookByTitle(refToTitle(bookRef)),
+    ] as const);
+    const chapter = await getChapterByNumber(book.id, refToNumber(chapterRef));
+    const [verses, prev, next] = await Promise.all([
+      getVersesByChapterId(chapter.id),
+      queryPrevChapterUrl(chapter),
+      queryNextChapterUrl(chapter),
+    ] as const);
+    return {volume, book, chapter, verses, prev, next};
+  }, match.url);
 
   return (
-    <Suspense fallback={<Spinner />}>
-      <Suspender resource={resource}>
-        {({volume, book, chapter, verses, adjacent: {prev, next}}) => (
-          <>
-            <Head>
-              <title>
-                WikiMarks: {book.title} {chapter.number}
-              </title>
-            </Head>
+    <ErrorBoundary grow>
+      <Suspense fallback={<Spinner />}>
+        <Suspender resource={resource}>
+          {({volume, book, chapter, verses, prev, next}) => (
+            <>
+              <Head>
+                <title>
+                  WikiMarks: {book.title} {chapter.number}
+                </title>
+              </Head>
 
-            <Chapter
-              volume={volume}
-              book={book}
-              chapter={chapter}
-              verses={verses}
-              prev={prev}
-              next={next}
-            />
-          </>
-        )}
-      </Suspender>
-    </Suspense>
+              <Chapter
+                volume={volume}
+                book={book}
+                chapter={chapter}
+                verses={verses}
+                prev={prev}
+                next={next}
+              />
+            </>
+          )}
+        </Suspender>
+      </Suspense>
+    </ErrorBoundary>
   );
 };
-
-// ChapterPage.getInitialProps = async ({
-//   req,
-//   query: {volume: volumeRef, book: bookRef, chapter: number},
-// }): Promise<Props> => {
-//   const volumeTitle = (volumeRef as string).replace(/\./g, ' ');
-//   const bookTitle = (bookRef as string).replace(/\./g, ' ');
-//   const client = getClient(getBaseUrl(req));
-//   const chapterResult = await client.query<
-//     queries.GetChapter,
-//     queries.GetChapterVariables
-//   >({
-//     query: queries.getChapter,
-//     variables: {volumeTitle, bookTitle, number: Number(number)},
-//   });
-
-//   const {
-//     data: {people},
-//   } = await client.query<queries.GetPeople, never>({
-//     query: queries.getPeople,
-//   });
-
-//   const chapterData = chapterResult.data.chapter;
-
-//   if (!chapterData) {
-//     throw new Error('Missing chapter!');
-//   }
-
-//   const {volume, book, verses, prev, next, ...chapter} = chapterData;
-
-//   return {
-//     volume,
-//     book,
-//     chapter,
-//     verses,
-//     prev,
-//     next,
-//     people,
-//   };
-// };
 
 export default ChapterPage;

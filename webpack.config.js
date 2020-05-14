@@ -5,9 +5,12 @@ const mode =
 
 /** @type {typeof import("webpack").Configuration} */
 const config = {
-  entry: './index.client.tsx',
+  entry: {
+    'index.client': './index.client.tsx',
+    'index.client.sw': './index.client.sw.ts',
+  },
   output: {
-    filename: 'index.client.js',
+    filename: '[name].js',
     path: path.resolve(__dirname, 'public'),
   },
   mode,

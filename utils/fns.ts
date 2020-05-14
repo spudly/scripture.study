@@ -13,6 +13,8 @@ import {
   PersonDoc,
 } from '../utils/types';
 import {Db, ObjectID} from 'mongodb';
+import refToTitle from './refToTitle';
+import refToNumber from './refToNumber';
 
 const markDocToMark = ({_id, ...markDoc}: MarkDoc): Mark => ({
   ...markDoc,
@@ -139,6 +141,16 @@ const getVersesByChapterId = (
   db
     .collection<VerseDoc>('verses')
     .find({chapterId: new ObjectID(chapterId)})
+    .map(verseDocToVerse)
+    .toArray();
+
+const getVersesByVolumeId = (
+  db: Db,
+  {volumeId}: {volumeId: string},
+): Promise<Array<Verse>> =>
+  db
+    .collection<VerseDoc>('verses')
+    .find({volumeId: new ObjectID(volumeId)})
     .map(verseDocToVerse)
     .toArray();
 
@@ -302,6 +314,16 @@ const getChaptersByBookId = (
     .map(chapterDocToChapter)
     .toArray();
 
+const getChaptersByVolumeId = (
+  db: Db,
+  {volumeId}: {volumeId: string},
+): Promise<Chapter[]> =>
+  db
+    .collection<ChapterDoc>('chapters')
+    .find({volumeId: new ObjectID(volumeId)})
+    .map(chapterDocToChapter)
+    .toArray();
+
 const getBooksByVolumeId = (
   db: Db,
   {volumeId}: {volumeId: string},
@@ -311,15 +333,6 @@ const getBooksByVolumeId = (
     .find({volumeId: new ObjectID(volumeId)})
     .map(bookDocToBook)
     .toArray();
-
-const refToTitle = (ref: string) => ref.replace(/\./g, ' ');
-
-const refToNumber = (ref: string): number => {
-  if (!ref.match(/^\d+$/)) {
-    throw new Error('Invalid Number Ref');
-  }
-  return Number(ref);
-};
 
 export const getBookByRef = async (
   db: Db,
@@ -333,6 +346,24 @@ export const getBookByRef = async (
     throw new Error('Not Found');
   }
   return book;
+};
+
+export const getVersesByVolumeRef = async (
+  db: Db,
+  {volumeRef}: {volumeRef: string},
+): Promise<Array<Verse>> => {
+  const volume = await getVolumeByRef(db, {volumeRef});
+  const verses = await getVersesByVolumeId(db, {volumeId: volume.id});
+  return verses;
+};
+
+export const getChaptersByVolumeRef = async (
+  db: Db,
+  {volumeRef}: {volumeRef: string},
+): Promise<Array<Chapter>> => {
+  const volume = await getVolumeByRef(db, {volumeRef});
+  const chapters = await getChaptersByVolumeId(db, {volumeId: volume.id});
+  return chapters;
 };
 
 export const getBooksByVolumeRef = async (
