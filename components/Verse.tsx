@@ -1,13 +1,6 @@
-import React, {
-  FC,
-  ReactNode,
-  Dispatch,
-  SetStateAction,
-  Suspense,
-  useMemo,
-} from 'react';
+import React, {FC, ReactNode, Dispatch, SetStateAction, useMemo} from 'react';
 import classnames from 'classnames';
-import {Mark, Verse as $Verse, Person, Resource} from '../utils/types';
+import {Mark, Verse as $Verse, Person} from '../utils/types';
 import sortByRange from '../utils/sortByRange';
 import {theme} from '../utils/themes';
 import unique from '../utils/unique';
@@ -16,9 +9,8 @@ import ErrorBoundary from './ErrorBoundary';
 
 const SpeakerIndicator: FC<{
   speakerId: string;
-  speakersResource: Resource<Array<Person>>;
-}> = ({speakersResource, speakerId}) => {
-  const speakers = speakersResource.read();
+  speakers: Array<Person>;
+}> = ({speakers, speakerId}) => {
   const speaker = speakers.find((s) => s.id === speakerId);
   if (!speaker) {
     throw new Error(`Missing Speaker: [${speakerId}]`);
@@ -47,7 +39,7 @@ const VerseFragment: FC<{
   selectMarks: Dispatch<SetStateAction<string[]>>;
   selectedMarkIds: Array<string>;
   speakerIds: Array<string>;
-  speakersResource: Resource<Array<Person>>;
+  speakers: Array<Person>;
 }> = ({
   isVerseNumber = false,
   children,
@@ -55,7 +47,7 @@ const VerseFragment: FC<{
   marks,
   selectedMarkIds,
   speakerIds: allSpeakerIds,
-  speakersResource,
+  speakers,
 }) => {
   const speakerIds = marks.flatMap((m) =>
     m.type === 'speaker' ? [m.speakerId] : [],
@@ -93,15 +85,9 @@ const VerseFragment: FC<{
       >
         <mark className={classes}>
           <ErrorBoundary grow>
-            <Suspense fallback={null}>
-              {speakerIds.map((id) => (
-                <SpeakerIndicator
-                  key={id}
-                  speakerId={id}
-                  speakersResource={speakersResource}
-                />
-              ))}
-            </Suspense>
+            {speakerIds.map((id) => (
+              <SpeakerIndicator key={id} speakerId={id} speakers={speakers} />
+            ))}
           </ErrorBoundary>
           {children}
         </mark>
@@ -118,18 +104,17 @@ const Verse: FC<{
   text: $Verse['text'];
   selectMarks: Dispatch<SetStateAction<string[]>>;
   selectedMarkIds: Array<string>;
-  speakersResource: Resource<Array<Person>>;
-  marksResource: Resource<Array<Mark>>;
+  speakers: Array<Person>;
+  marks: Array<Mark>;
 }> = ({
   id,
   text,
   number,
   selectMarks,
   selectedMarkIds,
-  speakersResource,
-  marksResource,
+  speakers,
+  marks: allMarks,
 }) => {
-  const allMarks = marksResource.read(); // TODO: this blocks the verse until marks are loaded. figure out how to render the verse even if we don't know what marks it has yet
   const marks = allMarks.filter((m) => m.verseId === id);
   const speakerIds = useMemo(
     () =>
@@ -170,7 +155,7 @@ const Verse: FC<{
             selectMarks={selectMarks}
             selectedMarkIds={selectedMarkIds}
             speakerIds={speakerIds}
-            speakersResource={speakersResource}
+            speakers={speakers}
           >
             {text.slice(from, to)}
           </VerseFragment>,

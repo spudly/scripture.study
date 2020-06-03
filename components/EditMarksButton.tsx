@@ -1,5 +1,5 @@
 import React, {useState, FC} from 'react';
-import {Mark, Person, Resource} from '../utils/types';
+import {Mark, Person} from '../utils/types';
 import {MdEdit} from 'react-icons/md';
 import classnames from 'classnames';
 import CircleButton from './CircleButton';
@@ -15,12 +15,11 @@ const byName = (a: Person, b: Person) => {
 const EditMarksButton: FC<{
   updateMarks: (marks: Array<Pick<Mark, 'id' | 'speakerId'>>) => void;
   isUpdating?: boolean;
-  marksResource: Resource<Array<Mark>>;
-  speakersResource: Resource<Array<Person>>;
-}> = ({updateMarks, isUpdating, speakersResource, marksResource}) => {
+  marks: Array<Mark>;
+  speakers: Array<Person>;
+  selectedMarkIds: string[];
+}> = ({updateMarks, isUpdating, speakers, marks, selectedMarkIds}) => {
   const [isOpen, setIsOpen] = useState(false);
-  const speakers = speakersResource.read();
-  const marks = marksResource.read();
 
   return (
     <>
@@ -58,15 +57,18 @@ const EditMarksButton: FC<{
                   const speakerId = e.currentTarget.value;
                   if (speakerId) {
                     setIsOpen(false);
-                    updateMarks(marks.map((m) => ({id: m.id, speakerId})));
+                    updateMarks(
+                      marks
+                        .filter((m) => selectedMarkIds.includes(m.id))
+                        .map((m) => ({id: m.id, speakerId})),
+                    );
                   }
                 }}
               >
                 <option />
                 {speakers.sort(byName).map(({id, name, description}) => (
                   <option key={id} value={id}>
-                    {name}
-                    {description && <>, {description}</>}
+                    {description ? `${name}, ${description}` : name}
                   </option>
                 ))}
               </Select>

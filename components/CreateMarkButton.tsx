@@ -1,5 +1,5 @@
 import React, {useState, FC} from 'react';
-import {Mark, Person, Resource} from '../utils/types';
+import {Mark, Person} from '../utils/types';
 import {MdRecordVoiceOver} from 'react-icons/md';
 import classnames from 'classnames';
 import CircleButton from '../components/CircleButton';
@@ -27,9 +27,8 @@ const CreateMarkButton: FC<{
   selections: Array<VerseSelection>;
   createMarks: (marks: Array<Omit<Mark, 'id'>>) => void;
   isCreating?: boolean;
-  speakersResource: Resource<Array<Person>>;
-}> = ({selections, createMarks, isCreating, speakersResource}) => {
-  const speakers = speakersResource.read();
+  speakers: Array<Person>;
+}> = ({selections, createMarks, isCreating, speakers}) => {
   const [isOpen, setIsOpen] = useState(false);
 
   return (

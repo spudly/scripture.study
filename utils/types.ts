@@ -1,4 +1,79 @@
-import {ObjectID, Db} from 'mongodb';
+import {ObjectID} from 'mongodb';
+
+declare global {
+  interface Window {
+    BackgroundFetchManager: any;
+  }
+
+  interface BackgroundFetchRecord {
+    request: Request;
+    responseReady: Promise<Response>;
+  }
+
+  interface BackgroundFetchEvent {
+    registration: BackgroundFetchRegistration;
+    waitUntil: Function;
+    updateUI(options: {title?: string; icons?: Array<IconDefinition>}): unknown;
+  }
+
+  interface BackgroundFetchRegistration extends EventTarget {
+    id: string;
+    uploadTotal?: number;
+    uploaded: number;
+    downloaded: number;
+    downloadTotal?: number;
+    result: '' | 'success' | 'failure';
+    failureReason:
+      | ''
+      | 'aborted'
+      | 'bad-status'
+      | 'fetch-error'
+      | 'quota-exceeded'
+      | 'download-total-exceeded';
+    recordsAvailable: boolean;
+    activeFetches: unknown;
+    onprogress?: (event: Event) => void;
+    abort: () => unknown;
+    match(
+      request?: RequestInfo,
+      options?: MultiCacheQueryOptions,
+    ): Promise<BackgroundFetchRecord>;
+    matchAll(
+      request?: RequestInfo,
+      options?: MultiCacheQueryOptions,
+    ): Promise<Array<BackgroundFetchRecord>>;
+  }
+
+  interface IconDefinition {}
+
+  interface BackgroundFetchManager {
+    fetch(
+      id: string,
+      requests: Array<Request | string>,
+      options: {
+        title: string;
+        icons: Array<IconDefinition>;
+        downloadTotal?: number;
+      },
+    ): Promise<BackgroundFetchRegistration>;
+  }
+
+  interface ServiceWorkerRegistration {
+    backgroundFetch: BackgroundFetchManager;
+  }
+
+  interface ServiceWorkerEventMap {
+    install: Event & {waitUntil: Function};
+    sync: Event & {tag: string; waitUntil: Function};
+    fetch: Event & {request: Request; respondWith: Function};
+    backgroundfetchsuccess: BackgroundFetchEvent;
+    backgroundfetchclick: BackgroundFetchEvent;
+  }
+
+  interface IDBFactory {
+    databases(): Promise<Array<{name: string; version: number}>>;
+  }
+}
 
 export type VolumeDoc = {
   _id: ObjectID;
@@ -98,6 +173,10 @@ export type Mark = {
   range: Array<number> | null;
 };
 
+export type SyncableMark = Mark & {
+  syncStatus: 'SYNCED' | 'PENDING_DELETE' | 'PENDING_UPDATE';
+};
+
 export type PersonDoc = {
   _id: ObjectID;
   name: string;
@@ -164,36 +243,53 @@ export type DirectoryEntry = {
   title: string;
 };
 
-export type Resource<RESULT> = {
-  read: () => RESULT;
-};
-
 export type PromiseResult<PROMISE> = PROMISE extends Promise<infer RESULT>
   ? RESULT
   : never;
 
-type ApiFns = typeof import('../utils/fns');
+export interface Queries {
+  getAllVolumes(): Promise<Array<Volume>>;
+  getVolumeByTitle(title: string): Promise<Volume>;
+  getAllBooksByVolumeId(volumeId: string): Promise<Array<Book>>;
+  getChapterById(volumeId: string, chapterId: string): Promise<Chapter>;
+  getBookById(volumeId: string, bookId: string): Promise<Book>;
+  getBookByTitle(volumeId: string, title: string): Promise<Book>;
+  getAllChaptersByBookId(
+    volumeId: string,
+    bookId: string,
+  ): Promise<Array<Chapter>>;
+  getChapterByBookIdAndNumber(
+    volumeId: string,
+    bookId: string,
+    number: string | number,
+  ): Promise<Chapter>;
+  getAllVersesByChapterId(
+    volumeId: string,
+    chapterId: string,
+  ): Promise<Array<Verse>>;
+  queryPrevChapterUrl(
+    volumeId: string,
+    chapterId: string,
+  ): Promise<string | null>;
+  queryNextChapterUrl(
+    volumeId: string,
+    chapterId: string,
+  ): Promise<string | null>;
+  getAllSpeakers(): Promise<Array<Person>>;
+  getAllMarksByChapterId(
+    volumeId: string,
+    chapterId: string,
+  ): Promise<Array<Mark>>;
+}
 
-export type ApiFnName = keyof ApiFns;
+export interface Mutations {
+  createMarks(marks: Array<Omit<Mark, 'id'>>): Promise<void>;
+  deleteMarks(markIds: Array<string>): Promise<void>;
+  updateMarks(marks: Array<Pick<Mark, 'id' | 'speakerId'>>): Promise<void>;
+}
 
-export type ApiFnParams<FN> = FN extends (db: Db, params: infer P) => any
-  ? P
-  : never;
-
-export type ApiFnResult<K extends ApiFnName> = PromiseResult<
-  ReturnType<ApiFns[K]>
->;
-
-export type ApiFnCall = {
-  [key in ApiFnName]: ApiFnParams<ApiFns[key]> & {fn: key};
-}[ApiFnName];
-
-export type ApiFnCallName<CALL extends ApiFnCall> = CALL['fn'];
-
-export type ApiFnParamsByName = {
-  [KEY in ApiFnName]: ApiFnParams<ApiFns[KEY]>;
-};
-
-export type ApiFnCallResults = {
-  [KEY in ApiFnName]: ApiFnResult<KEY>;
-};
+export type MutationState =
+  | {readyState: 'NONE'}
+  | {readyState: 'LOADING'}
+  | {readyState: 'COMPLETE'}
+  | {readyState: 'ERROR'; error: Error};

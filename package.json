@@ -11,7 +11,7 @@
     "build": "NODE_ENV=production webpack --json > stats.json",
     "depcheck": "depcheck --ignores=\",@commitlint/*,@types/*,prettier,pretty-quick,sort-package-json,typescript,@fullhuman/postcss-purgecss,autoprefixer,tailwindcss,postcss-import,webpack-cli\"",
     "lint": "eslint . --ext .js,.jsx,.ts,.tsx",
-    "start": "NODE_ENV=development PORT=8080 ts-node index.server.dev.tsx",
+    "start": "NODE_ENV=development PORT=3000 ts-node index.server.dev.tsx",
     "test": "echo \"no tests yet\"; exit 0"
   },
   "husky": {
