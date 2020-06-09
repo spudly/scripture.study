@@ -1,7 +1,9 @@
 import {Verse as $Verse} from './types';
 import getVerseId from './getVerseIdFromElement';
 
-const getSelectedVerses = <VERSE extends Pick<$Verse, 'id'>>(
+const getSelectedVerses = <
+  VERSE extends Pick<$Verse, 'id' | 'volumeId' | 'chapterId'>
+>(
   verses: Array<VERSE>,
   startContainer: HTMLElement,
   endContainer: HTMLElement,

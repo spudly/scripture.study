@@ -9,26 +9,29 @@ import Chapter from './components/Chapter';
 import ErrorBoundary from './components/ErrorBoundary';
 import './css/tailwind.css';
 
-ReactDOM.render(
-  <BrowserRouter>
-    <div className="min-h-screen flex flex-col bg-gray-100">
-      <ErrorBoundary grow>
-        <Switch>
-          <Route path="/" exact component={Volumes} />
-          <Route path="/:volume" exact component={Books} />
-          <Route path="/:volume/:book" exact component={Chapters} />} />
-          <Route path="/:volume/:book/:chapter" exact component={Chapter} />
-        </Switch>
-      </ErrorBoundary>
-    </div>
-  </BrowserRouter>,
-  document.getElementById('root'),
-);
+const renderApp = () => {
+  ReactDOM.render(
+    <BrowserRouter>
+      <div className="min-h-screen flex flex-col bg-gray-100">
+        <ErrorBoundary grow>
+          <Switch>
+            <Route path="/" exact component={Volumes} />
+            <Route path="/:volume" exact component={Books} />
+            <Route path="/:volume/:book" exact component={Chapters} />} />
+            <Route path="/:volume/:book/:chapter" exact component={Chapter} />
+          </Switch>
+        </ErrorBoundary>
+      </div>
+    </BrowserRouter>,
+    document.getElementById('root'),
+  );
+};
 
-window.addEventListener('load', async () => {
-  let swReg: ServiceWorkerRegistration;
+const registerServiceWorker = async () => {
   try {
-    swReg = await navigator.serviceWorker.register('/index.client.sw.js');
+    const swReg: ServiceWorkerRegistration = await navigator.serviceWorker.register(
+      '/index.client.sw.js',
+    );
     // swReg.sync.register('sync-marks');
     console.log(
       'ServiceWorker registration successful with scope: ',
@@ -37,4 +40,21 @@ window.addEventListener('load', async () => {
   } catch (error) {
     console.log('ServiceWorker registration failed: ', error);
   }
-});
+};
+
+const syncMarks = async () => {
+  try {
+    const swReg = await navigator.serviceWorker.ready;
+    console.log('SYNC: triggering sync');
+    await swReg.sync.register('sync-marks');
+    console.log('SYNC: triggered');
+    setTimeout(syncMarks, 30000);
+  } catch (error) {
+    console.log('SYNC: Failed', error);
+  }
+};
+
+renderApp();
+registerServiceWorker();
+syncMarks();
+window.addEventListener('beforeunload', () => syncMarks());

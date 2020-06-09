@@ -5,7 +5,9 @@ import getTextOffsetRelativeToContainer from './getTextOffsetRelativeToContainer
 import isEmptySelection from './isEmptySelection';
 
 const createVerseSelections = (
-  verses: Array<Pick<$Verse, 'id' | 'number' | 'text'>>,
+  verses: Array<
+    Pick<$Verse, 'id' | 'chapterId' | 'volumeId' | 'number' | 'text'>
+  >,
   selection: Selection,
 ): Array<VerseSelection> | null => {
   if (isEmptySelection(selection)) {
@@ -43,6 +45,8 @@ const createVerseSelections = (
       const isLast = index === selectedVerses.length - 1;
       return {
         verseId: v.id,
+        chapterId: v.chapterId,
+        volumeId: v.volumeId,
         range:
           isFirst && isLast
             ? lastVerseOffset >= v.text.length

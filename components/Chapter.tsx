@@ -20,7 +20,7 @@ import useAsync from '../utils/useAsync';
 import ErrorAlert from './ErrorAlert';
 
 const Verses: FC<{
-  verses: Array<Pick<$Verse, 'id' | 'number' | 'text'>>;
+  verses: Array<$Verse>;
   marks: Array<Mark>;
   speakers: Array<Person>;
   reloadMarks: () => void;
@@ -28,23 +28,13 @@ const Verses: FC<{
   const [selections, setSelections] = useState<Array<VerseSelection>>([]);
   const [selectedMarkIds, setSelectedMarkIds] = useState<string[]>([]);
 
-  const handleMarkMutated = () => {
-    setSelections([]);
-    setSelectedMarkIds([]);
-    reloadMarks();
-  };
-  const [createMarks, createMarksStatus] = useMutation(
-    'createMarks',
-    handleMarkMutated,
-  );
-
-  const [deleteMarks, deleteMarksStatus] = useMutation(
-    'deleteMarks',
-    handleMarkMutated,
-  );
-  const [updateMarks, updateMarksStatus] = useMutation(
-    'updateMarks',
-    handleMarkMutated,
+  const [createOrUpdateMarks, createOrUpdateMarksStatus] = useMutation(
+    'createOrUpdateMarks',
+    () => {
+      setSelections([]);
+      setSelectedMarkIds([]);
+      reloadMarks();
+    },
   );
 
   useEffect(() => {
@@ -101,17 +91,20 @@ const Verses: FC<{
                   speakers={speakers}
                   marks={marks}
                   selectedMarkIds={selectedMarkIds}
-                  isUpdating={updateMarksStatus.readyState === 'LOADING'}
-                  updateMarks={async (
-                    marks: Array<Pick<Mark, 'id' | 'speakerId'>>,
-                  ) => updateMarks(marks)}
+                  isUpdating={
+                    createOrUpdateMarksStatus.readyState === 'LOADING'
+                  }
+                  updateMarks={createOrUpdateMarks}
                 />
               </div>
               <div>
                 <DeleteMarksButton
+                  marks={marks}
                   selectedMarkIds={selectedMarkIds}
-                  isDeleting={deleteMarksStatus.readyState === 'LOADING'}
-                  deleteMarks={async (ids: string[]) => deleteMarks(ids)}
+                  isDeleting={
+                    createOrUpdateMarksStatus.readyState === 'LOADING'
+                  }
+                  updateMarks={createOrUpdateMarks}
                 />
               </div>
             </>
@@ -119,10 +112,10 @@ const Verses: FC<{
           {selections.length !== 0 && (
             <div>
               <CreateMarkButton
-                isCreating={createMarksStatus.readyState === 'LOADING'}
+                isCreating={createOrUpdateMarksStatus.readyState === 'LOADING'}
                 selections={selections}
-                createMarks={(newMarks: Array<Omit<Mark, 'id'>>) =>
-                  createMarks(newMarks)
+                createMarks={(newMarks: Array<Mark>) =>
+                  createOrUpdateMarks(newMarks)
                 }
                 speakers={speakers}
               />
@@ -143,10 +136,7 @@ const ChapterPage: FC<{}> = () => {
   const {volumeRef, bookRef, chapterRef} = match.params;
   const {result: mainResult, error: mainError} = useAsync(
     useCallback(async () => {
-      const [volume, speakers] = await Promise.all([
-        queries.getVolumeByTitle(refToTitle(volumeRef)),
-        queries.getAllSpeakers(),
-      ]);
+      const volume = await queries.getVolumeByTitle(refToTitle(volumeRef));
       const book = await queries.getBookByTitle(volume.id, refToTitle(bookRef));
       const chapter = await queries.getChapterByBookIdAndNumber(
         volume.id,
@@ -159,9 +149,13 @@ const ChapterPage: FC<{}> = () => {
         queries.queryPrevChapterUrl(volume.id, chapter.id),
         queries.queryNextChapterUrl(volume.id, chapter.id),
       ] as const);
-      return {speakers, volume, book, chapter, verses, marks, prev, next};
+      return {volume, book, chapter, verses, marks, prev, next};
     }, [volumeRef, bookRef, chapterRef]),
   );
+  const {result: speakers, error: speakersError} = useAsync(
+    queries.getAllSpeakers,
+  );
+
   const {result: marks, error: marksError, reload: reloadMarks} = useAsync(
     useMemo(
       () =>
@@ -176,7 +170,7 @@ const ChapterPage: FC<{}> = () => {
     ),
   );
 
-  const error = mainError || marksError;
+  const error = mainError || marksError || speakersError;
   if (error) {
     return <ErrorAlert error={error} grow />;
   }
@@ -185,7 +179,7 @@ const ChapterPage: FC<{}> = () => {
     return <Spinner grow />;
   }
 
-  const {speakers, book, chapter, verses, prev, next} = mainResult;
+  const {book, chapter, verses, prev, next} = mainResult;
 
   return (
     <>
@@ -216,7 +210,7 @@ const ChapterPage: FC<{}> = () => {
         <Pagination prevHref={prev} nextHref={next} />
         <Verses
           verses={verses}
-          speakers={speakers}
+          speakers={speakers ?? []}
           marks={marks ?? []}
           reloadMarks={reloadMarks}
         />

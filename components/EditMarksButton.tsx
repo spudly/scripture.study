@@ -13,7 +13,7 @@ const byName = (a: Person, b: Person) => {
 };
 
 const EditMarksButton: FC<{
-  updateMarks: (marks: Array<Pick<Mark, 'id' | 'speakerId'>>) => void;
+  updateMarks: (marks: Array<Mark>) => void;
   isUpdating?: boolean;
   marks: Array<Mark>;
   speakers: Array<Person>;
@@ -60,7 +60,11 @@ const EditMarksButton: FC<{
                     updateMarks(
                       marks
                         .filter((m) => selectedMarkIds.includes(m.id))
-                        .map((m) => ({id: m.id, speakerId})),
+                        .map((m) => ({
+                          ...m,
+                          speakerId,
+                          lastUpdated: Date.now(),
+                        })),
                     );
                   }
                 }}

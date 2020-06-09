@@ -18,7 +18,9 @@ const ErrorAlert: FC<Props> = ({error, grow}) => (
       })}
     />
     {process.env.NODE_ENV === 'development' && (
-      <pre className="text-left">{error.stack ?? error.message}</pre>
+      <pre className="text-left">
+        {error.stack ?? error.message ?? JSON.stringify(error)}
+      </pre>
     )}
   </div>
 );

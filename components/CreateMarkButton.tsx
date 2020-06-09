@@ -6,14 +6,18 @@ import CircleButton from '../components/CircleButton';
 import {VerseSelection} from '../utils/types';
 import Select from '../components/Select';
 import Spinner from './Spinner';
+import createId from '../utils/createId';
 
 const buildSpeakerMarks = (
   selections: Array<VerseSelection>,
   speakerId: string,
-): Array<Omit<Mark, 'id'>> =>
+): Array<Mark> =>
   selections.map((selection) => ({
     ...selection,
+    id: createId(),
     type: 'speaker',
+    isActive: true,
+    lastUpdated: Date.now(),
     speakerId,
   }));
 
@@ -25,7 +29,7 @@ const byName = (a: Person, b: Person) => {
 
 const CreateMarkButton: FC<{
   selections: Array<VerseSelection>;
-  createMarks: (marks: Array<Omit<Mark, 'id'>>) => void;
+  createMarks: (marks: Array<Mark>) => void;
   isCreating?: boolean;
   speakers: Array<Person>;
 }> = ({selections, createMarks, isCreating, speakers}) => {

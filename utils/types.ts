@@ -153,6 +153,8 @@ export type Volumes = {
 };
 
 export type VerseSelection = {
+  volumeId: string;
+  chapterId: string;
   verseId: string;
   range: Array<number> | null;
 };
@@ -162,7 +164,11 @@ export type MarkDoc = {
   type: string;
   speakerId: ObjectID;
   verseId: ObjectID;
+  chapterId: ObjectID;
+  volumeId: ObjectID;
   range: Array<number> | null;
+  isActive: boolean;
+  lastUpdated: number;
 };
 
 export type Mark = {
@@ -170,17 +176,22 @@ export type Mark = {
   type: string;
   speakerId: string;
   verseId: string;
+  chapterId: string;
+  volumeId: string;
   range: Array<number> | null;
-};
-
-export type SyncableMark = Mark & {
-  syncStatus: 'SYNCED' | 'PENDING_DELETE' | 'PENDING_UPDATE';
+  isActive: boolean;
+  lastUpdated: number;
 };
 
 export type PersonDoc = {
   _id: ObjectID;
   name: string;
   description?: string | null;
+};
+
+export type VolumeMeta = {
+  key: 'lastUpdated';
+  value: number;
 };
 
 export type Person = {id: string; name: string; description?: string | null};
@@ -280,12 +291,15 @@ export interface Queries {
     volumeId: string,
     chapterId: string,
   ): Promise<Array<Mark>>;
+  getAllMarksByVolumeId(volumeId: string): Promise<Array<Mark>>;
+  getAllUpdatedMarksByVolumeId(
+    volumeId: string,
+    since: number,
+  ): Promise<Array<Mark>>;
 }
 
 export interface Mutations {
-  createMarks(marks: Array<Omit<Mark, 'id'>>): Promise<void>;
-  deleteMarks(markIds: Array<string>): Promise<void>;
-  updateMarks(marks: Array<Pick<Mark, 'id' | 'speakerId'>>): Promise<void>;
+  createOrUpdateMarks(marks: Array<Mark>): Promise<void>;
 }
 
 export type MutationState =

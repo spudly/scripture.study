@@ -8,97 +8,128 @@ import {
   Person,
   Mark,
   Mutations,
-  SyncableMark,
+  VolumeMeta,
 } from '../utils/types';
 
-const createVolumesStore = (db: IDBDatabase) =>
-  new Promise<void>((resolve, reject) => {
-    const volumes: IDBObjectStore = db.createObjectStore('volumes', {
-      keyPath: 'id',
+type IndexDescriptor = {name: string; keyPath: string | Iterable<string>};
+
+const createObjectStore = (
+  db: IDBDatabase,
+  name: string,
+  keyPath: IDBObjectStoreParameters['keyPath'],
+  indexes: Array<IndexDescriptor> = [],
+): Promise<IDBObjectStore> =>
+  new Promise((resolve, reject) => {
+    const store = db.createObjectStore(name, {keyPath});
+    indexes.forEach((idx) => {
+      if (!store.indexNames.contains(idx.name)) {
+        store.createIndex(idx.name, idx.keyPath);
+      }
     });
-    volumes.createIndex('title', 'title');
-    volumes.createIndex('sortPosition', 'sortPosition');
-    volumes.transaction.addEventListener('complete', () => resolve());
-    volumes.transaction.addEventListener('error', (e: any) =>
+    store.transaction.addEventListener('complete', () => resolve(store));
+    store.transaction.addEventListener('error', (e: any) =>
       reject(e.target.error),
     );
   });
 
-const createMarksStore = (db: IDBDatabase) =>
-  new Promise<void>((resolve, reject) => {
-    const volumes: IDBObjectStore = db.createObjectStore('marks', {
-      keyPath: 'id',
-    });
-    volumes.createIndex('verseId', 'verseId');
-    volumes.createIndex('syncStatus', 'syncStatus');
-    volumes.transaction.addEventListener('complete', () => resolve());
-    volumes.transaction.addEventListener('error', (e: any) =>
-      reject(e.target.error),
-    );
-  });
+const upgradeStore = async (
+  transaction: IDBTransaction,
+  name: string,
+  indexes: Array<IndexDescriptor>,
+) => {
+  const store = transaction.objectStore(name);
 
-const createBooksStore = (db: IDBDatabase) =>
-  new Promise<void>((resolve, reject) => {
-    const books: IDBObjectStore = db.createObjectStore('books', {
-      keyPath: 'id',
-    });
-    books.createIndex('title', 'title');
-    books.createIndex('sortPosition', 'sortPosition');
-    books.createIndex('volumeId', 'volumeId');
-    books.transaction.addEventListener('complete', () => resolve());
-    books.transaction.addEventListener('error', (e: any) =>
-      reject(e.target.error),
-    );
+  indexes.forEach((idx) => {
+    if (!store.indexNames.contains(idx.name)) {
+      store.createIndex(idx.name, idx.keyPath);
+    }
   });
+};
 
-const createChapterStore = (db: IDBDatabase) =>
-  new Promise<void>((resolve, reject) => {
-    const chapters: IDBObjectStore = db.createObjectStore('chapters', {
-      keyPath: 'id',
-    });
-    chapters.createIndex('number', 'number');
-    chapters.createIndex('volumeId', 'volumeId');
-    chapters.createIndex('bookId', 'bookId');
-    chapters.createIndex('bookId+number', ['bookId', 'number'], {
-      unique: false,
-    });
-    chapters.transaction.addEventListener('complete', () => resolve());
-    chapters.transaction.addEventListener('error', (e: any) =>
-      reject(e.target.error),
-    );
-  });
+const createOrUpgradeStore = async (
+  e: any,
+  name: string,
+  keyPath: IDBObjectStoreParameters['keyPath'],
+  indexes: Array<IndexDescriptor> = [],
+) => {
+  const {
+    oldVersion,
+    target: {result: db, transaction},
+  } = e;
+  if (oldVersion < 1) {
+    await createObjectStore(db, name, keyPath, indexes);
+  } else {
+    upgradeStore(transaction, name, indexes);
+  }
+};
 
-const createVersesStore = (db: IDBDatabase) =>
-  new Promise<void>((resolve, reject) => {
-    const verses: IDBObjectStore = db.createObjectStore('verses', {
-      keyPath: 'id',
-    });
-    verses.createIndex('number', 'number');
-    verses.createIndex('volumeId', 'volumeId');
-    verses.createIndex('bookId', 'bookId');
-    verses.createIndex('chapterId', 'chapterId');
-    verses.transaction.addEventListener('complete', () => resolve());
-    verses.transaction.addEventListener('error', (e: any) =>
-      reject(e.target.error),
-    );
-  });
+const createVolumesStore = (e: IDBVersionChangeEvent) =>
+  createOrUpgradeStore(e, 'volumes', 'id', [
+    {name: 'title', keyPath: 'title'},
+    {name: 'sortPosition', keyPath: 'sortPosition'},
+  ]);
+
+const createMarksStore = (e: IDBVersionChangeEvent) =>
+  createOrUpgradeStore(e, 'marks', 'id', [
+    {name: 'verseId', keyPath: 'verseId'},
+    {name: 'chapterId', keyPath: 'chapterId'},
+    {name: 'lastUpdated', keyPath: 'lastUpdated'},
+  ]);
+
+const createMetaStore = (e: IDBVersionChangeEvent) =>
+  createOrUpgradeStore(e, 'meta', 'key');
+
+const createBooksStore = (e: IDBVersionChangeEvent) =>
+  createOrUpgradeStore(e, 'books', 'id', [
+    {name: 'title', keyPath: 'title'},
+    {name: 'sortPosition', keyPath: 'sortPosition'},
+    {name: 'volumeId', keyPath: 'volumeId'},
+  ]);
+
+const createChapterStore = (e: IDBVersionChangeEvent) =>
+  createOrUpgradeStore(e, 'chapters', 'id', [
+    {name: 'number', keyPath: 'number'},
+    {name: 'volumeId', keyPath: 'volumeId'},
+    {name: 'bookId', keyPath: 'bookId'},
+    {name: 'bookId+number', keyPath: ['bookId', 'number']},
+  ]);
+
+const createVersesStore = (e: IDBVersionChangeEvent) =>
+  createOrUpgradeStore(e, 'verses', 'id', [
+    {name: 'number', keyPath: 'number'},
+    {name: 'volumeId', keyPath: 'volumeId'},
+    {name: 'bookId', keyPath: 'bookId'},
+    {name: 'chapterId', keyPath: 'chapterId'},
+  ]);
 
 const dbCache = new Map<string, Promise<IDBDatabase>>();
 
-export const makeGetDb = (createStores: (db: IDBDatabase) => Promise<void>) => (
+export const makeGetDb = (
+  createStores: (e: IDBVersionChangeEvent) => Promise<void>,
+) => async (
   name: string,
+  shouldCreateIfMissing: boolean = false,
 ): Promise<IDBDatabase> => {
   const cachedPromise = dbCache.get(name);
   if (cachedPromise) {
     return cachedPromise;
   }
 
+  if (!shouldCreateIfMissing) {
+    const dbs = await indexedDB.databases();
+    if (!dbs.some((db) => db.name === name)) {
+      throw new Error(`db does not exist: [${name}]`);
+    }
+  }
+
   const promise = new Promise<IDBDatabase>((resolve, reject) => {
-    const request = indexedDB.open(name, 4);
+    const request = indexedDB.open(name, 8);
     request.addEventListener('error', () => reject('failed to open db'));
-    request.addEventListener('upgradeneeded', (e: any) =>
-      createStores(e.target.result),
-    );
+    request.addEventListener('upgradeneeded', (e: IDBVersionChangeEvent) => {
+      console.log(`UPGRAGING ${name} db`);
+      createStores(e);
+      console.log('UPGRADE_NEEDED', name);
+    });
     request.addEventListener('success', (e: any) => {
       const db = e.target.result;
       db.addEventListener('error', (e: any) => console.error('db error', e));
@@ -111,19 +142,22 @@ export const makeGetDb = (createStores: (db: IDBDatabase) => Promise<void>) => (
   return promise;
 };
 
-const createMainDbStores = async (db: IDBDatabase) => {
-  await Promise.all([createVolumesStore(db), createMarksStore(db)]);
+const createMainDbStores = async (e: any) => {
+  await createVolumesStore(e);
   const volumes = await fetchJson<Array<Volume>>('/data/volumes.json');
-  await insert(db, 'volumes', volumes);
+  await insertRecords(e.target.result, 'volumes', volumes);
 };
 
-export const getMainDb = () => makeGetDb(createMainDbStores)('main');
+export const getMainDb = (shouldCreateIfMissing = false) =>
+  makeGetDb(createMainDbStores)('main', shouldCreateIfMissing);
 
-const createVolumeDbStores = async (db: IDBDatabase) => {
+const createVolumeDbStores = async (e: IDBVersionChangeEvent) => {
   await Promise.all([
-    createBooksStore(db),
-    createChapterStore(db),
-    createVersesStore(db),
+    createMetaStore(e),
+    createBooksStore(e),
+    createChapterStore(e),
+    createVersesStore(e),
+    createMarksStore(e),
   ]);
 };
 
@@ -138,7 +172,16 @@ const add = async (store: IDBObjectStore, value: any) =>
     );
   });
 
-const insert = async <T = any>(
+const put = async (store: IDBObjectStore, value: any) =>
+  new Promise((resolve, reject) => {
+    const req = store.put(value);
+    req.addEventListener('success', () => resolve());
+    req.addEventListener('error', (e: any) =>
+      reject({error: e.target.error, value}),
+    );
+  });
+
+const insertRecords = async <T = any>(
   db: IDBDatabase,
   storeName: string,
   values: Array<T>,
@@ -146,6 +189,22 @@ const insert = async <T = any>(
   const txn = db.transaction([storeName], 'readwrite');
   const store = txn.objectStore(storeName);
   await Promise.all(values.map((value) => add(store, value)));
+  return new Promise((resolve, reject) => {
+    txn.addEventListener('complete', () => {
+      resolve();
+    });
+    txn.addEventListener('error', (e: any) => reject(e.target.error));
+  });
+};
+
+const insertOrUpdateRecords = async <T = any>(
+  db: IDBDatabase,
+  storeName: string,
+  values: Array<T>,
+) => {
+  const txn = db.transaction([storeName], 'readwrite');
+  const store = txn.objectStore(storeName);
+  await Promise.all(values.map((value) => put(store, value)));
   return new Promise((resolve, reject) => {
     txn.addEventListener('complete', () => {
       resolve();
@@ -165,12 +224,20 @@ export const insertVolumeData = async ({
   chapters: Array<Chapter>;
   verses: Array<Verse>;
 }) => {
-  const db = await getVolumeDb(volume.id);
+  const db = await getVolumeDb(volume.id, true);
   await Promise.all([
-    insert(db, 'books', books),
-    insert(db, 'chapters', chapters),
-    insert(db, 'verses', verses),
+    insertRecords(db, 'books', books),
+    insertRecords(db, 'chapters', chapters),
+    insertRecords(db, 'verses', verses),
   ]);
+};
+
+export const insertOrUpdateMarks = async (
+  volumeId: string,
+  marks: Array<Mark>,
+): Promise<void> => {
+  const db = await getVolumeDb(volumeId);
+  await insertOrUpdateRecords(db, 'marks', marks);
 };
 
 export const query = async <RECORD>(
@@ -228,7 +295,7 @@ export const getAll = async <RECORD>(
   db: IDBDatabase,
   storeName: string,
   index?: string | null,
-  query?: string | number | Array<string | number>,
+  query?: IDBValidKey | IDBKeyRange | null,
 ): Promise<Array<RECORD>> => {
   return new Promise<Array<RECORD>>((resolve, reject) => {
     const txn = db.transaction([storeName]);
@@ -240,6 +307,24 @@ export const getAll = async <RECORD>(
       resolve(e.target.result as Array<RECORD>);
     });
   });
+};
+
+export const deleteMultiple = async (
+  db: IDBDatabase,
+  storeName: string,
+  ids: Array<string>,
+): Promise<void> => {
+  const txn = db.transaction([storeName], 'readwrite');
+  await Promise.all(
+    ids.map(
+      (id) =>
+        new Promise<void>((resolve, reject) => {
+          const request = txn.objectStore(storeName).delete(id);
+          request.addEventListener('error', (e: any) => reject(e.target.error));
+          request.addEventListener('success', () => resolve());
+        }),
+    ),
+  );
 };
 
 const getVolumeById = async (volumeId: string): Promise<Volume> =>
@@ -387,11 +472,61 @@ const getAllVersesByChapterId = async (volumeId: string, chapterId: string) =>
 const getAllSpeakers = async () =>
   getAll<Person>(await getMainDb(), 'speakers');
 
-const getAllMarksByChapterId = async (volumdId: string, chapterId: string) =>
-  getAll<SyncableMark>(await getMainDb(), 'marks', 'chapterId', chapterId);
+const getAllMarksByChapterId = async (volumeId: string, chapterId: string) => {
+  const db = await getVolumeDb(volumeId);
+  const marks = await getAll<Mark>(db, 'marks', 'chapterId', chapterId);
+  return marks.filter((m) => m.isActive);
+};
+
+const getAllMarksByVolumeId = async (volumeId: string) => {
+  const db = await getVolumeDb(volumeId);
+  const marks = await getAll<Mark>(db, 'marks');
+  return marks.filter((m) => m.isActive);
+};
+
+const getAllUpdatedMarksByVolumeId = async (
+  volumeId: string,
+  since: number,
+) => {
+  const db = await getVolumeDb(volumeId);
+  const marks = await getAll<Mark>(
+    db,
+    'marks',
+    'lastUpdated',
+    IDBKeyRange.lowerBound(since),
+  );
+  return marks.filter((m) => m.isActive);
+};
+
+const createOrUpdateMarks = async (
+  marks: Array<Mark>,
+  updateLastUpdated = true,
+): Promise<void> => {
+  const [first] = marks;
+  if (!first) {
+    return;
+  }
+  await insertOrUpdateMarks(first.volumeId, marks);
+};
+
+export const getVolumeMarksLastUpdated = async (volumeId: string) => {
+  const db = await getVolumeDb(volumeId);
+  const record = await query<VolumeMeta>(db, 'meta', null, 'lastUpdated');
+  return record?.value ?? 0;
+};
+
+export const setVolumeMarksLastUpdated = async (
+  volumeId: string,
+  lastUpdated: number,
+) => {
+  const db = await getVolumeDb(volumeId);
+  return await insertOrUpdateRecords<VolumeMeta>(db, 'meta', [
+    {key: 'lastUpdated' as const, value: lastUpdated},
+  ]);
+};
 
 // access the db on page load. this results in creation of the db if it doesn't already exist
-getMainDb();
+getMainDb(true);
 
 export const queries: Queries = {
   getAllVolumes,
@@ -407,24 +542,10 @@ export const queries: Queries = {
   queryNextChapterUrl,
   getAllSpeakers,
   getAllMarksByChapterId,
+  getAllMarksByVolumeId,
+  getAllUpdatedMarksByVolumeId,
 };
 
 export const mutations: Mutations = {
-  createMarks: async (marks: Array<Omit<Mark, 'id'>>): Promise<void> => {
-    // TODO: create a pending mark in the client-side db. these will get sync'd
-    // with the server periodically
-    // When fetching mark, the UI will have to include the pending marks into account
-  },
-  deleteMarks: async (markIds: Array<string>): Promise<void> => {
-    // TODO: create a pending mark deletion in the client-side db. these will get sync'd
-    // with the server periodically
-    // When fetching marks, the UI will have to take the pending deletion into account
-  },
-  updateMarks: async (
-    marks: Array<Pick<Mark, 'id' | 'speakerId'>>,
-  ): Promise<void> => {
-    // TODO: create a pending mark update in the client-side db. these will get sync'd
-    // with the server periodically
-    // When fetching marks, the UI will have to take the pending update into account
-  },
+  createOrUpdateMarks,
 };

@@ -44,12 +44,24 @@ const markDocToMark = ({_id, ...markDoc}: MarkDoc): Mark => ({
   id: String(_id),
   speakerId: String(markDoc.speakerId),
   verseId: String(markDoc.verseId),
+  chapterId: String(markDoc.chapterId),
+  volumeId: String(markDoc.volumeId),
 });
 
-const newMarkToNewMarkDoc = (mark: Omit<Mark, 'id'>): Omit<MarkDoc, '_id'> => ({
-  ...mark,
-  speakerId: new ObjectID(mark.speakerId),
-  verseId: new ObjectID(mark.verseId),
+const newMarkToNewMarkDoc = ({
+  id,
+  speakerId,
+  verseId,
+  chapterId,
+  volumeId,
+  ...rest
+}: Mark): MarkDoc => ({
+  ...rest,
+  _id: new ObjectID(id),
+  speakerId: new ObjectID(speakerId),
+  verseId: new ObjectID(verseId),
+  chapterId: new ObjectID(chapterId),
+  volumeId: new ObjectID(volumeId),
 });
 
 const volumeDocToVolume = ({_id, ...volumeDoc}: VolumeDoc): Volume => ({
@@ -332,52 +344,61 @@ const getAllSpeakers = async (): Promise<Array<Person>> => {
     .toArray();
 };
 
-const getAllMarksByVerseIds = async (
-  verseIds: Array<string>,
+const getAllMarksByChapterId = async (
+  _volumeId: string,
+  chapterId: string,
 ): Promise<Array<Mark>> => {
   const db = await getDb();
 
   return db
     .collection<MarkDoc>('marks')
-    .find({verseId: {$in: verseIds.map((verseId) => new ObjectID(verseId))}})
+    .find({chapterId: new ObjectID(chapterId), isActive: true})
     .map(markDocToMark)
     .toArray();
 };
 
-const getAllMarksByChapterId = async (
+const getAllMarksByVolumeId = async (
   volumeId: string,
-  chapterId: string,
 ): Promise<Array<Mark>> => {
-  const verses = await getAllVersesByChapterId(volumeId, chapterId);
-  const marks = await getAllMarksByVerseIds(verses.map((v) => v.id));
-  return marks;
-};
-
-const createMarks = async (marks: Array<Omit<Mark, 'id'>>) => {
   const db = await getDb();
-  await db
+
+  return db
     .collection<MarkDoc>('marks')
-    .insertMany(marks.map(newMarkToNewMarkDoc));
+    .find({volumeId: new ObjectID(volumeId), isActive: true})
+    .map(markDocToMark)
+    .toArray();
 };
 
-const deleteMarks = async (markIds: Array<string>) => {
+const getAllUpdatedMarksByVolumeId = async (
+  volumeId: string,
+  since: number,
+): Promise<Array<Mark>> => {
   const db = await getDb();
-  await db.collection<MarkDoc>('marks').deleteMany({
-    _id: {$in: markIds.map((id) => new ObjectID(id))},
-  });
+
+  console.log('getAllUpdatedMarksByVolumeId', 'args:', {volumeId, since});
+
+  const result = await db
+    .collection<MarkDoc>('marks')
+    .find({
+      volumeId: new ObjectID(volumeId),
+      lastUpdated: {$gte: Number(since)},
+    })
+    .map(markDocToMark)
+    .toArray();
+
+  console.log(result);
+
+  return result;
 };
 
-const updateMarks = async (marks: Array<Pick<Mark, 'id' | 'speakerId'>>) => {
+const createOrUpdateMarks = async (marks: Array<Mark>) => {
   const db = await getDb();
+  const collection = db.collection<MarkDoc>('marks');
   await Promise.all(
-    marks.map((mark) =>
-      db
-        .collection<MarkDoc>('marks')
-        .updateOne(
-          {_id: new ObjectID(mark.id)},
-          {$set: {speakerId: new ObjectID(mark.speakerId)}},
-        ),
-    ),
+    marks.map((m) => {
+      const doc: MarkDoc = {...newMarkToNewMarkDoc(m), lastUpdated: Date.now()};
+      return collection.replaceOne({_id: doc._id}, doc, {upsert: true});
+    }),
   );
 };
 
@@ -403,10 +424,10 @@ export const queries: Queries = {
   queryNextChapterUrl,
   getAllSpeakers,
   getAllMarksByChapterId,
+  getAllMarksByVolumeId,
+  getAllUpdatedMarksByVolumeId,
 };
 
 export const mutations: Mutations = {
-  createMarks,
-  updateMarks,
-  deleteMarks,
+  createOrUpdateMarks,
 };

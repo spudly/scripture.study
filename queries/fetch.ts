@@ -72,14 +72,13 @@ export const queries: Queries = {
   getAllSpeakers: () => fetchQuery<Array<Person>>('getAllSpeakers'),
   getAllMarksByChapterId: (volumeId: string, chapterId: string) =>
     fetchQuery<Array<Mark>>('getAllMarksByChapterId', volumeId, chapterId),
+  getAllMarksByVolumeId: (volumeId: string) =>
+    fetchQuery<Array<Mark>>('getAllMarksByVolumeId', volumeId),
+  getAllUpdatedMarksByVolumeId: (volumeId: string, since: number) =>
+    fetchQuery<Array<Mark>>('getAllUpdatedMarksByVolumeId', volumeId, since),
 };
 
 export const mutations: Mutations = {
-  createMarks: async (marks: Array<Omit<Mark, 'id'>>): Promise<void> =>
-    fetchMutation('createMarks', marks),
-  deleteMarks: async (markIds: Array<string>): Promise<void> =>
-    fetchMutation('deleteMarks', markIds),
-  updateMarks: async (
-    marks: Array<Pick<Mark, 'id' | 'speakerId'>>,
-  ): Promise<void> => fetchMutation('updateMarks', marks),
+  createOrUpdateMarks: async (marks: Array<Mark>): Promise<void> =>
+    fetchMutation('createOrUpdateMarks', marks),
 };
