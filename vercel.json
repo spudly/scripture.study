@@ -6,7 +6,7 @@
   "routes": [
     {"handle": "filesystem"},
     {
-      "src": "/.*",
+      "src": "^(?!\\/api).*",
       "methods": ["GET"],
       "dest": "/"
     }
