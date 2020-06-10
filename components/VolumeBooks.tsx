@@ -6,7 +6,7 @@ import Directory from './Directory';
 import refToTitle from '../utils/refToTitle';
 import {Volume} from '../utils/types';
 import useAsync from '../utils/useAsync';
-import {queries} from '../queries/fetch';
+import {queries} from '../data-sources/fetch';
 import ErrorAlert from './ErrorAlert';
 import Spinner from './Spinner';
 

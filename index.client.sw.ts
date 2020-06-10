@@ -1,14 +1,14 @@
 import {
   queries as fetchQueries,
   mutations as fetchMutations,
-} from './queries/fetch';
+} from './data-sources/fetch';
 import {
   queries as idbQueries,
   mutations as idbMutations,
   insertVolumeData,
   getVolumeMarksLastUpdated,
   setVolumeMarksLastUpdated,
-} from './queries/idb';
+} from './data-sources/idb';
 import './utils/types';
 import {Queries, Mark, Volume, Book, Chapter, Verse} from './utils/types';
 

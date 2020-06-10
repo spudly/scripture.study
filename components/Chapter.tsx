@@ -5,7 +5,7 @@ import Spinner from './Spinner';
 import ErrorBoundary from './ErrorBoundary';
 import refToTitle from '../utils/refToTitle';
 import refToNumber from '../utils/refToNumber';
-import {queries} from '../queries/fetch';
+import {queries} from '../data-sources/fetch';
 import Spacer from './Spacer';
 import Pagination from './Pagination';
 import {Verse as $Verse, Mark, VerseSelection, Person} from '../utils/types';

@@ -4,7 +4,7 @@ import {useRouteMatch} from 'react-router';
 import byNumber from '../utils/byNumber';
 import Directory from './Directory';
 import refToTitle from '../utils/refToTitle';
-import {queries} from '../queries/fetch';
+import {queries} from '../data-sources/fetch';
 import useAsync from '../utils/useAsync';
 import ErrorAlert from './ErrorAlert';
 import Spinner from './Spinner';

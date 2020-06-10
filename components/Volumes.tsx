@@ -8,7 +8,7 @@ import {Volume} from '../utils/types';
 import {MdFileDownload} from 'react-icons/md';
 import useFetchVolume from '../utils/useDownloadVolume';
 import useAsync from '../utils/useAsync';
-import {queries} from '../queries/fetch';
+import {queries} from '../data-sources/fetch';
 import ErrorAlert from './ErrorAlert';
 
 const VolumeThing: FC<{volume: Volume}> = ({volume}) => {

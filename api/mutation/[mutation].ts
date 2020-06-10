@@ -1,5 +1,5 @@
 import {NowRequest, NowResponse} from '@now/node';
-import {mutations} from '../../queries/mongo';
+import {mutations} from '../../data-sources/mongo';
 import {Mutations} from '../../utils/types';
 
 export default async (req: NowRequest, resp: NowResponse) => {
