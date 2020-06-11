@@ -3,14 +3,8 @@ import {Mark, Person} from '../utils/types';
 import {MdEdit} from 'react-icons/md';
 import classnames from 'classnames';
 import CircleButton from './CircleButton';
-import Select from './Select';
+import SpeakerSelect from './SpeakerSelect';
 import Spinner from './Spinner';
-
-const byName = (a: Person, b: Person) => {
-  const aName = a.name.toLowerCase();
-  const bName = b.name.toLowerCase();
-  return aName < bName ? -1 : aName > bName ? 1 : 0;
-};
 
 const EditMarksButton: FC<{
   updateMarks: (marks: Array<Mark>) => void;
@@ -51,7 +45,8 @@ const EditMarksButton: FC<{
             )}
           >
             <div className="pr-6">
-              <Select
+              <SpeakerSelect
+                speakers={speakers}
                 onClick={(e) => e.stopPropagation()}
                 onChange={(e) => {
                   const speakerId = e.currentTarget.value;
@@ -68,14 +63,7 @@ const EditMarksButton: FC<{
                     );
                   }
                 }}
-              >
-                <option />
-                {speakers.sort(byName).map(({id, name, description}) => (
-                  <option key={id} value={id}>
-                    {description ? `${name}, ${description}` : name}
-                  </option>
-                ))}
-              </Select>
+              />
             </div>
           </div>
         </div>

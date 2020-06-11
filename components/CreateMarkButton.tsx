@@ -4,9 +4,9 @@ import {MdRecordVoiceOver} from 'react-icons/md';
 import classnames from 'classnames';
 import CircleButton from '../components/CircleButton';
 import {VerseSelection} from '../utils/types';
-import Select from '../components/Select';
 import Spinner from './Spinner';
 import createId from '../utils/createId';
+import SpeakerSelect from './SpeakerSelect';
 
 const buildSpeakerMarks = (
   selections: Array<VerseSelection>,
@@ -20,12 +20,6 @@ const buildSpeakerMarks = (
     lastUpdated: Date.now(),
     speakerId,
   }));
-
-const byName = (a: Person, b: Person) => {
-  const aName = a.name.toLowerCase();
-  const bName = b.name.toLowerCase();
-  return aName < bName ? -1 : aName > bName ? 1 : 0;
-};
 
 const CreateMarkButton: FC<{
   selections: Array<VerseSelection>;
@@ -62,7 +56,8 @@ const CreateMarkButton: FC<{
           )}
         >
           <div className="pr-6">
-            <Select
+            <SpeakerSelect
+              speakers={speakers}
               onClick={(e) => e.stopPropagation()}
               onChange={(e) => {
                 const speaker = e.currentTarget.value;
@@ -71,14 +66,7 @@ const CreateMarkButton: FC<{
                   createMarks(buildSpeakerMarks(selections, speaker));
                 }
               }}
-            >
-              <option />
-              {speakers.sort(byName).map(({id, name, description}) => (
-                <option key={id} value={id}>
-                  {description ? `${name}, ${description}` : name}
-                </option>
-              ))}
-            </Select>
+            />
           </div>
         </div>
       </div>
