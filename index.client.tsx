@@ -17,7 +17,7 @@ const renderApp = () => {
           <Switch>
             <Route path="/" exact component={Volumes} />
             <Route path="/:volume" exact component={Books} />
-            <Route path="/:volume/:book" exact component={Chapters} />} />
+            <Route path="/:volume/:book" exact component={Chapters} />
             <Route path="/:volume/:book/:chapter" exact component={Chapter} />
           </Switch>
         </ErrorBoundary>

@@ -1,19 +1,18 @@
 import {NowRequest, NowResponse} from '@now/node';
 import {queries} from '../../data-sources/mongo';
+import {requestLogger} from '../../utils/logger';
+import {Request as ExpressRequest, Response as ExpressResponse} from 'express';
 
-export default async (req: NowRequest, resp: NowResponse) => {
+export default async (
+  req: NowRequest | ExpressRequest,
+  resp: NowResponse | ExpressResponse,
+) => {
+  requestLogger(req, resp);
   const query = (req as any).params?.query ?? req.query.query;
   const arg = req.query.arg;
-  const queryFn = queries[query as keyof typeof queries];
-  console.log(
-    'query:',
-    query,
-    'args:',
-    ...(Array.isArray(arg) ? arg : arg != null ? [arg] : []),
-  );
-  const result = await queryFn(
-    // @ts-ignore
-    ...(Array.isArray(arg) ? arg : arg != null ? [arg] : []),
-  );
+  const queryFn: Function = queries[query as keyof typeof queries];
+  const args: any = Array.isArray(arg) ? arg : arg != null ? [arg] : [];
+  req.log.info({query, args}, 'Query');
+  const result = await queryFn(...args);
   resp.json(result);
 };

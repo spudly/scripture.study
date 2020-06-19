@@ -11,7 +11,7 @@
     "build": "NODE_ENV=production webpack --json > stats.json",
     "depcheck": "depcheck --ignores=\",@commitlint/*,@types/*,prettier,pretty-quick,sort-package-json,typescript,@fullhuman/postcss-purgecss,autoprefixer,tailwindcss,postcss-import,webpack-cli\"",
     "lint": "eslint . --ext .js,.jsx,.ts,.tsx",
-    "start": "NODE_ENV=development PORT=3000 ts-node index.server.dev.tsx",
+    "start": "NODE_ENV=development PORT=3000 ts-node index.server.dev.tsx | pino-pretty",
     "test": "echo \"no tests yet\"; exit 0"
   },
   "husky": {
@@ -60,6 +60,9 @@
     "classnames": "^2.2.6",
     "express": "^5.0.0-alpha.8",
     "mongodb": "^3.5.3",
+    "pino": "^6.3.2",
+    "pino-http": "^5.2.0",
+    "pino-pretty": "^4.0.0",
     "postcss-import": "^12.0.1",
     "react": "0.0.0-experimental-e5d06e34b",
     "react-dom": "0.0.0-experimental-e5d06e34b",
@@ -78,6 +81,8 @@
     "@types/express": "^4.17.6",
     "@types/mongodb": "^3.3.16",
     "@types/node": "^13.7.0",
+    "@types/pino": "^6.3.0",
+    "@types/pino-http": "^5.0.1",
     "@types/react": "^16.9.19",
     "@types/react-dom": "^16.9.5",
     "@types/react-router": "^5.1.5",
