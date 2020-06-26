@@ -8,10 +8,12 @@
   "author": "Stephen Sorensen <shuoink@gmail.com>",
   "main": "index.js",
   "scripts": {
-    "build": "NODE_ENV=production webpack --json > stats.json",
+    "build": "npm run build:typescript && npm run build:webpack",
+    "build:typescript": "tsc",
+    "build:webpack": "NODE_ENV=production webpack --config=src/webpack.config.js --json > stats.json",
     "depcheck": "depcheck --ignores=\",@commitlint/*,@types/*,prettier,pretty-quick,sort-package-json,typescript,@fullhuman/postcss-purgecss,autoprefixer,tailwindcss,postcss-import,webpack-cli\"",
     "lint": "eslint . --ext .js,.jsx,.ts,.tsx",
-    "start": "NODE_ENV=development PORT=3000 ts-node index.server.dev.tsx | pino-pretty",
+    "start": "NODE_ENV=development PORT=3000 ts-node src/index.server.tsx | pino-pretty",
     "test": "echo \"no tests yet\"; exit 0"
   },
   "husky": {
@@ -55,10 +57,15 @@
   ],
   "dependencies": {
     "@fullhuman/postcss-purgecss": "^2.0.6",
+    "@types/cookie-parser": "^1.4.2",
+    "@types/helmet": "0.0.47",
     "autoprefixer": "^9.7.4",
     "body-parser": "^1.19.0",
     "classnames": "^2.2.6",
+    "cookie-parser": "^1.4.5",
+    "csurf": "^1.11.0",
     "express": "^5.0.0-alpha.8",
+    "helmet": "^3.23.2",
     "mongodb": "^3.5.3",
     "pino": "^6.3.2",
     "pino-http": "^5.2.0",
@@ -78,6 +85,7 @@
     "@now/node": "^1.5.1",
     "@spudly/eslint-config": "^6.0.0",
     "@types/classnames": "^2.2.9",
+    "@types/csurf": "^1.9.36",
     "@types/express": "^4.17.6",
     "@types/mongodb": "^3.3.16",
     "@types/node": "^13.7.0",

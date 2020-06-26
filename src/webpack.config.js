@@ -6,8 +6,8 @@ const mode =
 /** @type {typeof import("webpack").Configuration} */
 const config = {
   entry: {
-    'index.client': './index.client.tsx',
-    'index.client.sw': './index.client.sw.ts',
+    'index.client': './src/index.client.tsx',
+    'index.client.sw': './src/index.client.sw.ts',
   },
   output: {
     filename: '[name].js',

@@ -2,7 +2,12 @@ import {ObjectID} from 'mongodb';
 
 declare global {
   interface Window {
+    CSRF_TOKEN?: string;
     BackgroundFetchManager: any;
+  }
+
+  interface ServiceWorker {
+    CSRF_TOKEN?: string;
   }
 
   interface BackgroundFetchRecord {
@@ -307,3 +312,5 @@ export type MutationState =
   | {readyState: 'LOADING'}
   | {readyState: 'COMPLETE'}
   | {readyState: 'ERROR'; error: Error};
+
+export type Message = {type: 'CSRF_TOKEN'; token: string};

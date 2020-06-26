@@ -10,7 +10,15 @@ import {
   setVolumeMarksLastUpdated,
 } from './data-sources/idb';
 import './utils/types';
-import {Queries, Mark, Volume, Book, Chapter, Verse} from './utils/types';
+import {
+  Queries,
+  Mark,
+  Volume,
+  Book,
+  Chapter,
+  Verse,
+  Message,
+} from './utils/types';
 
 // eslint-disable-next-line no-restricted-globals
 declare var self: ServiceWorker;
@@ -240,10 +248,19 @@ const handleBgFetchClick = (event: BackgroundFetchEvent) => {
   (self as any).clients.openWindow('/');
 };
 
+const handleMessage = (event: any) => {
+  const message: Message = JSON.parse(event.data);
+  switch (message.type) {
+    case 'CSRF_TOKEN':
+      self.CSRF_TOKEN = message.token;
+  }
+};
+
 self.addEventListener('install', handleInstall);
 self.addEventListener('fetch', handleFetch);
 self.addEventListener('sync', handleSync);
 self.addEventListener('backgroundfetchsuccess', handleBgFetchSuccess);
 self.addEventListener('backgroundfetchclick', handleBgFetchClick);
+self.addEventListener('message', handleMessage);
 
 export default undefined; // because ts complains if it thinks it's not a module

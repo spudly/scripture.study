@@ -9,6 +9,15 @@ import Chapter from './components/Chapter';
 import ErrorBoundary from './components/ErrorBoundary';
 import './css/tailwind.css';
 
+const CSRF_TOKEN = document.cookie
+  .split(';')
+  .map((pair) => pair.trim().split('='))
+  .find(([name]) => name === 'CSRF_TOKEN')?.[1];
+
+if (!CSRF_TOKEN) {
+  throw new Error('Missing CSRF Token');
+}
+
 const renderApp = () => {
   ReactDOM.render(
     <BrowserRouter>
@@ -42,6 +51,13 @@ const registerServiceWorker = async () => {
   }
 };
 
+const sendCsrfToken = async () => {
+  const swReg = await navigator.serviceWorker.ready;
+  swReg.active?.postMessage(
+    JSON.stringify({type: 'CSRF_TOKEN', token: CSRF_TOKEN}),
+  );
+};
+
 const syncMarks = async () => {
   try {
     const swReg = await navigator.serviceWorker.ready;
@@ -56,5 +72,6 @@ const syncMarks = async () => {
 
 renderApp();
 registerServiceWorker();
+sendCsrfToken();
 syncMarks();
 window.addEventListener('beforeunload', () => syncMarks());

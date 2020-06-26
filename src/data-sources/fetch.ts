@@ -30,6 +30,8 @@ const fetchMutation = async <NAME extends keyof Mutations>(
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
+      // eslint-disable-next-line no-restricted-globals
+      'CSRF-Token': self.CSRF_TOKEN ?? '',
     },
     body: JSON.stringify(payload),
   });
