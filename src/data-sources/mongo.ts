@@ -16,11 +16,11 @@ import {
 } from '../utils/types';
 import {Db, MongoClient, ObjectID} from 'mongodb';
 
-const {MONGO_USER, MONGO_PASSWORD} = process.env;
+const {COSMOS_USER, COSMOS_PASSWORD} = process.env;
 
 const getClient = async () => {
   const mongoClient = new MongoClient(
-    `mongodb+srv://${MONGO_USER}:${MONGO_PASSWORD}@cluster0-qreww.mongodb.net/test?retryWrites=true&w=majority`,
+    `mongodb://${COSMOS_USER}:${COSMOS_PASSWORD}@wikimarks.documents.azure.com:10255/?ssl=true&replicaSet=globaldb`,
     {useUnifiedTopology: true},
   );
   return mongoClient.connect();

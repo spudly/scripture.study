@@ -16,5 +16,5 @@
     "jsx": "react",
     "allowJs": true
   },
-  "include": ["@types", "src", "utils", "components", "*.ts", "*.tsx"]
+  "include": ["@types", "src"]
 }
