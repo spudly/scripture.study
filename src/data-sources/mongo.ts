@@ -20,7 +20,7 @@ const {COSMOS_USER, COSMOS_PASSWORD} = process.env;
 
 const getClient = async () => {
   const mongoClient = new MongoClient(
-    `mongodb://${COSMOS_USER}:${COSMOS_PASSWORD}@wikimarks.documents.azure.com:10255/?ssl=true&replicaSet=globaldb`,
+    `mongodb://${COSMOS_USER}:${COSMOS_PASSWORD}@wikimarks.documents.azure.com:10255/?ssl=true`,
     {useUnifiedTopology: true},
   );
   return mongoClient.connect();
