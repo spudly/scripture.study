@@ -391,13 +391,28 @@ const getAllUpdatedMarksByVolumeId = async (
   return result;
 };
 
+const findMarkDocById = async (id: string): Promise<MarkDoc | null> => {
+  const db = await getDb();
+  return await db.collection<MarkDoc>('marks').findOne({_id: new ObjectID(id)});
+};
+
 const createOrUpdateMarks = async (marks: Array<Mark>) => {
   const db = await getDb();
   const collection = db.collection<MarkDoc>('marks');
   await Promise.all(
-    marks.map((m) => {
-      const doc: MarkDoc = {...newMarkToNewMarkDoc(m), lastUpdated: Date.now()};
-      return collection.replaceOne({_id: doc._id}, doc, {upsert: true});
+    marks.map(async (m) => {
+      const oldDoc = await findMarkDocById(m.id);
+      const newDoc: MarkDoc = {
+        ...newMarkToNewMarkDoc(m),
+        lastUpdated: Date.now(),
+      };
+      if (oldDoc) {
+        await collection.deleteOne({
+          _id: newDoc._id,
+          speakerId: oldDoc.speakerId,
+        });
+      }
+      await collection.insertOne(newDoc);
     }),
   );
 };

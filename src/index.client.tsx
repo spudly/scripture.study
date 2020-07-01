@@ -9,10 +9,9 @@ import Chapter from './components/Chapter';
 import ErrorBoundary from './components/ErrorBoundary';
 import './css/tailwind.css';
 
-const CSRF_TOKEN = document.cookie
-  .split(';')
-  .map((pair) => pair.trim().split('='))
-  .find(([name]) => name === 'CSRF_TOKEN')?.[1];
+const CSRF_TOKEN = document
+  .querySelector('meta[name="CSRF-Token"]')
+  ?.getAttribute('content');
 
 if (!CSRF_TOKEN) {
   throw new Error('Missing CSRF Token');
