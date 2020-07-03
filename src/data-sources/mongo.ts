@@ -16,11 +16,11 @@ import {
 } from '../utils/types';
 import {Db, MongoClient, ObjectID} from 'mongodb';
 
-const {COSMOS_USER, COSMOS_PASSWORD} = process.env;
+const {MONGO_USER, MONGO_PASSWORD} = process.env;
 
 const getClient = async () => {
   const mongoClient = new MongoClient(
-    `mongodb://${COSMOS_USER}:${COSMOS_PASSWORD}@wikimarks.documents.azure.com:10255/?ssl=true`,
+    `mongodb+srv://${MONGO_USER}:${MONGO_PASSWORD}@cluster0-qreww.mongodb.net/test?retryWrites=true&w=majority`,
     {useUnifiedTopology: true},
   );
   return mongoClient.connect();
@@ -391,28 +391,13 @@ const getAllUpdatedMarksByVolumeId = async (
   return result;
 };
 
-const findMarkDocById = async (id: string): Promise<MarkDoc | null> => {
-  const db = await getDb();
-  return await db.collection<MarkDoc>('marks').findOne({_id: new ObjectID(id)});
-};
-
 const createOrUpdateMarks = async (marks: Array<Mark>) => {
   const db = await getDb();
   const collection = db.collection<MarkDoc>('marks');
   await Promise.all(
-    marks.map(async (m) => {
-      const oldDoc = await findMarkDocById(m.id);
-      const newDoc: MarkDoc = {
-        ...newMarkToNewMarkDoc(m),
-        lastUpdated: Date.now(),
-      };
-      if (oldDoc) {
-        await collection.deleteOne({
-          _id: newDoc._id,
-          speakerId: oldDoc.speakerId,
-        });
-      }
-      await collection.insertOne(newDoc);
+    marks.map((m) => {
+      const doc: MarkDoc = {...newMarkToNewMarkDoc(m), lastUpdated: Date.now()};
+      return collection.replaceOne({_id: doc._id}, doc, {upsert: true});
     }),
   );
 };
