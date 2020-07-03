@@ -12,8 +12,9 @@
     "build:typescript": "tsc",
     "build:webpack": "NODE_ENV=production webpack --config=src/webpack.config.js --json > stats.json",
     "depcheck": "depcheck --ignores=\",@commitlint/*,@types/*,prettier,pretty-quick,sort-package-json,typescript,@fullhuman/postcss-purgecss,autoprefixer,tailwindcss,postcss-import,webpack-cli\"",
+    "dev": "NODE_ENV=development PORT=3000 ts-node src/index.server.tsx | pino-pretty",
     "lint": "eslint . --ext .js,.jsx,.ts,.tsx",
-    "start": "NODE_ENV=development PORT=3000 ts-node src/index.server.tsx | pino-pretty",
+    "start": "NODE_ENV=production node build/index.server.js",
     "test": "echo \"no tests yet\"; exit 0"
   },
   "husky": {
