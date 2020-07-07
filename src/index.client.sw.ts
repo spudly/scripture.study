@@ -29,18 +29,18 @@ declare var self: ServiceWorker;
 // TODO: move all indexdb operations into the service worker
 
 const CACHE_NAME = 'shuoink'; // TODO: rename thisMa
-const CACHE_WHITELIST = [
+const CACHE_ALLOWLIST = [
   '/',
   '/manifest.json',
   '/favicon.ico',
   '/index.client.js',
   '/api/query/getAllVolumes',
 ];
-const CACHE_BLACKLIST = [/getAllMarksByChapterId/];
+const CACHE_BLOCKLIST = [/getAllMarksByChapterId/, /auth/];
 
 const initCache = async () => {
   const cache = await caches.open(CACHE_NAME);
-  await cache.addAll(CACHE_WHITELIST);
+  await cache.addAll(CACHE_ALLOWLIST);
 };
 
 const handleInstall = (e: Event & {waitUntil: Function}) => {
@@ -96,7 +96,7 @@ const getServerResponse = async (request: Request) => {
   if (
     response.ok &&
     response.type === 'basic' &&
-    !CACHE_BLACKLIST.some((regex) => regex.test(request.url))
+    !CACHE_BLOCKLIST.some((regex) => regex.test(request.url))
   ) {
     console.log(`CACHE ADD: ${request.url}`);
     const cache = await caches.open(CACHE_NAME);
@@ -111,8 +111,8 @@ const getServerResponse = async (request: Request) => {
 const getResponse = async (request: Request): Promise<Response> => {
   const response =
     (await getIndexedDbResponse(request)) ??
-    (await getCachedResponse(request)) ??
-    (await getServerResponse(request));
+    (await getServerResponse(request)) ??
+    (await getCachedResponse(request));
   return response.clone();
 };
 

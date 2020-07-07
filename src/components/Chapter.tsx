@@ -1,4 +1,11 @@
-import React, {FC, useEffect, useState, useCallback, useMemo} from 'react';
+import React, {
+  FC,
+  useEffect,
+  useState,
+  useCallback,
+  useMemo,
+  useContext,
+} from 'react';
 import {useRouteMatch} from 'react-router';
 import Head from './Head';
 import Spinner from './Spinner';
@@ -18,6 +25,8 @@ import CreateMarkButton from './CreateMarkButton';
 import useMutation from '../utils/useMutation';
 import useAsync from '../utils/useAsync';
 import ErrorAlert from './ErrorAlert';
+import UserContext from '../utils/UserContext';
+import hasRole from '../utils/hasRole';
 
 const Verses: FC<{
   verses: Array<$Verse>;
@@ -25,6 +34,7 @@ const Verses: FC<{
   speakers: Array<Person>;
   reloadMarks: () => void;
 }> = ({verses, speakers, marks, reloadMarks}) => {
+  const user = useContext(UserContext);
   const [selections, setSelections] = useState<Array<VerseSelection>>([]);
   const [selectedMarkIds, setSelectedMarkIds] = useState<string[]>([]);
 
@@ -84,7 +94,7 @@ const Verses: FC<{
             />
           ))}
         <div className="fixed bottom-0 right-0 pr-4 pb-4 text-right">
-          {selectedMarkIds.length !== 0 && (
+          {selectedMarkIds.length !== 0 && hasRole(user, 'author') && (
             <>
               <div>
                 <EditMarksButton
@@ -109,7 +119,7 @@ const Verses: FC<{
               </div>
             </>
           )}
-          {selections.length !== 0 && (
+          {selections.length !== 0 && hasRole(user, 'author') && (
             <div>
               <CreateMarkButton
                 isCreating={createOrUpdateMarksStatus.readyState === 'LOADING'}
@@ -190,17 +200,17 @@ const ChapterPage: FC<{}> = () => {
       </Head>
       <div className="flex-1 flex flex-col px-4 sm:px-32">
         {chapter.number === 1 && (
-          <h1 className="text-center text-6xl uppercase font-serif select-none">
+          <h1 className="text-center text-6xl uppercase font-serif">
             {book.longTitle}
           </h1>
         )}
-        <h2 className="text-center text-4xl uppercase font-serif select-none">
+        <h2 className="text-center text-4xl uppercase font-serif">
           {chapter.number === 1 ? 'Chapter' : book.title} {chapter.number}
         </h2>
 
         <Spacer y={8} />
 
-        <p className="text-4xl italic font-serif select-none">
+        <p className="text-4xl italic font-serif">
           Lorem ipsum dolor sit amet, consectetur adipiscing elit. Mauris luctus
           suscipit congue. Quisque accumsan posuere elementum. Morbi nec sapien
           convallis, condimentum diam non, aliquet tellus.

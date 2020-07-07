@@ -1,6 +1,14 @@
 import {ObjectID} from 'mongodb';
 
 declare global {
+  namespace Express {
+    interface User extends Profile {
+      roles?: Array<string>;
+    }
+  }
+}
+
+declare global {
   interface Window {
     CSRF_TOKEN?: string;
     BackgroundFetchManager: any;
@@ -79,6 +87,34 @@ declare global {
     databases(): Promise<Array<{name: string; version: number}>>;
   }
 }
+
+export type User = {
+  id: string;
+  displayName: string;
+  gender?: string;
+  ageRange?: {
+    min: number;
+    max?: number;
+  };
+  picture?: string;
+  profileUrl?: string;
+  username?: string;
+  birthday: string;
+  roles?: Array<string>;
+  provider: string;
+  name?: {
+    familyName: string;
+    givenName: string;
+    middleName?: string;
+  };
+  emails?: Array<{
+    value: string;
+    type?: string;
+  }>;
+  photos?: Array<{
+    value: string;
+  }>;
+};
 
 export type VolumeDoc = {
   _id: ObjectID;

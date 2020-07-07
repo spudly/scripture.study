@@ -7,6 +7,7 @@ import Books from './components/VolumeBooks';
 import Chapters from './components/BookChapters';
 import Chapter from './components/Chapter';
 import ErrorBoundary from './components/ErrorBoundary';
+import Authorize from './components/Authorize';
 import './css/tailwind.css';
 
 const CSRF_TOKEN = document
@@ -19,18 +20,20 @@ if (!CSRF_TOKEN) {
 
 const renderApp = () => {
   ReactDOM.render(
-    <BrowserRouter>
-      <div className="min-h-screen flex flex-col bg-gray-100">
-        <ErrorBoundary grow>
-          <Switch>
-            <Route path="/" exact component={Volumes} />
-            <Route path="/:volume" exact component={Books} />
-            <Route path="/:volume/:book" exact component={Chapters} />
-            <Route path="/:volume/:book/:chapter" exact component={Chapter} />
-          </Switch>
-        </ErrorBoundary>
-      </div>
-    </BrowserRouter>,
+    <Authorize>
+      <BrowserRouter>
+        <div className="min-h-screen flex flex-col bg-gray-100">
+          <ErrorBoundary grow>
+            <Switch>
+              <Route path="/" exact component={Volumes} />
+              <Route path="/:volume" exact component={Books} />
+              <Route path="/:volume/:book" exact component={Chapters} />
+              <Route path="/:volume/:book/:chapter" exact component={Chapter} />
+            </Switch>
+          </ErrorBoundary>
+        </div>
+      </BrowserRouter>
+    </Authorize>,
     document.getElementById('root'),
   );
 };

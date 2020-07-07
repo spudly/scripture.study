@@ -1,4 +1,11 @@
-import React, {FC, ReactNode, Dispatch, SetStateAction, useMemo} from 'react';
+import React, {
+  FC,
+  ReactNode,
+  Dispatch,
+  SetStateAction,
+  useMemo,
+  useContext,
+} from 'react';
 import classnames from 'classnames';
 import {Mark, Verse as $Verse, Person} from '../utils/types';
 import sortByRange from '../utils/sortByRange';
@@ -6,6 +13,8 @@ import {theme} from '../utils/themes';
 import unique from '../utils/unique';
 import {MdRecordVoiceOver} from 'react-icons/md';
 import ErrorBoundary from './ErrorBoundary';
+import UserContext from '../utils/UserContext';
+import hasRole from '../utils/hasRole';
 
 const SpeakerIndicator: FC<{
   speakerId: string;
@@ -52,47 +61,56 @@ const VerseFragment: FC<{
   const speakerIds = marks.flatMap((m) =>
     m.type === 'speaker' ? [m.speakerId] : [],
   );
+  const user = useContext(UserContext);
+  const isAuthor = hasRole(user, 'author');
   const lastSpeakerId = speakerIds[speakerIds.length - 1];
   const lastMark = marks[marks.length - 1];
   const classes = classnames(
     lastSpeakerId &&
       theme(allSpeakerIds.indexOf(lastSpeakerId), {
-        states: isVerseNumber
-          ? ['default']
-          : selectedMarkIds.includes(lastMark.id)
-          ? ['activated']
-          : undefined,
+        states:
+          isVerseNumber || !isAuthor
+            ? ['default']
+            : selectedMarkIds.includes(lastMark.id)
+            ? ['activated']
+            : undefined,
         colors: ['bgColor', 'textColor'],
       }),
     'py-4',
-    {'cursor-pointer': marks.length !== 0},
+    {'cursor-pointer': isAuthor && marks.length !== 0},
   );
-  return marks.length ? (
-    <>
-      {/* eslint-disable-next-line jsx-a11y/anchor-is-valid */}
-      <a
-        data-speaker-ids={speakerIds.join(' ')}
-        // TODO: for now, we'll support selecting a single mark. eventually it'd be nice to prompt the user to choose which mark they want to select.
-        onClick={(e) => {
-          e.stopPropagation();
-          const markId = marks[marks.length - 1].id;
-          if (e.ctrlKey) {
-            selectMarks((markIds) => [...(markIds ?? []), markId]);
-          } else {
-            selectMarks([markId]);
-          }
-        }}
-      >
-        <mark className={classes}>
-          <ErrorBoundary grow>
-            {speakerIds.map((id) => (
-              <SpeakerIndicator key={id} speakerId={id} speakers={speakers} />
-            ))}
-          </ErrorBoundary>
-          {children}
-        </mark>
-      </a>
-    </>
+  const mark = marks.length ? (
+    <mark className={classes}>
+      <ErrorBoundary grow>
+        {speakerIds.map((id) => (
+          <SpeakerIndicator key={id} speakerId={id} speakers={speakers} />
+        ))}
+      </ErrorBoundary>
+      {children}
+    </mark>
+  ) : null;
+  return mark ? (
+    isAuthor ? (
+      <>
+        {/* eslint-disable-next-line jsx-a11y/anchor-is-valid */}
+        <a
+          // TODO: for now, we'll support selecting a single mark. eventually it'd be nice to prompt the user to choose which mark they want to select.
+          onClick={(e) => {
+            e.stopPropagation();
+            const markId = marks[marks.length - 1].id;
+            if (e.ctrlKey) {
+              selectMarks((markIds) => [...(markIds ?? []), markId]);
+            } else {
+              selectMarks([markId]);
+            }
+          }}
+        >
+          {mark}
+        </a>
+      </>
+    ) : (
+      mark
+    )
   ) : (
     <>{children}</>
   );

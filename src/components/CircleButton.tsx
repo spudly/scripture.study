@@ -10,7 +10,7 @@ const CircleButton: FC<
   <button
     {...props}
     className={classnames(
-      'inline-flex flex-shrink-0 text-4xl min-w-20 h-20 rounded-full uppercase items-center justify-center focus:outline-none focus:shadow-outline shadow-lg m-2 cursor-pointer flex-no-wrap leading-none select-none',
+      'inline-flex flex-shrink-0 text-4xl min-w-20 h-20 rounded-full uppercase items-center justify-center focus:outline-none focus:shadow-outline shadow:lg hover:shadow-2xl m-2 cursor-pointer flex-no-wrap leading-none select-none transform hover:scale-125 transition-transform transition-opacity duration-200 opacity-50 hover:opacity-100',
       theme(themeId),
     )}
   />
