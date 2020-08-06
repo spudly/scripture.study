@@ -6,7 +6,7 @@ import React, {
   useMemo,
   useContext,
 } from 'react';
-import {useRouteMatch} from 'react-router';
+import {useRouteMatch, useLocation} from 'react-router';
 import Head from './Head';
 import Spinner from './Spinner';
 import ErrorBoundary from './ErrorBoundary';
@@ -15,7 +15,7 @@ import refToNumber from '../utils/refToNumber';
 import {queries} from '../data-sources/fetch';
 import Spacer from './Spacer';
 import Pagination from './Pagination';
-import {Verse as $Verse, Mark, VerseSelection, Person} from '../utils/types';
+import {Verse as $Verse, Mark, VerseSelection, Speaker} from '../utils/types';
 import Verse from './Verse';
 import createVerseSelections from '../utils/createVerseSelections';
 import isEmptySelection from '../utils/isEmptySelection';
@@ -31,7 +31,7 @@ import hasRole from '../utils/hasRole';
 const Verses: FC<{
   verses: Array<$Verse>;
   marks: Array<Mark>;
-  speakers: Array<Person>;
+  speakers: Array<Speaker>;
   reloadMarks: () => void;
 }> = ({verses, speakers, marks, reloadMarks}) => {
   const user = useContext(UserContext);
@@ -137,12 +137,28 @@ const Verses: FC<{
   );
 };
 
+// TODO: move this to an exported module
+const SCROLL_POSITION_BY_PATH: {[key: string]: [number, number]} = {};
+const useRestoreScrollPosition = () => {
+  const {pathname} = useLocation();
+
+  useEffect(() => {
+    const [x, y] = SCROLL_POSITION_BY_PATH[pathname] ?? [0, 0];
+    window.scrollTo(x, y);
+
+    return () => {
+      SCROLL_POSITION_BY_PATH[pathname] = [window.scrollX, window.scrollY];
+    };
+  }, [pathname]);
+};
+
 const ChapterPage: FC<{}> = () => {
+  useRestoreScrollPosition();
   const match = useRouteMatch<{
     volumeRef: string;
     bookRef: string;
     chapterRef: string;
-  }>('/:volumeRef/:bookRef/:chapterRef')!;
+  }>('/read/:volumeRef/:bookRef/:chapterRef')!;
   const {volumeRef, bookRef, chapterRef} = match.params;
   const {result: mainResult, error: mainError} = useAsync(
     useCallback(async () => {

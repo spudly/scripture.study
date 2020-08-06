@@ -53,7 +53,7 @@ const authorize = (role: string | null = null): Handler => (
   if (req.user && (role == null || hasRole(req.user, role))) {
     return next();
   }
-  req.session!.returnTo = req.originalUrl;
+  req.session!.returnTo = '/';
   resp.redirect('/auth/login');
 };
 
@@ -85,7 +85,9 @@ const app = express()
   .get(
     '/auth/login',
     passport.authenticate('auth0', {scope: 'openid email profile'}),
-    (_req, resp) => resp.redirect('/'),
+    (_req, resp) => {
+      resp.redirect('/');
+    },
   )
   .get('/auth/callback', (req, res, next) => {
     passport.authenticate('auth0', (err, user, info) => {

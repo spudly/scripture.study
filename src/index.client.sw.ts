@@ -141,6 +141,10 @@ const getMutationResponse = async (request: Request): Promise<Response> => {
       console.log('OPTIMISTIC RESPONSE: createOrUpdateMarks');
       return makeResponse();
     }
+    case '/api/mutation/createOrUpdateSpeaker': {
+      // not stored in indexeddb, so just use fetch to get a response
+      return fetch(request);
+    }
     default:
       throw new Error(
         `Unhandled POST request in service worker: ${request.url}`,

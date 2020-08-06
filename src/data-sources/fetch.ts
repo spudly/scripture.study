@@ -6,12 +6,15 @@ import {
   Chapter,
   Verse,
   Mark,
-  Person,
+  Speaker,
   Mutations,
+  NewSpeaker,
+  QueryOptions,
 } from '../utils/types';
 
 const fetchQuery = <T>(
   name: keyof Queries,
+  options: QueryOptions = {},
   ...args: Array<string | number>
 ) => {
   const pathname = `/api/query/${name}`;
@@ -19,7 +22,11 @@ const fetchQuery = <T>(
     .map((arg) => `arg=${encodeURIComponent(arg)}`)
     .join('&');
   const url = `${pathname}${queryString ? '?' : ''}${queryString}`;
-  return fetchJson<T>(url);
+  const headers: RequestInit['headers'] = {};
+  if (options.noCache) {
+    // headers['Cache-Control'] = 'no-cache';
+  }
+  return fetchJson<T>(url, {headers});
 };
 
 const fetchMutation = async <NAME extends keyof Mutations>(
@@ -41,46 +48,70 @@ const fetchMutation = async <NAME extends keyof Mutations>(
 };
 
 export const queries: Queries = {
-  getAllVolumes: () => fetchQuery<Array<Volume>>('getAllVolumes'),
-  getVolumeByTitle: (title: string) =>
-    fetchQuery<Volume>('getVolumeByTitle', title),
-  getAllBooksByVolumeId: (volumeId: string) =>
-    fetchQuery<Array<Book>>('getAllBooksByVolumeId', volumeId),
-  getChapterById: (volumeId: string, chapterId: string) =>
-    fetchQuery<Chapter>('getChapterById', volumeId, chapterId),
-  getBookById: (volumeId: string, bookId: string) =>
-    fetchQuery<Book>('getBookById', volumeId, bookId),
-  getBookByTitle: (volumeId: string, title: string) =>
-    fetchQuery<Book>('getBookByTitle', volumeId, title),
-  getAllChaptersByBookId: (volumeId: string, bookId: string) =>
-    fetchQuery<Array<Chapter>>('getAllChaptersByBookId', volumeId, bookId),
+  getAllVolumes: (opts) => fetchQuery<Array<Volume>>('getAllVolumes', opts),
+  getVolumeByTitle: (title: string, opts) =>
+    fetchQuery<Volume>('getVolumeByTitle', opts, title),
+  getAllBooksByVolumeId: (volumeId: string, opts) =>
+    fetchQuery<Array<Book>>('getAllBooksByVolumeId', opts, volumeId),
+  getChapterById: (volumeId: string, chapterId: string, opts) =>
+    fetchQuery<Chapter>('getChapterById', opts, volumeId, chapterId),
+  getBookById: (volumeId: string, bookId: string, opts) =>
+    fetchQuery<Book>('getBookById', opts, volumeId, bookId),
+  getBookByTitle: (volumeId: string, title: string, opts) =>
+    fetchQuery<Book>('getBookByTitle', opts, volumeId, title),
+  getAllChaptersByBookId: (volumeId: string, bookId: string, opts) =>
+    fetchQuery<Array<Chapter>>(
+      'getAllChaptersByBookId',
+      opts,
+      volumeId,
+      bookId,
+    ),
   getChapterByBookIdAndNumber: (
     volumeId: string,
     bookId: string,
     number: string | number,
+    opts,
   ) =>
     fetchQuery<Chapter>(
       'getChapterByBookIdAndNumber',
+      opts,
       volumeId,
       bookId,
       number,
     ),
-  getAllVersesByChapterId: (volumeId: string, chapterId: string) =>
-    fetchQuery<Array<Verse>>('getAllVersesByChapterId', volumeId, chapterId),
-  queryPrevChapterUrl: (volumeId: string, chapterId: string) =>
-    fetchQuery<string | null>('queryPrevChapterUrl', volumeId, chapterId),
-  queryNextChapterUrl: (volumeId: string, chapterId: string) =>
-    fetchQuery<string | null>('queryNextChapterUrl', volumeId, chapterId),
-  getAllSpeakers: () => fetchQuery<Array<Person>>('getAllSpeakers'),
-  getAllMarksByChapterId: (volumeId: string, chapterId: string) =>
-    fetchQuery<Array<Mark>>('getAllMarksByChapterId', volumeId, chapterId),
-  getAllMarksByVolumeId: (volumeId: string) =>
-    fetchQuery<Array<Mark>>('getAllMarksByVolumeId', volumeId),
-  getAllUpdatedMarksByVolumeId: (volumeId: string, since: number) =>
-    fetchQuery<Array<Mark>>('getAllUpdatedMarksByVolumeId', volumeId, since),
+  getAllVersesByChapterId: (volumeId, chapterId: string, opts) =>
+    fetchQuery<Array<Verse>>(
+      'getAllVersesByChapterId',
+      opts,
+      volumeId,
+      chapterId,
+    ),
+  queryPrevChapterUrl: (volumeId, chapterId, opts) =>
+    fetchQuery<string | null>('queryPrevChapterUrl', opts, volumeId, chapterId),
+  queryNextChapterUrl: (volumeId, chapterId, opts) =>
+    fetchQuery<string | null>('queryNextChapterUrl', opts, volumeId, chapterId),
+  getAllSpeakers: (opts) => fetchQuery<Array<Speaker>>('getAllSpeakers', opts),
+  getAllMarksByChapterId: (volumeId, chapterId, opts) =>
+    fetchQuery<Array<Mark>>(
+      'getAllMarksByChapterId',
+      opts,
+      volumeId,
+      chapterId,
+    ),
+  getAllMarksByVolumeId: (volumeId, opts) =>
+    fetchQuery<Array<Mark>>('getAllMarksByVolumeId', opts, volumeId),
+  getAllUpdatedMarksByVolumeId: (volumeId, since, opts) =>
+    fetchQuery<Array<Mark>>(
+      'getAllUpdatedMarksByVolumeId',
+      opts,
+      volumeId,
+      since,
+    ),
 };
 
 export const mutations: Mutations = {
   createOrUpdateMarks: async (marks: Array<Mark>): Promise<void> =>
     fetchMutation('createOrUpdateMarks', marks),
+  createOrUpdateSpeaker: async (speaker: NewSpeaker): Promise<void> =>
+    fetchMutation('createOrUpdateSpeaker', speaker),
 };

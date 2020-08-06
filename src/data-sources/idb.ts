@@ -5,10 +5,11 @@ import {
   Chapter,
   Verse,
   Queries,
-  Person,
+  Speaker,
   Mark,
   Mutations,
   VolumeMeta,
+  NewSpeaker,
 } from '../utils/types';
 
 type IndexDescriptor = {name: string; keyPath: string | Iterable<string>};
@@ -470,7 +471,7 @@ const getAllVersesByChapterId = async (volumeId: string, chapterId: string) =>
   getAll<Verse>(await getVolumeDb(volumeId), 'verses', 'chapterId', chapterId);
 
 const getAllSpeakers = async () =>
-  getAll<Person>(await getMainDb(), 'speakers');
+  getAll<Speaker>(await getMainDb(), 'speakers');
 
 const getAllMarksByChapterId = async (volumeId: string, chapterId: string) => {
   const db = await getVolumeDb(volumeId);
@@ -507,6 +508,10 @@ const createOrUpdateMarks = async (
     return;
   }
   await insertOrUpdateMarks(first.volumeId, marks);
+};
+
+const createOrUpdateSpeaker = async (speaker: NewSpeaker) => {
+  throw new Error('Not Supported');
 };
 
 export const getVolumeMarksLastUpdated = async (volumeId: string) => {
@@ -548,4 +553,5 @@ export const queries: Queries = {
 
 export const mutations: Mutations = {
   createOrUpdateMarks,
+  createOrUpdateSpeaker,
 };

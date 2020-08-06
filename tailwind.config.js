@@ -3,10 +3,22 @@ module.exports = {
   theme: {
     minWidth: {
       '20': '5rem',
+      full: '100%',
     },
     maxWidth: {
       '0': '0',
       '64': '16rem',
+      '96': '24rem',
+      '128': '32rem',
+    },
+    maxHeight: {
+      '0': '0',
+      '20': '5rem',
+      '64': '16rem',
+      '96': '24rem',
+      '128': '32rem',
+      full: '100%',
+      screen: '100vh',
     },
     fontFamily: {
       sans: [
@@ -35,7 +47,7 @@ module.exports = {
     },
   },
   variants: {
-    backgroundColor: ['responsive', 'hover', 'focus', 'active'],
+    backgroundColor: ['responsive', 'hover', 'focus', 'active', 'odd', 'even'],
     scale: ['responsive', 'hover', 'focus', 'active'],
   },
 };

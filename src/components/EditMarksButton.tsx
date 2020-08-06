@@ -1,5 +1,5 @@
 import React, {useState, FC} from 'react';
-import {Mark, Person} from '../utils/types';
+import {Mark, Speaker} from '../utils/types';
 import {MdEdit} from 'react-icons/md';
 import classnames from 'classnames';
 import CircleButton from './CircleButton';
@@ -10,7 +10,7 @@ const EditMarksButton: FC<{
   updateMarks: (marks: Array<Mark>) => void;
   isUpdating?: boolean;
   marks: Array<Mark>;
-  speakers: Array<Person>;
+  speakers: Array<Speaker>;
   selectedMarkIds: string[];
 }> = ({updateMarks, isUpdating, speakers, marks, selectedMarkIds}) => {
   const [isOpen, setIsOpen] = useState(false);

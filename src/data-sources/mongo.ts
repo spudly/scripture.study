@@ -5,14 +5,15 @@ import {
   Chapter,
   Mark,
   MarkDoc,
-  Person,
+  Speaker,
   VolumeDoc,
   BookDoc,
   ChapterDoc,
   VerseDoc,
-  PersonDoc,
+  SpeakerDoc,
   Queries,
   Mutations,
+  NewSpeaker,
 } from '../utils/types';
 import {Db, MongoClient, ObjectID} from 'mongodb';
 
@@ -64,6 +65,16 @@ const newMarkToNewMarkDoc = ({
   volumeId: new ObjectID(volumeId),
 });
 
+const newSpeakerToSpeakerDoc = ({
+  id,
+  name,
+  description,
+}: NewSpeaker): SpeakerDoc => ({
+  _id: new ObjectID(id),
+  name,
+  description,
+});
+
 const volumeDocToVolume = ({_id, ...volumeDoc}: VolumeDoc): Volume => ({
   ...volumeDoc,
   id: String(_id),
@@ -90,9 +101,14 @@ const verseDocToVerse = ({_id, ...verseDoc}: VerseDoc): Verse => ({
   chapterId: String(verseDoc.chapterId),
 });
 
-const personDocToPerson = ({_id, ...personDoc}: PersonDoc): Person => ({
-  ...personDoc,
+const speakerDocToSpeaker = ({
+  _id,
+  name,
+  description,
+}: SpeakerDoc): Speaker => ({
   id: String(_id),
+  name,
+  description: description ?? undefined,
 });
 
 const findVolumeByTitle = async (title: string): Promise<Volume | null> => {
@@ -335,12 +351,12 @@ const getChapterById = async (chapterId: string): Promise<Chapter> => {
   return chapterDocToChapter(chapterDoc);
 };
 
-const getAllSpeakers = async (): Promise<Array<Person>> => {
+const getAllSpeakers = async (): Promise<Array<Speaker>> => {
   const db = await getDb();
   return db
-    .collection<PersonDoc>('people')
+    .collection<SpeakerDoc>('people')
     .find()
-    .map(personDocToPerson)
+    .map(speakerDocToSpeaker)
     .toArray();
 };
 
@@ -402,6 +418,13 @@ const createOrUpdateMarks = async (marks: Array<Mark>) => {
   );
 };
 
+const createOrUpdateSpeaker = async (speaker: Speaker) => {
+  const db = await getDb();
+  const collection = db.collection<SpeakerDoc>('people');
+  const doc: SpeakerDoc = newSpeakerToSpeakerDoc(speaker);
+  await collection.replaceOne({_id: doc._id}, doc, {upsert: true});
+};
+
 const getVolumeByTitle = async (title: string): Promise<Volume> => {
   const volume = await findVolumeByTitle(title);
   if (!volume) {
@@ -430,4 +453,5 @@ export const queries: Queries = {
 
 export const mutations: Mutations = {
   createOrUpdateMarks,
+  createOrUpdateSpeaker,
 };

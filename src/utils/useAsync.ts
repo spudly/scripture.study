@@ -1,27 +1,40 @@
 import {useState, useEffect, useCallback} from 'react';
 
+type State<T> =
+  | {
+      isLoading: true;
+      error?: undefined;
+      result?: undefined;
+    }
+  | {
+      isLoading: false;
+      error: Error;
+      result?: undefined;
+    }
+  | {
+      isLoading: false;
+      error?: undefined;
+      result: T;
+    };
+
 const useAsync = <T extends any>(
   fn?: (() => Promise<T>) | undefined | null,
-) => {
-  const [state, setState] = useState<{
-    isLoading: boolean;
-    error?: Error;
-    result?: T;
-  }>({isLoading: false});
+): State<T> & {reload: () => void; flush: () => void} => {
+  const [state, setState] = useState<State<T>>({isLoading: true});
 
-  const flush = useCallback(() => setState({isLoading: false}), []);
+  const flush = useCallback(() => setState({isLoading: true}), []);
 
   const reload = useCallback(
     async (shouldFlush: boolean = false) => {
       if (shouldFlush) {
         flush();
       }
-      setState((s) => ({...s, loading: true}));
+      setState({isLoading: true});
       try {
         const result = await fn!();
-        setState((s) => ({...s, loading: false, result}));
+        setState({isLoading: false, result});
       } catch (error) {
-        setState((s) => ({...s, loading: false, error}));
+        setState({isLoading: false, error});
       }
     },
     [fn, flush],

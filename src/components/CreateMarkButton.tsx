@@ -1,5 +1,5 @@
 import React, {useState, FC} from 'react';
-import {Mark, Person} from '../utils/types';
+import {Mark, Speaker} from '../utils/types';
 import {MdRecordVoiceOver} from 'react-icons/md';
 import classnames from 'classnames';
 import CircleButton from '../components/CircleButton';
@@ -25,7 +25,7 @@ const CreateMarkButton: FC<{
   selections: Array<VerseSelection>;
   createMarks: (marks: Array<Mark>) => void;
   isCreating?: boolean;
-  speakers: Array<Person>;
+  speakers: Array<Speaker>;
 }> = ({selections, createMarks, isCreating, speakers}) => {
   const [isOpen, setIsOpen] = useState(false);
 

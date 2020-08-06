@@ -1,12 +1,8 @@
-import {NowRequest, NowResponse} from '@now/node';
 import {queries} from '../../data-sources/mongo';
 import {requestLogger} from '../../utils/logger';
 import {Request as ExpressRequest, Response as ExpressResponse} from 'express';
 
-export default async (
-  req: NowRequest | ExpressRequest,
-  resp: NowResponse | ExpressResponse,
-) => {
+export default async (req: ExpressRequest, resp: ExpressResponse) => {
   requestLogger(req, resp);
   const query = (req as any).params?.query ?? req.query.query;
   const arg = req.query.arg;

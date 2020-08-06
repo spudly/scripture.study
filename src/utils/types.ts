@@ -1,10 +1,39 @@
 import {ObjectID} from 'mongodb';
+import {ReactElement} from 'react';
+
+type MyUser = {
+  id: string;
+  displayName: string;
+  gender?: string;
+  ageRange?: {
+    min: number;
+    max?: number;
+  };
+  picture?: string;
+  profileUrl?: string;
+  username?: string;
+  birthday: string;
+  roles?: Array<string>;
+  provider: string;
+  name?: {
+    familyName: string;
+    givenName: string;
+    middleName?: string;
+  };
+  emails?: Array<{
+    value: string;
+    type?: string;
+  }>;
+  photos?: Array<{
+    value: string;
+  }>;
+};
+
+export type User = MyUser;
 
 declare global {
   namespace Express {
-    interface User extends Profile {
-      roles?: Array<string>;
-    }
+    interface User extends MyUser {}
   }
 }
 
@@ -87,34 +116,6 @@ declare global {
     databases(): Promise<Array<{name: string; version: number}>>;
   }
 }
-
-export type User = {
-  id: string;
-  displayName: string;
-  gender?: string;
-  ageRange?: {
-    min: number;
-    max?: number;
-  };
-  picture?: string;
-  profileUrl?: string;
-  username?: string;
-  birthday: string;
-  roles?: Array<string>;
-  provider: string;
-  name?: {
-    familyName: string;
-    givenName: string;
-    middleName?: string;
-  };
-  emails?: Array<{
-    value: string;
-    type?: string;
-  }>;
-  photos?: Array<{
-    value: string;
-  }>;
-};
 
 export type VolumeDoc = {
   _id: ObjectID;
@@ -224,10 +225,10 @@ export type Mark = {
   lastUpdated: number;
 };
 
-export type PersonDoc = {
+export type SpeakerDoc = {
   _id: ObjectID;
-  name: string;
-  description?: string | null;
+  name: string | undefined;
+  description?: string | undefined;
 };
 
 export type VolumeMeta = {
@@ -235,7 +236,9 @@ export type VolumeMeta = {
   value: number;
 };
 
-export type Person = {id: string; name: string; description?: string | null};
+export type NewSpeaker = {id?: string; name?: string; description?: string};
+
+export type Speaker = {id: string; name?: string; description?: string};
 
 export type StateMicroTheme = {
   bgColor: string;
@@ -299,48 +302,76 @@ export type PromiseResult<PROMISE> = PROMISE extends Promise<infer RESULT>
   ? RESULT
   : never;
 
+export type QueryOptions = {noCache?: boolean};
+
 export interface Queries {
-  getAllVolumes(): Promise<Array<Volume>>;
-  getVolumeByTitle(title: string): Promise<Volume>;
-  getAllBooksByVolumeId(volumeId: string): Promise<Array<Book>>;
-  getChapterById(volumeId: string, chapterId: string): Promise<Chapter>;
-  getBookById(volumeId: string, bookId: string): Promise<Book>;
-  getBookByTitle(volumeId: string, title: string): Promise<Book>;
+  getAllVolumes(opts?: QueryOptions): Promise<Array<Volume>>;
+  getVolumeByTitle(title: string, opts?: QueryOptions): Promise<Volume>;
+  getAllBooksByVolumeId(
+    volumeId: string,
+    opts?: QueryOptions,
+  ): Promise<Array<Book>>;
+  getChapterById(
+    volumeId: string,
+    chapterId: string,
+    opts?: QueryOptions,
+  ): Promise<Chapter>;
+  getBookById(
+    volumeId: string,
+    bookId: string,
+    opts?: QueryOptions,
+  ): Promise<Book>;
+  getBookByTitle(
+    volumeId: string,
+    title: string,
+    opts?: QueryOptions,
+  ): Promise<Book>;
   getAllChaptersByBookId(
     volumeId: string,
     bookId: string,
+    opts?: QueryOptions,
   ): Promise<Array<Chapter>>;
   getChapterByBookIdAndNumber(
     volumeId: string,
     bookId: string,
     number: string | number,
+    opts?: QueryOptions,
   ): Promise<Chapter>;
   getAllVersesByChapterId(
     volumeId: string,
     chapterId: string,
+    opts?: QueryOptions,
   ): Promise<Array<Verse>>;
   queryPrevChapterUrl(
     volumeId: string,
     chapterId: string,
+    opts?: QueryOptions,
   ): Promise<string | null>;
   queryNextChapterUrl(
     volumeId: string,
     chapterId: string,
+    opts?: QueryOptions,
   ): Promise<string | null>;
-  getAllSpeakers(): Promise<Array<Person>>;
+  getAllSpeakers(opts?: QueryOptions): Promise<Array<Speaker>>;
   getAllMarksByChapterId(
     volumeId: string,
     chapterId: string,
+    opts?: QueryOptions,
   ): Promise<Array<Mark>>;
-  getAllMarksByVolumeId(volumeId: string): Promise<Array<Mark>>;
+  getAllMarksByVolumeId(
+    volumeId: string,
+    opts?: QueryOptions,
+  ): Promise<Array<Mark>>;
   getAllUpdatedMarksByVolumeId(
     volumeId: string,
     since: number,
+    opts?: QueryOptions,
   ): Promise<Array<Mark>>;
 }
 
 export interface Mutations {
   createOrUpdateMarks(marks: Array<Mark>): Promise<void>;
+  createOrUpdateSpeaker(speaker: NewSpeaker): Promise<void>;
 }
 
 export type MutationState =
@@ -350,3 +381,12 @@ export type MutationState =
   | {readyState: 'ERROR'; error: Error};
 
 export type Message = {type: 'CSRF_TOKEN'; token: string};
+
+export type NativeElement<
+  TAG extends keyof JSX.IntrinsicElements
+> = ReactElement<JSX.IntrinsicElements[TAG], TAG>;
+export type ChildElements<T> = T | T[];
+
+export type TableSection = NativeElement<'thead' | 'tbody' | 'tfoot'>;
+export type TableRow = NativeElement<'tr'>;
+export type TableCell = NativeElement<'th' | 'td'>;

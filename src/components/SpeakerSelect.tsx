@@ -1,13 +1,9 @@
 import React, {FC, ComponentProps} from 'react';
 import Select from '../components/Select';
-import {Person} from '../utils/types';
+import {Speaker} from '../utils/types';
 import useLocalStorage from '../utils/useLocalStorage';
-
-const byName = (a: Person, b: Person) => {
-  const aName = a.name.toLowerCase();
-  const bName = b.name.toLowerCase();
-  return aName < bName ? -1 : aName > bName ? 1 : 0;
-};
+import serializeSpeaker from '../utils/serializeSpeaker';
+import compareSpeakers from '../utils/compareSpeakers';
 
 const useRecentItems = (key: string, max: number) => {
   const [items, setItems] = useLocalStorage<Array<string>>(key, []);
@@ -22,7 +18,7 @@ const useRecentItems = (key: string, max: number) => {
 };
 
 const SpeakerSelect: FC<
-  ComponentProps<typeof Select> & {speakers: Array<Person>}
+  ComponentProps<typeof Select> & {speakers: Array<Speaker>}
 > = ({speakers, onChange, ...rest}) => {
   const [recentSpeakerIds, setSpeakerIdUsed] = useRecentItems(
     'recentSpeakers',
@@ -31,9 +27,9 @@ const SpeakerSelect: FC<
   const recentSpeakers = speakers.filter((s) =>
     recentSpeakerIds?.includes(s.id),
   );
-  const renderSpeakerOption = ({id, name, description}: Person) => (
-    <option key={id} value={id}>
-      {description ? `${name}, ${description}` : name}
+  const renderSpeakerOption = (speaker: Speaker) => (
+    <option key={speaker.id} value={speaker.id}>
+      {serializeSpeaker(speaker)}
     </option>
   );
   return (
@@ -48,7 +44,7 @@ const SpeakerSelect: FC<
       <optgroup label="Recent">
         {recentSpeakers.map(renderSpeakerOption)}
       </optgroup>
-      {speakers.sort(byName).map(renderSpeakerOption)}
+      {speakers.sort(compareSpeakers).map(renderSpeakerOption)}
     </Select>
   );
 };

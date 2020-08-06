@@ -7,7 +7,7 @@ import React, {
   useContext,
 } from 'react';
 import classnames from 'classnames';
-import {Mark, Verse as $Verse, Person} from '../utils/types';
+import {Mark, Verse as $Verse, Speaker} from '../utils/types';
 import sortByRange from '../utils/sortByRange';
 import {theme} from '../utils/themes';
 import unique from '../utils/unique';
@@ -18,24 +18,24 @@ import hasRole from '../utils/hasRole';
 
 const SpeakerIndicator: FC<{
   speakerId: string;
-  speakers: Array<Person>;
+  speakers: Array<Speaker>;
 }> = ({speakers, speakerId}) => {
   const speaker = speakers.find((s) => s.id === speakerId);
   if (!speaker) {
-    throw new Error(`Missing Speaker: [${speakerId}]`);
+    return null;
   }
   const {name, description} = speaker;
   return (
     <div
       className="inline-block w-16 h-16 mx-2 align-middle overflow-hidden select-none"
       data-selection-ignore
-      title={description ? `${name}, ${description}` : name}
+      title={[name, description].filter((x) => x != null).join(', ')}
     >
       <div className="flex justify-center">
         <MdRecordVoiceOver />
       </div>
       <div className="text-xs text-center truncate uppercase leading-none flex-1 min-w-0 pt-1">
-        {name}
+        {name ?? description}
       </div>
     </div>
   );
@@ -48,7 +48,7 @@ const VerseFragment: FC<{
   selectMarks: Dispatch<SetStateAction<string[]>>;
   selectedMarkIds: Array<string>;
   speakerIds: Array<string>;
-  speakers: Array<Person>;
+  speakers: Array<Speaker>;
 }> = ({
   isVerseNumber = false,
   children,
@@ -122,7 +122,7 @@ const Verse: FC<{
   text: $Verse['text'];
   selectMarks: Dispatch<SetStateAction<string[]>>;
   selectedMarkIds: Array<string>;
-  speakers: Array<Person>;
+  speakers: Array<Speaker>;
   marks: Array<Mark>;
 }> = ({
   id,
