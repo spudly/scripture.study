@@ -19,13 +19,17 @@ if (mode === 'development') {
 const config = {
   entry: {
     'index.client': [
-      'webpack-hot-middleware/client?name=index.client',
+      mode === 'development'
+        ? 'webpack-hot-middleware/client?name=index.client'
+        : null,
       './src/index.client.tsx',
-    ],
+    ].filter(Boolean),
     'index.client.sw': [
-      'webpack-hot-middleware/client?name=index.client.sw',
+      mode === 'development'
+        ? 'webpack-hot-middleware/client?name=index.client.sw'
+        : null,
       './src/index.client.sw.ts',
-    ],
+    ].filter(Boolean),
   },
   output: {
     filename: '[name].js',
