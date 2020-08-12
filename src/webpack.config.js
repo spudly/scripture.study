@@ -1,16 +1,35 @@
 const path = require('path');
+const ReactRefreshWebpackPlugin = require('@pmmmwh/react-refresh-webpack-plugin');
+const webpack = require('webpack');
+const purgeCss = require('@fullhuman/postcss-purgecss');
+const postCssImport = require('postcss-import');
+const tailwindCss = require('tailwindcss');
+const autoprefixer = require('autoprefixer');
 
 const mode =
   process.env.NODE_ENV === 'production' ? 'production' : 'development';
 
-/** @type {typeof import("webpack").Configuration} */
+const plugins = [];
+if (mode === 'development') {
+  plugins.push(new webpack.HotModuleReplacementPlugin());
+  plugins.push(new ReactRefreshWebpackPlugin());
+}
+
+/** @type {import("webpack").Configuration} */
 const config = {
   entry: {
-    'index.client': './src/index.client.tsx',
-    'index.client.sw': './src/index.client.sw.ts',
+    'index.client': [
+      'webpack-hot-middleware/client?name=index.client',
+      './src/index.client.tsx',
+    ],
+    'index.client.sw': [
+      'webpack-hot-middleware/client?name=index.client.sw',
+      './src/index.client.sw.ts',
+    ],
   },
   output: {
     filename: '[name].js',
+    publicPath: '/',
     path: path.resolve(__dirname, '../public'),
   },
   mode,
@@ -20,15 +39,13 @@ const config = {
   module: {
     rules: [
       {
-        test: /\.tsx?$/,
-        loader: 'ts-loader',
+        test: /\.[jt]sx?$/,
         exclude: /node_modules/,
-        options: {
-          compilerOptions: {
-            noEmit: false,
-            module: 'esnext',
+        use: [
+          {
+            loader: 'babel-loader',
           },
-        },
+        ],
       },
       {
         test: /\.css$/,
@@ -40,14 +57,14 @@ const config = {
             options: {
               ident: 'postcss',
               plugins: [
-                require('postcss-import'),
-                require('tailwindcss'),
-                require('autoprefixer'),
+                postCssImport,
+                tailwindCss,
+                autoprefixer,
                 ...(mode === 'production'
                   ? [
-                      require('@fullhuman/postcss-purgecss')({
+                      purgeCss({
                         content: ['./**/*.tsx', './**/*.html'],
-                        defaultExtractor: (content) =>
+                        defaultExtractor: (/** @type {string} */ content) =>
                           content.match(/[\w-/:]+(?<!:)/g) || [],
                       }),
                     ]
@@ -59,6 +76,7 @@ const config = {
       },
     ],
   },
+  plugins,
 };
 
 module.exports = config;

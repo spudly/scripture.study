@@ -12,7 +12,7 @@
     "build:typescript": "tsc",
     "build:webpack": "NODE_ENV=production webpack --config=src/webpack.config.js --json > stats.json",
     "depcheck": "depcheck --ignores=\",@commitlint/*,@types/*,prettier,pretty-quick,sort-package-json,typescript,@fullhuman/postcss-purgecss,autoprefixer,tailwindcss,postcss-import,webpack-cli\"",
-    "dev": "NODE_ENV=development PORT=3000 ts-node src/index.server.tsx | pino-pretty",
+    "dev": "NODE_ENV=development BABEL_ENV=development PORT=3000 ts-node src/index.server.tsx | pino-pretty",
     "lint": "eslint . --ext .js,.jsx,.ts,.tsx",
     "start": "NODE_ENV=production node build/index.server.js",
     "test": "echo \"no tests yet\"; exit 0"
@@ -41,6 +41,30 @@
       "prettier --write"
     ]
   },
+  "babel": {
+    "presets": [
+      "@babel/preset-typescript",
+      [
+        "@babel/preset-env",
+        {
+          "loose": true,
+          "useBuiltIns": "usage",
+          "corejs": 3,
+          "shippedProposals": true,
+          "include": [
+            "@babel/plugin-proposal-nullish-coalescing-operator",
+            "@babel/plugin-proposal-optional-chaining"
+          ]
+        }
+      ],
+      "@babel/preset-react"
+    ]
+  },
+  "browserslist": [
+    "last 2 chrome versions",
+    "last 2 edge versions",
+    "last 2 firefox versions"
+  ],
   "prettier": {
     "bracketSpacing": false,
     "endOfLine": "lf",
@@ -57,6 +81,7 @@
     "public"
   ],
   "dependencies": {
+    "@babel/preset-env": "^7.11.0",
     "@fullhuman/postcss-purgecss": "^2.0.6",
     "@reach/auto-id": "^0.10.5",
     "@types/cookie-parser": "^1.4.2",
@@ -84,12 +109,18 @@
     "tailwindcss": "^1.6.2",
     "uuid": "^8.2.0",
     "webpack": "^4.43.0",
-    "webpack-dev-middleware": "^3.7.2"
+    "webpack-dev-middleware": "^3.7.2",
+    "webpack-hot-middleware": "^2.25.0"
   },
   "devDependencies": {
-    "@commitlint/cli": "^9.1.1",
+    "@babel/core": "^7.11.1",
+    "@babel/preset-react": "^7.10.4",
+    "@babel/preset-typescript": "^7.10.4",
+    "@commitlint/cli": "^9.1.2",
     "@commitlint/config-conventional": "^9.1.1",
+    "@pmmmwh/react-refresh-webpack-plugin": "^0.4.1",
     "@spudly/eslint-config": "^6.0.0",
+    "@types/autoprefixer": "^9.7.2",
     "@types/classnames": "^2.2.9",
     "@types/csurf": "^1.9.36",
     "@types/express": "^4.17.7",
@@ -101,6 +132,7 @@
     "@types/passport-auth0": "^1.0.4",
     "@types/pino": "^6.3.0",
     "@types/pino-http": "^5.0.3",
+    "@types/postcss-import": "^12.0.0",
     "@types/react": "^16.9.43",
     "@types/react-dom": "^16.9.5",
     "@types/react-router": "^5.1.8",
@@ -108,6 +140,8 @@
     "@types/uuid": "^8.0.0",
     "@types/webpack": "^4.41.21",
     "@types/webpack-dev-middleware": "^3.7.0",
+    "@types/webpack-hot-middleware": "^2.25.3",
+    "babel-loader": "^8.1.0",
     "css-loader": "^3.5.3",
     "depcheck": "^1.0.0",
     "eslint": "^6.8.0",
@@ -116,9 +150,9 @@
     "postcss-loader": "^3.0.0",
     "prettier": "^2.0.4",
     "pretty-quick": "^2.0.1",
+    "react-refresh": "^0.8.3",
     "sort-package-json": "^1.41.0",
     "style-loader": "^1.2.0",
-    "ts-loader": "^8.0.1",
     "ts-node": "^8.9.0",
     "typescript": "^3.9.7",
     "webpack-cli": "^3.3.11"

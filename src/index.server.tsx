@@ -2,6 +2,7 @@ import webpack from 'webpack';
 import path from 'path';
 import express, {Handler} from 'express';
 import webpackDevMiddleware from 'webpack-dev-middleware';
+import webpackHotMiddleware from 'webpack-hot-middleware';
 import bodyParser from 'body-parser';
 import cookieParser from 'cookie-parser';
 import queryRoute from './api/query/[query]';
@@ -57,6 +58,11 @@ const authorize = (role: string | null = null): Handler => (
   resp.redirect('/auth/login');
 };
 
+const compiler =
+  process.env.NODE_ENV === 'development' ? webpack(webpackConfig) : null;
+
+const passthrough: Handler = (_, __, next) => next();
+
 const app = express()
   .use(helmet())
   .use(cookieParser())
@@ -75,12 +81,13 @@ const app = express()
   .use(passport.session())
   .use(requestLogger)
   .use(
-    process.env.NODE_ENV === 'development'
-      ? webpackDevMiddleware(webpack(webpackConfig), {
+    compiler
+      ? webpackDevMiddleware(compiler, {
           publicPath: '/',
         })
-      : (_, __, next) => next(),
+      : passthrough,
   )
+  .use(compiler ? webpackHotMiddleware(compiler) : passthrough)
   .use(express.static(publicDir, {index: false}))
   .get(
     '/auth/login',
