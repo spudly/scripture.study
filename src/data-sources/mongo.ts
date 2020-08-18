@@ -273,7 +273,7 @@ const findNextChapter = async (chapterId: string): Promise<Chapter | null> => {
 const getChapterUrl = async (chapter: Chapter): Promise<string> => {
   const volume = await getVolumeById(chapter.volumeId);
   const book = await getBookById(chapter.bookId);
-  return `/${volume.title.replace(/\s/g, '.')}/${book.title.replace(
+  return `/read/${volume.title.replace(/\s/g, '.')}/${book.title.replace(
     /\s/g,
     '.',
   )}/${chapter.number}`;
