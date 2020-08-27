@@ -94,46 +94,9 @@ const App: FC = () => {
   );
 };
 
-const registerServiceWorker = async () => {
-  try {
-    const swReg: ServiceWorkerRegistration = await navigator.serviceWorker.register(
-      '/index.client.sw.js',
-    );
-    console.log(
-      'ServiceWorker registration successful with scope: ',
-      swReg.scope,
-    );
-  } catch (error) {
-    console.log('ServiceWorker registration failed: ', error);
-  }
-};
-
-const sendCsrfToken = async () => {
-  const swReg = await navigator.serviceWorker.ready;
-  swReg.active?.postMessage(
-    JSON.stringify({type: 'CSRF_TOKEN', token: CSRF_TOKEN}),
-  );
-};
-
-const syncMarks = async () => {
-  try {
-    const swReg = await navigator.serviceWorker.ready;
-    console.log('SYNC: triggering sync');
-    await swReg.sync.register('sync-marks');
-    console.log('SYNC: triggered');
-    setTimeout(syncMarks, 30000);
-  } catch (error) {
-    console.log('SYNC: Failed', error);
-  }
-};
-
 ReactDOM.render(
   <BrowserRouter>
     <App />
   </BrowserRouter>,
   document.getElementById('root'),
 );
-registerServiceWorker();
-sendCsrfToken();
-syncMarks();
-window.addEventListener('beforeunload', () => syncMarks());

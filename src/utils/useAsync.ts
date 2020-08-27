@@ -1,4 +1,5 @@
 import {useState, useEffect, useCallback} from 'react';
+import useIsMounted from './useIsMounted';
 
 type State<T> =
   | {
@@ -21,8 +22,8 @@ const useAsync = <T extends any>(
   fn?: (() => Promise<T>) | undefined | null,
 ): State<T> & {reload: () => void; flush: () => void} => {
   const [state, setState] = useState<State<T>>({isLoading: true});
-
   const flush = useCallback(() => setState({isLoading: true}), []);
+  const isMounted = useIsMounted();
 
   const reload = useCallback(
     async (shouldFlush: boolean = false) => {
@@ -32,12 +33,16 @@ const useAsync = <T extends any>(
       setState({isLoading: true});
       try {
         const result = await fn!();
-        setState({isLoading: false, result});
+        if (isMounted()) {
+          setState({isLoading: false, result});
+        }
       } catch (error) {
-        setState({isLoading: false, error});
+        if (isMounted()) {
+          setState({isLoading: false, error});
+        }
       }
     },
-    [fn, flush],
+    [fn, flush, isMounted],
   );
 
   useEffect(() => {

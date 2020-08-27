@@ -7,7 +7,7 @@ import React, {
   ReactNode,
   MouseEvent,
 } from 'react';
-import {MdKeyboardArrowRight, MdFileDownload} from 'react-icons/md';
+import {MdKeyboardArrowRight} from 'react-icons/md';
 import classnames from 'classnames';
 import UserContext from '../utils/UserContext';
 import {Link, useRouteMatch} from 'react-router-dom';
@@ -16,8 +16,6 @@ import {Volume, Book, Chapter, Unstyled} from '../utils/types';
 import compareSortPosition from '../utils/compareSortPosition';
 import compareNumberProperty from '../utils/compareNumberProperty';
 import titleToRef from '../utils/titleToRef';
-import useFetchVolume from '../utils/useDownloadVolume';
-import Spinner from './Spinner';
 
 const NavButton: FC<
   Unstyled<'button'> & {checked?: boolean; icon?: ReactNode}
@@ -89,38 +87,9 @@ const VolumeThingLink: FC<{volume: Volume; isActive?: boolean}> = ({
   volume,
   isActive,
 }) => {
-  const [download, downloadState] = useFetchVolume(volume);
-  const [hasServiceWorker, setHasServiceWorker] = useState(false);
-
-  useEffect(() => {
-    navigator.serviceWorker.ready.then(() => setHasServiceWorker(true));
-  }, []);
-
   return (
-    <ThingLink
-      href={`/read/${titleToRef(volume.title)}`}
-      isActive={isActive}
-      onClick={(e) => {
-        if (hasServiceWorker) {
-          if (downloadState.status === 'NOT_DOWNLOADED') {
-            e.preventDefault();
-            download();
-          }
-          if (downloadState.status === 'DOWNLOADING') {
-            e.preventDefault();
-          }
-        }
-      }}
-    >
+    <ThingLink href={`/read/${titleToRef(volume.title)}`} isActive={isActive}>
       {volume.longTitle}
-      {hasServiceWorker && (
-        <>
-          {downloadState.status === 'NOT_DOWNLOADED' && (
-            <MdFileDownload size="3em" />
-          )}
-          {downloadState.status === 'DOWNLOADING' && <Spinner />}
-        </>
-      )}
     </ThingLink>
   );
 };

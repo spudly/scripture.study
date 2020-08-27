@@ -24,12 +24,6 @@ const config = {
         : null,
       './src/index.client.tsx',
     ].filter(Boolean),
-    'index.client.sw': [
-      mode === 'development'
-        ? 'webpack-hot-middleware/client?name=index.client.sw'
-        : null,
-      './src/index.client.sw.ts',
-    ].filter(Boolean),
   },
   output: {
     filename: '[name].js',
