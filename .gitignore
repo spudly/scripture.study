@@ -5,3 +5,4 @@ public/*.js
 stats.json
 *Zone.Identifier
 scripts
+coverage

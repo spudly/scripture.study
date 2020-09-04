@@ -1,4 +1,4 @@
-import fetchJson from '../utils/fetchJson';
+import fetchJson from '../utils/pushpop/fetchJson';
 import {
   Volume,
   Queries,
@@ -11,6 +11,7 @@ import {
   NewSpeaker,
   QueryOptions,
 } from '../utils/types';
+import getCsrfToken from '../utils/getCsrfToken';
 
 const fetchQuery = <T>(
   name: keyof Queries,
@@ -38,7 +39,7 @@ const fetchMutation = async <NAME extends keyof Mutations>(
     headers: {
       'Content-Type': 'application/json',
       // eslint-disable-next-line no-restricted-globals
-      'CSRF-Token': self.CSRF_TOKEN ?? '',
+      'CSRF-Token': getCsrfToken(),
     },
     body: JSON.stringify(payload),
   });

@@ -12,10 +12,13 @@ import classnames from 'classnames';
 import UserContext from '../utils/UserContext';
 import {Link, useRouteMatch} from 'react-router-dom';
 import hasRole from '../utils/hasRole';
-import {Volume, Book, Chapter, Unstyled} from '../utils/types';
-import compareSortPosition from '../utils/compareSortPosition';
-import compareNumberProperty from '../utils/compareNumberProperty';
+import type {Volume, Book, Chapter, Unstyled} from '../utils/types';
 import titleToRef from '../utils/titleToRef';
+import compareBy from '../utils/pushpop/compareBy';
+import get from '../utils/pushpop/get';
+
+const compareNumber = compareBy(get('number'));
+const compareSortPosition = compareBy(get('sortPosition'));
 
 const NavButton: FC<
   Unstyled<'button'> & {checked?: boolean; icon?: ReactNode}
@@ -119,7 +122,9 @@ const Nav: FC<{
   book?: Book;
   chapter?: Chapter;
 }> = ({volumes, books, chapters, volume, book, chapter}) => {
-  const scrollPositionRef = useRef(window.scrollY);
+  const scrollPositionRef = useRef(
+    typeof window !== 'undefined' ? window.scrollY : 0,
+  );
   const [didScrollUp, setDidScrollUp] = useState(true);
   const [selectedView, setSelectedView] = useState<
     'volumes' | 'books' | 'chapters' | null
@@ -226,7 +231,7 @@ const Nav: FC<{
               </ThingLink>
             ))}
           {view === 'chapters' &&
-            chapters.sort(compareNumberProperty).map((c) => (
+            chapters.sort(compareNumber).map((c) => (
               <ThingLink
                 key={c.id}
                 href={`/read/${titleToRef(volume!.title)}/${titleToRef(

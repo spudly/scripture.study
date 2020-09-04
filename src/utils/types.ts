@@ -37,12 +37,6 @@ declare global {
   }
 }
 
-declare global {
-  interface Window {
-    CSRF_TOKEN?: string;
-  }
-}
-
 export type VolumeDoc = {
   _id: ObjectID;
   title: string;
@@ -305,8 +299,6 @@ export type MutationState =
   | {readyState: 'LOADING'}
   | {readyState: 'COMPLETE'}
   | {readyState: 'ERROR'; error: Error};
-
-export type Message = {type: 'CSRF_TOKEN'; token: string};
 
 export type NativeElement<
   TAG extends keyof JSX.IntrinsicElements

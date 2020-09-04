@@ -1,7 +1,7 @@
 import React, {FC, ComponentProps} from 'react';
 import Select from '../components/Select';
 import {Speaker} from '../utils/types';
-import useLocalStorage from '../utils/useLocalStorage';
+import useLocalStorage from '../utils/pushpop/useLocalStorage';
 import serializeSpeaker from '../utils/serializeSpeaker';
 import compareSpeakers from '../utils/compareSpeakers';
 

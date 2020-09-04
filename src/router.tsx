@@ -13,6 +13,12 @@ import {renderToStaticNodeStream} from 'react-dom/server';
 import passport from 'passport';
 import Auth0Strategy from 'passport-auth0';
 import hasRole from './utils/hasRole';
+import Page from './components/Page';
+import {StaticRouter} from 'react-router';
+import {queries} from './data-sources/mongo';
+import App from './App';
+import refToTitle from './utils/refToTitle';
+import refToNumber from './utils/refToNumber';
 
 const publicDir = path.join(__dirname, '../public');
 
@@ -50,6 +56,64 @@ const authorize = (role: string | null = null): Handler => (
   }
   req.session!.returnTo = '/';
   resp.redirect('/auth/login');
+};
+
+const getAppData = async (
+  volumeRef?: string,
+  bookRef?: string,
+  chapterRef?: string,
+) => {
+  const volumes = await queries.getAllVolumes();
+  const volume = volumeRef
+    ? await queries.getVolumeByTitle(refToTitle(volumeRef))
+    : undefined;
+  const books = volume ? await queries.getAllBooksByVolumeId(volume.id) : [];
+  const book =
+    volume && bookRef
+      ? await queries.getBookByTitle(volume.id, refToTitle(bookRef))
+      : undefined;
+  const chapters =
+    volume && book
+      ? await queries.getAllChaptersByBookId(volume.id, book.id)
+      : [];
+  const chapter =
+    volume && book && chapterRef
+      ? await queries.getChapterByBookIdAndNumber(
+          volume.id,
+          book.id,
+          refToNumber(chapterRef),
+        )
+      : undefined;
+
+  const verses =
+    volume && chapter
+      ? await queries.getAllVersesByChapterId(volume.id, chapter.id)
+      : [];
+  const marks =
+    volume && chapter
+      ? await queries.getAllMarksByChapterId(volume.id, chapter.id)
+      : [];
+  const prev =
+    volume && chapter
+      ? (await queries.queryPrevChapterUrl(volume.id, chapter.id)) ?? undefined
+      : undefined;
+  const next =
+    volume && chapter
+      ? (await queries.queryNextChapterUrl(volume.id, chapter.id)) ?? undefined
+      : undefined;
+
+  return {
+    volumes,
+    volume,
+    books,
+    book,
+    chapters,
+    chapter,
+    verses,
+    marks,
+    prev,
+    next,
+  };
 };
 
 const router = express
@@ -124,25 +188,29 @@ const router = express
     bodyParser.json(),
     mutationRoute,
   )
-  .get('*', (req, resp) => {
+  .get('/read/:volumeRef?/:bookRef?/:chapterRef?', async (req, resp) => {
     resp.setHeader('Content-Type', 'text/html');
     resp.write('<!doctpe html>');
+    const {volumeRef, bookRef, chapterRef} = req.params;
+    const appData = await getAppData(volumeRef, bookRef, chapterRef);
     renderToStaticNodeStream(
-      <html lang="en">
-        <head>
-          <link rel="shortcut icon" href="/favicon.ico" type="image/x-icon" />
-          <link rel="icon" href="/favicon.ico" type="image/x-icon" />
-          <link rel="manifest" href="/manifest.json" />
-          <meta name="theme-color" content="#bee3f8" />
-          <meta name="viewport" content="width=device-width, initial-scale=1" />
-          <meta name="CSRF-Token" content={req.csrfToken()} />
-          <link rel="apple-touch-icon" href="/icons/loco-192.png" />
-        </head>
-        <body>
-          <div id="root"></div>
-          <script src="/index.client.js"></script>
-        </body>
-      </html>,
+      <Page csrfToken={req.csrfToken()} data={appData}>
+        <StaticRouter location={req.url}>
+          <App initialData={appData} />
+        </StaticRouter>
+      </Page>,
+    ).pipe(resp);
+  })
+  .get('*', async (req, resp) => {
+    resp.setHeader('Content-Type', 'text/html');
+    resp.write('<!doctpe html>');
+    const appData = await getAppData();
+    renderToStaticNodeStream(
+      <Page csrfToken={req.csrfToken()} data={appData}>
+        <StaticRouter location={req.url}>
+          <App initialData={appData} />
+        </StaticRouter>
+      </Page>,
     ).pipe(resp);
   });
 

@@ -1,7 +1,7 @@
 const sortByRange = <ITEM extends {range: Array<number> | null}>(
   items: Array<ITEM>,
 ): Array<ITEM> =>
-  items.sort((a, b) => {
+  [...items].sort((a, b) => {
     if (!a.range && !b.range) {
       return 0;
     }

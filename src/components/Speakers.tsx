@@ -1,5 +1,5 @@
 import React, {FC, useState} from 'react';
-import useAsync from '../utils/useAsync';
+import useAsync from '../utils/pushpop/useAsync';
 import {queries, mutations} from '../data-sources/fetch';
 import Spinner from './Spinner';
 import ErrorAlert from './ErrorAlert';

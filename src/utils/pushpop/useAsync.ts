@@ -20,8 +20,13 @@ type State<T> =
 
 const useAsync = <T extends any>(
   fn?: (() => Promise<T>) | undefined | null,
+  initialResult?: T,
 ): State<T> & {reload: () => void; flush: () => void} => {
-  const [state, setState] = useState<State<T>>({isLoading: true});
+  const [state, setState] = useState<State<T>>(
+    initialResult != null
+      ? {isLoading: false, result: initialResult}
+      : {isLoading: true},
+  );
   const flush = useCallback(() => setState({isLoading: true}), []);
   const isMounted = useIsMounted();
 
@@ -30,7 +35,6 @@ const useAsync = <T extends any>(
       if (shouldFlush) {
         flush();
       }
-      setState({isLoading: true});
       try {
         const result = await fn!();
         if (isMounted()) {
@@ -47,6 +51,7 @@ const useAsync = <T extends any>(
 
   useEffect(() => {
     if (fn) {
+      // TODO: when this is initially hydrated and and initialResult is provided, it should not need to reload()
       reload();
     } else {
       flush();

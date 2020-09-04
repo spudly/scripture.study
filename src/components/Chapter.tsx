@@ -15,7 +15,15 @@ import refToNumber from '../utils/refToNumber';
 import {queries} from '../data-sources/fetch';
 import Spacer from './Spacer';
 import Pagination from './Pagination';
-import {Verse as $Verse, Mark, VerseSelection, Speaker} from '../utils/types';
+import {
+  Verse as $Verse,
+  Mark,
+  VerseSelection,
+  Speaker,
+  Book,
+  Volume,
+  Chapter,
+} from '../utils/types';
 import Verse from './Verse';
 import createVerseSelections from '../utils/createVerseSelections';
 import isEmptySelection from '../utils/isEmptySelection';
@@ -23,7 +31,7 @@ import EditMarksButton from './EditMarksButton';
 import DeleteMarksButton from './DeleteMarksButton';
 import CreateMarkButton from './CreateMarkButton';
 import useMutation from '../utils/useMutation';
-import useAsync from '../utils/useAsync';
+import useAsync from '../utils/pushpop/useAsync';
 import ErrorAlert from './ErrorAlert';
 import UserContext from '../utils/UserContext';
 import hasRole from '../utils/hasRole';
@@ -152,7 +160,17 @@ const useRestoreScrollPosition = () => {
   }, [pathname]);
 };
 
-const ChapterPage: FC<{}> = () => {
+const ChapterPage: FC<{
+  initialData?: {
+    volume: Volume;
+    book: Book;
+    chapter: Chapter;
+    verses: Array<$Verse>;
+    marks: Array<Mark>;
+    prev: string;
+    next: string;
+  };
+}> = ({initialData}) => {
   useRestoreScrollPosition();
   const match = useRouteMatch<{
     volumeRef: string;
@@ -177,6 +195,7 @@ const ChapterPage: FC<{}> = () => {
       ] as const);
       return {volume, book, chapter, verses, marks, prev, next};
     }, [volumeRef, bookRef, chapterRef]),
+    initialData,
   );
   const {result: speakers, error: speakersError} = useAsync(
     queries.getAllSpeakers,
