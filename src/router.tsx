@@ -142,7 +142,7 @@ const router = express
     session({
       secret: process.env.SESSION_SECRET!,
       cookie: {
-        secure: process.env.NODE_ENV === 'production',
+        // secure: process.env.NODE_ENV === 'production',
       },
       resave: false,
       saveUninitialized: true,
