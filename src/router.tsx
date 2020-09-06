@@ -19,22 +19,6 @@ import {queries} from './data-sources/mongo';
 import App from './App';
 import refToTitle from './utils/refToTitle';
 import refToNumber from './utils/refToNumber';
-import pick from './utils/pushpop/pick';
-
-logger.info(
-  pick([
-    'PORT',
-    'AUTH0_CALLBACK_URL',
-    'AUTH0_CLIENT_ID',
-    'AUTH0_CLIENT_SECRET',
-    'AUTH0_DOMAIN',
-    'MONGO_PASSWORD',
-    'MONGO_USER',
-    'NODE_MODULES_CACHE',
-    'SESSION_SECRET',
-  ])(process.env as Record<string, string | undefined>),
-  'env',
-);
 
 const publicDir = path.join(__dirname, '../public');
 
@@ -142,6 +126,7 @@ const router = express
     session({
       secret: process.env.SESSION_SECRET!,
       cookie: {
+        // GOTCHA: setting secure:true in production breaks Auth0
         // secure: process.env.NODE_ENV === 'production',
       },
       resave: false,

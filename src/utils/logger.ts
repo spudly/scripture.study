@@ -9,6 +9,5 @@ export const requestLogger = pinoHttp({
     req: IncomingMessage & {cookies?: Object; sessionId?: string},
   ) => ({
     cookies: req.cookies,
-    sessionId: req.sessionId,
   }),
 } as any);
