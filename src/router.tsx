@@ -4,7 +4,7 @@ import bodyParser from 'body-parser';
 import cookieParser from 'cookie-parser';
 import queryRoute from './api/query/[query]';
 import mutationRoute from './api/mutation/[mutation]';
-import {requestLogger} from './utils/logger';
+import {logger, requestLogger} from './utils/logger';
 import csurf from 'csurf';
 import helmet from 'helmet';
 import React from 'react';
@@ -19,6 +19,22 @@ import {queries} from './data-sources/mongo';
 import App from './App';
 import refToTitle from './utils/refToTitle';
 import refToNumber from './utils/refToNumber';
+import pick from './utils/pushpop/pick';
+
+logger.info(
+  pick([
+    'PORT',
+    'AUTH0_CALLBACK_URL',
+    'AUTH0_CLIENT_ID',
+    'AUTH0_CLIENT_SECRET',
+    'AUTH0_DOMAIN',
+    'MONGO_PASSWORD',
+    'MONGO_USER',
+    'NODE_MODULES_CACHE',
+    'SESSION_SECRET',
+  ])(process.env as Record<string, string | undefined>),
+  'env',
+);
 
 const publicDir = path.join(__dirname, '../public');
 
@@ -34,6 +50,7 @@ passport.use(
       const {_json, _raw, ...profile} = rawProfile;
       const roles =
         _json['https://wikimarks/app_metadata']?.authorization?.roles;
+      logger.info({profile, roles, _json, _raw}, 'Auth0 profile');
       done(null, {...profile, roles});
     },
   ),
@@ -144,6 +161,7 @@ const router = express
   )
   .get('/auth/callback', (req, res, next) => {
     passport.authenticate('auth0', (err, user, info) => {
+      logger.info({error: err, user, info}, 'auth callback');
       if (err) {
         return next(err);
       }
