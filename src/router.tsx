@@ -33,7 +33,7 @@ passport.use(
     (_accessToken, _refreshToken, _extraParams, rawProfile, done) => {
       const {_json, _raw, ...profile} = rawProfile;
       const roles =
-        _json['https://wikimarks/app_metadata']?.authorization?.roles;
+        _json['https://wikimarks/app_metadata']?.authorization?.roles; // TODO: rename wikimarks to "scripture.study"
       logger.info({profile, roles, _json, _raw}, 'Auth0 profile');
       done(null, {...profile, roles});
     },

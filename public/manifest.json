@@ -1,7 +1,7 @@
 {
-  "short_name": "WikiMarks",
-  "name": "WikiMarks",
-  "description": "Crowdsourced Annotations",
+  "short_name": "scripture.study",
+  "name": "scripture.study",
+  "description": "Scripture Study Resources",
   "icons": [
     {
       "src": "/icons/logo-192.png",

@@ -230,7 +230,7 @@ const ChapterPage: FC<{
     <>
       <Head>
         <title>
-          WikiMarks: {book.title} {chapter.number}
+          scripture.study: {book.title} {chapter.number}
         </title>
       </Head>
       <div className="flex-1 flex flex-col px-4 sm:px-32">

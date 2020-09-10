@@ -37,7 +37,7 @@ const memoizedGetClient = async () => {
 
 const getDb = async () => {
   const client = await memoizedGetClient();
-  return client.db('wikimarks');
+  return client.db('wikimarks'); // TODO: rename db to "scripture.study"
 };
 
 const markDocToMark = ({_id, ...markDoc}: MarkDoc): Mark => ({
