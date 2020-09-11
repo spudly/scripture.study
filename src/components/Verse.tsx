@@ -10,7 +10,7 @@ import classnames from 'classnames';
 import {Mark, Verse as $Verse, Speaker} from '../utils/types';
 import sortByRange from '../utils/sortByRange';
 import {theme} from '../utils/themes';
-import unique from '../utils/pushpop/unique';
+import {unique} from '@spudly/pushpop';
 import {MdRecordVoiceOver} from 'react-icons/md';
 import ErrorBoundary from './ErrorBoundary';
 import UserContext from '../utils/UserContext';

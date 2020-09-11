@@ -31,7 +31,7 @@ import EditMarksButton from './EditMarksButton';
 import DeleteMarksButton from './DeleteMarksButton';
 import CreateMarkButton from './CreateMarkButton';
 import useMutation from '../utils/useMutation';
-import useAsync from '../utils/pushpop/useAsync';
+import useAsync from '../utils/useAsync';
 import ErrorAlert from './ErrorAlert';
 import UserContext from '../utils/UserContext';
 import hasRole from '../utils/hasRole';

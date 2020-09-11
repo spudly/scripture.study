@@ -1,4 +1,4 @@
-import fetchJson from '../utils/pushpop/fetchJson';
+import fetchJson from '../utils/fetchJson';
 import {
   Volume,
   Queries,

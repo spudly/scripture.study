@@ -14,8 +14,7 @@ import {Link, useRouteMatch} from 'react-router-dom';
 import hasRole from '../utils/hasRole';
 import type {Volume, Book, Chapter, Unstyled} from '../utils/types';
 import titleToRef from '../utils/titleToRef';
-import compareBy from '../utils/pushpop/compareBy';
-import get from '../utils/pushpop/get';
+import {get, compareBy} from '@spudly/pushpop';
 
 const compareNumber = compareBy(get('number'));
 const compareSortPosition = compareBy(get('sortPosition'));

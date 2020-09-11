@@ -5,7 +5,7 @@ import ErrorBoundary from './components/ErrorBoundary';
 import Authorize from './components/Authorize';
 import Nav from './components/Nav';
 import Speakers from './components/Speakers';
-import useAsync from './utils/pushpop/useAsync';
+import useAsync from './utils/useAsync';
 import {queries} from './data-sources/fetch';
 import refToTitle from './utils/refToTitle';
 import refToNumber from './utils/refToNumber';
