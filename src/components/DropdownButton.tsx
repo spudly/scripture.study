@@ -1,5 +1,6 @@
 import React, {FC, useState, useCallback, ReactNode} from 'react';
 import classnames from 'classnames';
+import Overlay from './reusable/Overlay';
 
 type RenderPropProps = {
   isOpen: boolean;
@@ -25,12 +26,7 @@ const DropdownButton: FC<Props> = ({
     <>
       <div className="inline-block relative">
         {renderButton({open, close, isOpen})}
-        {isOpen && (
-          <div
-            className="fixed top-0 right-0 bottom-0 left-0"
-            onClick={close}
-          />
-        )}
+        {isOpen && <Overlay onClick={close} />}
         {isOpen && (
           <div
             className={classnames('absolute min-w-full', {

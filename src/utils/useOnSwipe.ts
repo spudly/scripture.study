@@ -26,7 +26,7 @@ const useSwipe = (
       return undefined;
     }
     const handleTouchStart = (e: TouchEvent) => {
-      e.preventDefault();
+      // e.preventDefault(); // breaks click events
       const touch = e.changedTouches[0];
       start = {x: touch.pageX, y: touch.pageY, time: Date.now()};
     };
@@ -34,7 +34,7 @@ const useSwipe = (
     // const handleTouchMove = (e: TouchEvent) => e.preventDefault(); // prevents scrolling. do we really want this?
 
     const handleTouchEnd = (e: TouchEvent) => {
-      e.preventDefault();
+      // e.preventDefault(); // what default am I preventing? is this needed?
       const touch = e.changedTouches[0];
       const dist = {x: touch.pageX - start.x, y: touch.pageY - start.y};
       const elapsed = Date.now() - start.time;

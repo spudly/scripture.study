@@ -1,5 +1,5 @@
 import React, {FC, ComponentProps} from 'react';
-import Select from '../components/Select';
+import Select from './reusable/Select';
 import {Speaker} from '../utils/types';
 import useLocalStorage from '../utils/useLocalStorage';
 import serializeSpeaker from '../utils/serializeSpeaker';

@@ -2,11 +2,12 @@ import React, {useState, FC} from 'react';
 import {Mark, Speaker} from '../utils/types';
 import {MdRecordVoiceOver} from 'react-icons/md';
 import classnames from 'classnames';
-import CircleButton from '../components/CircleButton';
+import CircleButton from './reusable/CircleButton';
 import {VerseSelection} from '../utils/types';
-import Spinner from './Spinner';
+import Spinner from './reusable/Spinner';
 import createId from '../utils/createId';
 import SpeakerSelect from './SpeakerSelect';
+import Overlay from './reusable/Overlay';
 
 const buildSpeakerMarks = (
   selections: Array<VerseSelection>,
@@ -31,12 +32,7 @@ const CreateMarkButton: FC<{
 
   return (
     <>
-      {isOpen && (
-        <div
-          className="fixed top-0 right-0 bottom-0 left-0 bg-black opacity-25"
-          onClick={() => setIsOpen(false)}
-        />
-      )}
+      {isOpen && <Overlay onClick={() => setIsOpen(false)} />}
       <CircleButton
         themeId="yellow"
         onClick={(e) => setIsOpen((is) => !is)}

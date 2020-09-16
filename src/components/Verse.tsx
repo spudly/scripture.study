@@ -12,7 +12,7 @@ import sortByRange from '../utils/sortByRange';
 import {theme} from '../utils/themes';
 import {unique} from '@spudly/pushpop';
 import {MdRecordVoiceOver} from 'react-icons/md';
-import ErrorBoundary from './ErrorBoundary';
+import ErrorBoundary from './reusable/ErrorBoundary';
 import UserContext from '../utils/UserContext';
 import hasRole from '../utils/hasRole';
 

@@ -1,32 +1,20 @@
 import React, {useCallback, FC} from 'react';
 import {Switch, Route, useRouteMatch, Redirect} from 'react-router';
 import Chapter from './components/Chapter';
-import ErrorBoundary from './components/ErrorBoundary';
-import Authorize from './components/Authorize';
+import ErrorBoundary from './components/reusable/ErrorBoundary';
+import Authenticate from './components/Authenticate';
 import Nav from './components/Nav';
 import Speakers from './components/Speakers';
 import useAsync from './utils/useAsync';
 import {queries} from './data-sources/fetch';
 import refToTitle from './utils/refToTitle';
 import refToNumber from './utils/refToNumber';
-import ErrorAlert from './components/ErrorAlert';
-import Spinner from './components/Spinner';
-import {Volume, Book, Chapter as $Chapter, Verse, Mark} from './utils/types';
+import ErrorAlert from './components/reusable/ErrorAlert';
+import Spinner from './components/reusable/Spinner';
+import useTitle from './utils/useTitle';
 
-const App: FC<{
-  initialData?: {
-    volumes: Array<Volume>;
-    volume: Volume | undefined;
-    books: Array<Book>;
-    book: Book | undefined;
-    chapters: Array<$Chapter>;
-    chapter: $Chapter | undefined;
-    verses: Array<Verse>;
-    marks: Array<Mark>;
-    prev: string | undefined;
-    next: string | undefined;
-  };
-}> = ({initialData}) => {
+const App: FC = () => {
+  useTitle('scripture.study');
   let {
     params: {volumeRef, bookRef, chapterRef},
   } = useRouteMatch<{
@@ -61,7 +49,6 @@ const App: FC<{
           : undefined;
       return {volumes, volume, books, book, chapters, chapter};
     }, [volumeRef, bookRef, chapterRef]),
-    initialData,
   );
 
   if (result.error) {
@@ -75,7 +62,7 @@ const App: FC<{
   const {volumes, volume, books, book, chapters, chapter} = result.result;
 
   return (
-    <Authorize>
+    <Authenticate>
       <div className="min-h-screen flex flex-col bg-gray-200 pt-20">
         <ErrorBoundary grow>
           <Switch>
@@ -83,7 +70,7 @@ const App: FC<{
             <Route
               path="/read/:volume/:book/:chapter"
               exact
-              render={() => <Chapter initialData={initialData as any} />}
+              render={() => <Chapter />}
             />
             <Route path="/read/:volume/:book" render={() => null} />
             <Route path="/read/:volume" render={() => null} />
@@ -93,7 +80,7 @@ const App: FC<{
         </ErrorBoundary>
       </div>
       <Nav {...{volumes, volume, books, book, chapters, chapter}} />
-    </Authorize>
+    </Authenticate>
   );
 };
 

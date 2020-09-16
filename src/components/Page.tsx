@@ -1,11 +1,6 @@
 import React, {FC} from 'react';
-import ReactDOMServer from 'react-dom/server';
 
-const Page: FC<{csrfToken: string; data: any}> = ({
-  csrfToken,
-  data,
-  children,
-}) => (
+const Page: FC<{csrfToken: string}> = ({csrfToken}) => (
   <html lang="en">
     <head>
       <link rel="shortcut icon" href="/favicon.ico" type="image/x-icon" />
@@ -18,17 +13,7 @@ const Page: FC<{csrfToken: string; data: any}> = ({
       <script src="/index.client.js" defer />
     </head>
     <body>
-      <div
-        id="root"
-        dangerouslySetInnerHTML={{
-          __html: ReactDOMServer.renderToString(<>{children}</>),
-        }}
-      />
-      <script
-        type="application/json"
-        id="data"
-        dangerouslySetInnerHTML={{__html: JSON.stringify(data)}}
-      />
+      <div id="root" />
     </body>
   </html>
 );

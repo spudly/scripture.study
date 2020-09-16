@@ -2,9 +2,10 @@ import React, {useState, FC} from 'react';
 import {Mark, Speaker} from '../utils/types';
 import {MdEdit} from 'react-icons/md';
 import classnames from 'classnames';
-import CircleButton from './CircleButton';
+import CircleButton from './reusable/CircleButton';
 import SpeakerSelect from './SpeakerSelect';
-import Spinner from './Spinner';
+import Spinner from './reusable/Spinner';
+import Overlay from './reusable/Overlay';
 
 const EditMarksButton: FC<{
   updateMarks: (marks: Array<Mark>) => void;
@@ -17,12 +18,7 @@ const EditMarksButton: FC<{
 
   return (
     <>
-      {isOpen && (
-        <div
-          className="fixed top-0 right-0 bottom-0 left-0"
-          onClick={() => setIsOpen(false)}
-        />
-      )}
+      {isOpen && <Overlay onClick={() => setIsOpen(false)} />}
       <CircleButton
         themeId="blue"
         onClick={(e) => {

@@ -7,23 +7,14 @@ import React, {
   useContext,
 } from 'react';
 import {useRouteMatch, useLocation} from 'react-router';
-import Head from './Head';
-import Spinner from './Spinner';
-import ErrorBoundary from './ErrorBoundary';
+import Spinner from './reusable/Spinner';
+import ErrorBoundary from './reusable/ErrorBoundary';
 import refToTitle from '../utils/refToTitle';
 import refToNumber from '../utils/refToNumber';
 import {queries} from '../data-sources/fetch';
-import Spacer from './Spacer';
-import Pagination from './Pagination';
-import {
-  Verse as $Verse,
-  Mark,
-  VerseSelection,
-  Speaker,
-  Book,
-  Volume,
-  Chapter,
-} from '../utils/types';
+import Spacer from './reusable/Spacer';
+import Pagination from './reusable/Pagination';
+import {Verse as $Verse, Mark, VerseSelection, Speaker} from '../utils/types';
 import Verse from './Verse';
 import createVerseSelections from '../utils/createVerseSelections';
 import isEmptySelection from '../utils/isEmptySelection';
@@ -32,7 +23,7 @@ import DeleteMarksButton from './DeleteMarksButton';
 import CreateMarkButton from './CreateMarkButton';
 import useMutation from '../utils/useMutation';
 import useAsync from '../utils/useAsync';
-import ErrorAlert from './ErrorAlert';
+import ErrorAlert from './reusable/ErrorAlert';
 import UserContext from '../utils/UserContext';
 import hasRole from '../utils/hasRole';
 
@@ -160,17 +151,7 @@ const useRestoreScrollPosition = () => {
   }, [pathname]);
 };
 
-const ChapterPage: FC<{
-  initialData?: {
-    volume: Volume;
-    book: Book;
-    chapter: Chapter;
-    verses: Array<$Verse>;
-    marks: Array<Mark>;
-    prev: string;
-    next: string;
-  };
-}> = ({initialData}) => {
+const ChapterPage: FC = () => {
   useRestoreScrollPosition();
   const match = useRouteMatch<{
     volumeRef: string;
@@ -195,7 +176,6 @@ const ChapterPage: FC<{
       ] as const);
       return {volume, book, chapter, verses, marks, prev, next};
     }, [volumeRef, bookRef, chapterRef]),
-    initialData,
   );
   const {result: speakers, error: speakersError} = useAsync(
     queries.getAllSpeakers,
@@ -227,40 +207,33 @@ const ChapterPage: FC<{
   const {book, chapter, verses, prev, next} = mainResult;
 
   return (
-    <>
-      <Head>
-        <title>
-          scripture.study: {book.title} {chapter.number}
-        </title>
-      </Head>
-      <div className="flex-1 flex flex-col px-4 sm:px-32">
-        {chapter.number === 1 && (
-          <h1 className="text-center text-6xl uppercase font-serif">
-            {book.longTitle}
-          </h1>
-        )}
-        <h2 className="text-center text-4xl uppercase font-serif">
-          {chapter.number === 1 ? 'Chapter' : book.title} {chapter.number}
-        </h2>
+    <div className="flex-1 flex flex-col px-4 sm:px-32">
+      {chapter.number === 1 && (
+        <h1 className="text-center text-6xl uppercase font-serif">
+          {book.longTitle}
+        </h1>
+      )}
+      <h2 className="text-center text-4xl uppercase font-serif">
+        {chapter.number === 1 ? 'Chapter' : book.title} {chapter.number}
+      </h2>
 
-        <Spacer y={8} />
+      <Spacer y={8} />
 
-        <p className="text-4xl italic font-serif">
-          Lorem ipsum dolor sit amet, consectetur adipiscing elit. Mauris luctus
-          suscipit congue. Quisque accumsan posuere elementum. Morbi nec sapien
-          convallis, condimentum diam non, aliquet tellus.
-        </p>
+      <p className="text-4xl italic font-serif">
+        Lorem ipsum dolor sit amet, consectetur adipiscing elit. Mauris luctus
+        suscipit congue. Quisque accumsan posuere elementum. Morbi nec sapien
+        convallis, condimentum diam non, aliquet tellus.
+      </p>
 
-        <Spacer y={8} />
-        <Pagination prevHref={prev} nextHref={next} />
-        <Verses
-          verses={verses}
-          speakers={speakers ?? []}
-          marks={marks ?? []}
-          reloadMarks={reloadMarks}
-        />
-      </div>{' '}
-    </>
+      <Spacer y={8} />
+      <Pagination prevHref={prev} nextHref={next} />
+      <Verses
+        verses={verses}
+        speakers={speakers ?? []}
+        marks={marks ?? []}
+        reloadMarks={reloadMarks}
+      />
+    </div>
   );
 };
 
