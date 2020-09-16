@@ -90,7 +90,10 @@ const VolumeThingLink: FC<{volume: Volume; isActive?: boolean}> = ({
   isActive,
 }) => {
   return (
-    <ThingLink href={`/read/${titleToRef(volume.title)}`} isActive={isActive}>
+    <ThingLink
+      href={`/scriptures/${titleToRef(volume.title)}`}
+      isActive={isActive}
+    >
       {volume.longTitle}
     </ThingLink>
   );
@@ -129,10 +132,10 @@ const Nav: FC<{
     'volumes' | 'books' | 'chapters' | null
   >(null);
   const user = useContext(UserContext);
-  const read = Boolean(useRouteMatch('/read'));
+  const isScriptures = Boolean(useRouteMatch('/scriptures'));
   const view =
     selectedView ||
-    (read
+    (isScriptures
       ? volume == null
         ? 'volumes'
         : book == null
@@ -221,7 +224,7 @@ const Nav: FC<{
             books.sort(compareSortPosition).map((b) => (
               <ThingLink
                 key={b.id}
-                href={`/read/${titleToRef(volume!.title)}/${titleToRef(
+                href={`/scriptures/${titleToRef(volume!.title)}/${titleToRef(
                   b.title,
                 )}`}
                 isActive={book && b.id === book.id}
@@ -233,7 +236,7 @@ const Nav: FC<{
             chapters.sort(compareNumber).map((c) => (
               <ThingLink
                 key={c.id}
-                href={`/read/${titleToRef(volume!.title)}/${titleToRef(
+                href={`/scriptures/${titleToRef(volume!.title)}/${titleToRef(
                   book!.title,
                 )}/${c.number}`}
                 isActive={chapter && c.id === chapter.id}

@@ -21,7 +21,7 @@ const App: FC = () => {
     volumeRef?: string;
     bookRef?: string;
     chapterRef?: string;
-  }>('/read/:volumeRef?/:bookRef?/:chapterRef?') ?? {params: {}};
+  }>('/scriptures/:volumeRef?/:bookRef?/:chapterRef?') ?? {params: {}};
   const result = useAsync(
     useCallback(async () => {
       const volumes = await queries.getAllVolumes();
@@ -68,14 +68,14 @@ const App: FC = () => {
           <Switch>
             <Route path="/speakers" exact component={Speakers} />
             <Route
-              path="/read/:volume/:book/:chapter"
+              path="/scriptures/:volume/:book/:chapter"
               exact
               render={() => <Chapter />}
             />
-            <Route path="/read/:volume/:book" render={() => null} />
-            <Route path="/read/:volume" render={() => null} />
-            <Route path="/read" render={() => null} />
-            <Route render={() => <Redirect to="/read" />} />
+            <Route path="/scriptures/:volume/:book" render={() => null} />
+            <Route path="/scriptures/:volume" render={() => null} />
+            <Route path="/scriptures" render={() => null} />
+            <Route render={() => <Redirect to="/scriptures" />} />
           </Switch>
         </ErrorBoundary>
       </div>

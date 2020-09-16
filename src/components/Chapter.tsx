@@ -157,7 +157,7 @@ const ChapterPage: FC = () => {
     volumeRef: string;
     bookRef: string;
     chapterRef: string;
-  }>('/read/:volumeRef/:bookRef/:chapterRef')!;
+  }>('/scriptures/:volumeRef/:bookRef/:chapterRef')!;
   const {volumeRef, bookRef, chapterRef} = match.params;
   const {result: mainResult, error: mainError} = useAsync(
     useCallback(async () => {
