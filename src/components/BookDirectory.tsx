@@ -1,6 +1,5 @@
 import React, {FC} from 'react';
 import Directory, {DirectoryItem} from './Directory';
-import titleToRef from '../utils/titleToRef';
 import {get, compareBy} from '@spudly/pushpop';
 import {queries} from '../data-sources/fetch';
 import {useQuery} from 'react-query';

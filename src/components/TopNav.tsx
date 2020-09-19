@@ -2,7 +2,6 @@ import React, {FC, useContext} from 'react';
 import {MdMenu} from 'react-icons/md';
 import UserContext from '../utils/UserContext';
 import Button from './reusable/Button';
-import Spacer from './reusable/Spacer';
 
 const Breadcrumb: FC<{}> = () => {
   return <div />;

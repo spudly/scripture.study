@@ -19,14 +19,14 @@ const BookDirectory: FC = () => {
   );
   const {data: book} = useQuery(
     `getBookByTitle(${volume?.id}, ${bookTitle})`,
-    () => queries.getBookByTitle(volume.id, bookTitle),
+    () => queries.getBookByTitle(volume!.id, bookTitle),
     {enabled: volume && bookTitle},
   );
   const {
     data: chapters,
   } = useQuery(
     `getChaptersByBookId(${volume?.id}, ${book?.id})`,
-    () => queries.getAllChaptersByBookId(volume.id, book.id),
+    () => queries.getAllChaptersByBookId(volume!.id, book!.id),
     {enabled: volume && book},
   );
 
