@@ -1,10 +1,10 @@
 import {BrowserRouter} from 'react-router-dom';
 import React from 'react';
 import ReactDOM from 'react-dom';
-import App from './App';
-import './css/tailwind.css';
+import App from './components/App';
+import './css/index.css';
 
-ReactDOM.hydrate(
+ReactDOM.render(
   <BrowserRouter>
     <App />
   </BrowserRouter>,

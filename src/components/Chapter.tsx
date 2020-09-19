@@ -26,6 +26,7 @@ import useAsync from '../utils/useAsync';
 import ErrorAlert from './reusable/ErrorAlert';
 import UserContext from '../utils/UserContext';
 import hasRole from '../utils/hasRole';
+import Title from './reusable/Title';
 
 const Verses: FC<{
   verses: Array<$Verse>;
@@ -204,36 +205,38 @@ const ChapterPage: FC = () => {
     return <Spinner grow />;
   }
 
-  const {book, chapter, verses, prev, next} = mainResult;
+  const {volume, book, chapter, verses, prev, next} = mainResult;
 
   return (
-    <div className="flex-1 flex flex-col px-4 sm:px-32">
-      {chapter.number === 1 && (
-        <h1 className="text-center text-6xl uppercase font-serif">
-          {book.longTitle}
-        </h1>
-      )}
-      <h2 className="text-center text-4xl uppercase font-serif">
-        {chapter.number === 1 ? 'Chapter' : book.title} {chapter.number}
-      </h2>
+    <Title title={`${volume.longTitle} | ${book.title} ${chapter.number}`}>
+      <div className="flex-1 flex flex-col px-4 sm:px-32">
+        {chapter.number === 1 && (
+          <h1 className="text-center text-6xl uppercase font-serif">
+            {book.longTitle}
+          </h1>
+        )}
+        <h2 className="text-center text-4xl uppercase font-serif">
+          {chapter.number === 1 ? 'Chapter' : book.title} {chapter.number}
+        </h2>
 
-      <Spacer y={8} />
+        <Spacer y={8} />
 
-      <p className="text-4xl italic font-serif">
-        Lorem ipsum dolor sit amet, consectetur adipiscing elit. Mauris luctus
-        suscipit congue. Quisque accumsan posuere elementum. Morbi nec sapien
-        convallis, condimentum diam non, aliquet tellus.
-      </p>
+        <p className="text-4xl italic font-serif">
+          Lorem ipsum dolor sit amet, consectetur adipiscing elit. Mauris luctus
+          suscipit congue. Quisque accumsan posuere elementum. Morbi nec sapien
+          convallis, condimentum diam non, aliquet tellus.
+        </p>
 
-      <Spacer y={8} />
-      <Pagination prevHref={prev} nextHref={next} />
-      <Verses
-        verses={verses}
-        speakers={speakers ?? []}
-        marks={marks ?? []}
-        reloadMarks={reloadMarks}
-      />
-    </div>
+        <Spacer y={8} />
+        <Pagination prevHref={prev} nextHref={next} />
+        <Verses
+          verses={verses}
+          speakers={speakers ?? []}
+          marks={marks ?? []}
+          reloadMarks={reloadMarks}
+        />
+      </div>
+    </Title>
   );
 };
 
