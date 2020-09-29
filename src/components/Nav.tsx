@@ -1,14 +1,14 @@
 import React, {FC} from 'react';
-import useToggle from '../utils/useToggle';
+import useBoolean from '../utils/useBoolean';
 import SideNav from './SideNav';
 import TopNav from './TopNav';
 
 const Nav: FC = () => {
-  const [isSideNavOpen, toggleSideNav] = useToggle(false);
+  const [isSideNavOpen, , open, close] = useBoolean(false);
   return (
     <>
-      <TopNav toggleSideNav={toggleSideNav} />
-      <SideNav isOpen={isSideNavOpen} toggle={toggleSideNav} />
+      <TopNav openSideNav={open} />
+      <SideNav isOpen={isSideNavOpen} close={close} />
     </>
   );
 };

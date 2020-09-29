@@ -7,8 +7,18 @@ import React, {
 } from 'react';
 import Overlay from './reusable/Overlay';
 import classnames from 'classnames';
-import {MdClose, MdKeyboardArrowRight} from 'react-icons/md';
+import {
+  MdClose,
+  MdKeyboardArrowRight,
+  MdPeople,
+  MdPlace,
+  MdSettings,
+  MdWidgets,
+} from 'react-icons/md';
 import {VscBook} from 'react-icons/vsc';
+import {ImBooks} from 'react-icons/im';
+import {BiBook} from 'react-icons/bi';
+import {FiLogOut} from 'react-icons/fi';
 import Button from './reusable/Button';
 import {NavLink} from 'react-router-dom';
 import UserContext from '../utils/UserContext';
@@ -18,14 +28,15 @@ import scriptureLinkHref from '../utils/scriptureLinkHref';
 import {queries} from '../data-sources/fetch';
 import {useQuery} from 'react-query';
 import {Book, Volume} from '../utils/types';
-import useToggle from '../utils/useToggle';
+import useBoolean from '../utils/useBoolean';
 
 const SideNavLink: FC<{
   href: string;
   external?: boolean;
   onClick?: (event: React.MouseEvent<HTMLAnchorElement, MouseEvent>) => void;
   level?: 0 | 1 | 2 | 3;
-}> = ({href, external, children, onClick, level = 0}) => {
+  icon?: ReactNode;
+}> = ({href, icon, external, children, onClick, level = 0}) => {
   const className = classnames(
     'flex items-center p-2 space-x-2 hover:bg-gray-800 space-x-2',
     {
@@ -34,9 +45,15 @@ const SideNavLink: FC<{
       'pl-12': level === 3,
     },
   );
+  const kids = (
+    <>
+      {icon}
+      {typeof children === 'string' ? <span>{children}</span> : children}
+    </>
+  );
   return external ? (
     <a href={href} className={className} onClick={onClick}>
-      {children}
+      {kids}
     </a>
   ) : (
     <NavLink
@@ -45,7 +62,7 @@ const SideNavLink: FC<{
       activeClassName="bg-gray-700"
       onClick={onClick}
     >
-      {children}
+      {kids}
     </NavLink>
   );
 };
@@ -56,15 +73,14 @@ const SideNavLinkBranch: FC<
     label: ReactNode;
     isOpen: boolean;
   }
-> = ({icon, isOpen: isOpenProp, children, label, ...rest}) => {
-  const [isOpen, toggle] = useToggle(isOpenProp);
+> = ({isOpen: isOpenProp, children, label, ...rest}) => {
+  const [isOpen, setIsOpen, , , toggle] = useBoolean(isOpenProp);
   useEffect(() => {
-    toggle(isOpenProp);
-  }, [toggle, isOpenProp]);
+    setIsOpen(isOpenProp);
+  }, [setIsOpen, isOpenProp]);
   return (
     <>
       <SideNavLink {...rest} onClick={toggle}>
-        {icon}
         <div>{label}</div>
         <div className="flex-1" />
         <OpenIndicator isOpen={isOpen} />
@@ -77,8 +93,8 @@ const SideNavLinkBranch: FC<
 const ChapterLinks: FC<{
   volume: Volume;
   book: Book;
-  toggleSideNav: (arg: unknown) => void;
-}> = ({volume, book, toggleSideNav}) => {
+  closeSideNav: () => void;
+}> = ({volume, book, closeSideNav}) => {
   const {
     data: chapters,
   } = useQuery(`getChaptersByBookId(${volume?.id}, ${book?.id})`, () =>
@@ -93,7 +109,7 @@ const ChapterLinks: FC<{
             to={scriptureLinkHref(volume.title, book.title, chapter.number)}
             className="block m-2 p-2 w-12 h-12 text-center"
             activeClassName="bg-gray-700"
-            onClick={() => toggleSideNav(false)}
+            onClick={closeSideNav}
           >
             {chapter.number}
           </NavLink>
@@ -106,8 +122,8 @@ const ChapterLinks: FC<{
 const BookLinks: FC<{
   volume: Volume;
   bookTitle?: string;
-  toggleSideNav: (arg: unknown) => void;
-}> = ({volume, bookTitle, toggleSideNav}) => {
+  closeSideNav: () => void;
+}> = ({volume, bookTitle, closeSideNav}) => {
   const {data: books} = useQuery(
     `getAllBooksByVolumeId(${volume.id})`,
     () => queries.getAllBooksByVolumeId(volume!.id),
@@ -121,6 +137,7 @@ const BookLinks: FC<{
           <SideNavLinkBranch
             isOpen={book.title === bookTitle}
             href={scriptureLinkHref(volume.title, book.title)}
+            icon={<BiBook />}
             label={book.title}
             level={2}
           >
@@ -128,7 +145,7 @@ const BookLinks: FC<{
               <ChapterLinks
                 volume={volume}
                 book={book}
-                toggleSideNav={toggleSideNav}
+                closeSideNav={closeSideNav}
               />
             )}
           </SideNavLinkBranch>
@@ -141,8 +158,8 @@ const BookLinks: FC<{
 const VolumeLinks: FC<{
   volumeTitle?: string;
   bookTitle?: string;
-  toggleSideNav: (arg: unknown) => void;
-}> = ({volumeTitle, bookTitle, toggleSideNav}) => {
+  closeSideNav: () => void;
+}> = ({volumeTitle, bookTitle, closeSideNav}) => {
   const {data: volumes} = useQuery('getAllVolumes', queries.getAllVolumes);
 
   return (
@@ -152,6 +169,7 @@ const VolumeLinks: FC<{
           <SideNavLinkBranch
             isOpen={volume.title === volumeTitle}
             href={scriptureLinkHref(volume.title)}
+            icon={<ImBooks />}
             label={volume.title}
             level={1}
           >
@@ -159,7 +177,7 @@ const VolumeLinks: FC<{
               <BookLinks
                 volume={volume}
                 bookTitle={bookTitle}
-                toggleSideNav={toggleSideNav}
+                closeSideNav={closeSideNav}
               />
             )}
           </SideNavLinkBranch>
@@ -177,10 +195,9 @@ const OpenIndicator: FC<{isOpen: boolean}> = ({isOpen}) => (
   />
 );
 
-const SideNav: FC<{isOpen: boolean; toggle: (arg?: unknown) => void}> = ({
-  isOpen,
-  toggle,
-}) => {
+const SideNavDivider: FC = () => <hr className="border-t border-gray-700" />;
+
+const SideNav: FC<{isOpen: boolean; close: () => void}> = ({isOpen, close}) => {
   const user = useContext(UserContext);
   const {
     match: scriptureMatch,
@@ -190,7 +207,7 @@ const SideNav: FC<{isOpen: boolean; toggle: (arg?: unknown) => void}> = ({
 
   return (
     <div className="fixed z-10">
-      {isOpen && <Overlay darken onClick={toggle} />}
+      {isOpen && <Overlay darken onClick={close} />}
       <div
         className={classnames(
           'flex flex-col w-128 max-w-3/4 bg-gray-900 text-gray-100 fixed top-0 bottom-0 overflow-hidden duration-200 text-2xl overflow-y-auto',
@@ -203,13 +220,11 @@ const SideNav: FC<{isOpen: boolean; toggle: (arg?: unknown) => void}> = ({
         <div className="flex p-2 items-center justify-between">
           <span className="text-base">scripture.study</span>
           <Button minimal>
-            <MdClose onClick={() => toggle(false)} />
+            <MdClose onClick={close} />
           </Button>
         </div>
 
-        {user && hasRole(user, 'author') && (
-          <SideNavLink href="/speakers">People</SideNavLink>
-        )}
+        <SideNavDivider />
 
         <SideNavLinkBranch
           isOpen={scriptureMatch}
@@ -221,17 +236,56 @@ const SideNav: FC<{isOpen: boolean; toggle: (arg?: unknown) => void}> = ({
             <VolumeLinks
               volumeTitle={volumeTitle}
               bookTitle={bookTitle}
-              toggleSideNav={toggle}
+              closeSideNav={close}
             />
           )}
         </SideNavLinkBranch>
 
+        {/* TODO: update the people area such that you don't need admin privs to have read-only access */}
+        {user && hasRole(user, 'author') && (
+          <SideNavLink href="/speakers" icon={<MdPeople />} onClick={close}>
+            People
+          </SideNavLink>
+        )}
+
+        <SideNavLink href="/places" icon={<MdPlace />} onClick={close}>
+          Places
+        </SideNavLink>
+
+        <SideNavLink href="/things" icon={<MdWidgets />} onClick={close}>
+          Things
+        </SideNavLink>
+
         <div className="flex-1" />
+        <SideNavDivider />
 
         {user ? (
-          <SideNavLink external href="/auth/logout">
-            Logout
-          </SideNavLink>
+          <>
+            <SideNavLink
+              href="/user/profile"
+              icon={
+                <img
+                  src={user.picture}
+                  alt={user.displayName}
+                  className="rounded-full"
+                  style={{height: '1em', width: '1em'}}
+                />
+              }
+              onClick={close}
+            >
+              {user.name?.givenName ?? user.displayName}
+            </SideNavLink>
+            <SideNavLink
+              href={`/user/settings`}
+              icon={<MdSettings />}
+              onClick={close}
+            >
+              Settings
+            </SideNavLink>
+            <SideNavLink external href="/auth/logout" icon={<FiLogOut />}>
+              Logout
+            </SideNavLink>
+          </>
         ) : (
           <SideNavLink external href="/auth/login">
             Login

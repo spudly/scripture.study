@@ -8,9 +8,12 @@ import Title from './reusable/Title';
 import VolumeDirectory from './VolumeDirectory';
 import BookDirectory from './BookDirectory';
 import ChapterDirectory from './ChapterDirectory';
-import {ReactQueryDevtools} from 'react-query-devtools';
+import UserSettings from './UserSettings';
+import UserProfile from './UserProfile';
 import {QueryCache, ReactQueryCacheProvider} from 'react-query';
 import Nav from './Nav';
+import Places from './Places';
+import Things from './Things';
 
 const queryCache = new QueryCache();
 
@@ -23,7 +26,11 @@ const App: FC = () => {
             <div className="min-h-screen flex flex-col bg-gray-200 pt-20">
               <ErrorBoundary grow>
                 <Switch>
-                  <Route path="/speakers" exact component={Speakers} />
+                  <Route path="/user/profile" component={UserProfile} />
+                  <Route path="/user/settings" component={UserSettings} />
+                  <Route path="/speakers" component={Speakers} />
+                  <Route path="/places" component={Places} />
+                  <Route path="/things" component={Things} />
                   <Route path="/scriptures" exact component={VolumeDirectory} />
                   <Route
                     path="/scriptures/:volume"
@@ -48,7 +55,7 @@ const App: FC = () => {
             <Nav />
           </Authenticate>
         </Title>
-        <ReactQueryDevtools initialIsOpen={false} />
+        {/* <ReactQueryDevtools initialIsOpen={false} /> */}
       </ReactQueryCacheProvider>
     </>
   );
