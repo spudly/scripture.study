@@ -1,6 +1,6 @@
 import React, {FC, useState, useCallback, ReactNode} from 'react';
 import classnames from 'classnames';
-import Overlay from './reusable/Overlay';
+import Overlay from './Overlay';
 
 type RenderPropProps = {
   isOpen: boolean;

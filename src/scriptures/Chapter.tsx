@@ -7,13 +7,13 @@ import React, {
   useContext,
 } from 'react';
 import {useRouteMatch, useLocation} from 'react-router';
-import Spinner from './reusable/Spinner';
-import ErrorBoundary from './reusable/ErrorBoundary';
+import Spinner from '../widgets/Spinner';
+import ErrorBoundary from '../widgets/ErrorBoundary';
 import refToTitle from '../utils/refToTitle';
 import refToNumber from '../utils/refToNumber';
-import {queries} from '../data-sources/fetch';
-import Spacer from './reusable/Spacer';
-import Pagination from './reusable/Pagination';
+import {queries} from '../api/api.client';
+import Spacer from '../widgets/Spacer';
+import Pagination from '../widgets/Pagination';
 import {Verse as $Verse, Mark, VerseSelection, Speaker} from '../utils/types';
 import Verse from './Verse';
 import createVerseSelections from '../utils/createVerseSelections';
@@ -23,10 +23,10 @@ import DeleteMarksButton from './DeleteMarksButton';
 import CreateMarkButton from './CreateMarkButton';
 import useMutation from '../utils/useMutation';
 import useAsync from '../utils/useAsync';
-import ErrorAlert from './reusable/ErrorAlert';
+import ErrorAlert from '../widgets/ErrorAlert';
 import UserContext from '../utils/UserContext';
 import hasRole from '../utils/hasRole';
-import Title from './reusable/Title';
+import Title from '../widgets/Title';
 
 const Verses: FC<{
   verses: Array<$Verse>;

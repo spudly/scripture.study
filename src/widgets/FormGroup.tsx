@@ -1,5 +1,5 @@
 import React, {FC, ReactNode} from 'react';
-import {Unstyled} from '../../utils/types';
+import {Unstyled} from '../utils/types';
 
 const FormGroup: FC<
   Unstyled<'div'> & {label: ReactNode; labelFor?: string}

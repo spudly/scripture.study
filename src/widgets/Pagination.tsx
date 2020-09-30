@@ -2,7 +2,7 @@ import React, {FC, useRef, RefObject, useEffect} from 'react';
 import {useHistory, Link} from 'react-router-dom';
 import {MdNavigateBefore, MdNavigateNext} from 'react-icons/md';
 import classnames from 'classnames';
-import useSwipe, {Direction} from '../../utils/useOnSwipe';
+import useSwipe, {Direction} from '../utils/useOnSwipe';
 
 const PaginationLink: FC<{
   type: 'prev' | 'next';

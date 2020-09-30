@@ -1,19 +1,19 @@
 import React, {FC} from 'react';
 import {Switch, Route, Redirect} from 'react-router';
-import Chapter from './Chapter';
-import ErrorBoundary from './reusable/ErrorBoundary';
-import Authenticate from './Authenticate';
-import Speakers from './Speakers';
-import Title from './reusable/Title';
-import VolumeDirectory from './VolumeDirectory';
-import BookDirectory from './BookDirectory';
-import ChapterDirectory from './ChapterDirectory';
-import UserSettings from './UserSettings';
-import UserProfile from './UserProfile';
+import Chapter from '../scriptures/Chapter';
+import ErrorBoundary from '../widgets/ErrorBoundary';
+import Authenticate from '../auth/Authenticate';
+import Speakers from '../people/Speakers';
+import Title from '../widgets/Title';
+import VolumeDirectory from '../scriptures/VolumeDirectory';
+import BookDirectory from '../scriptures/BookDirectory';
+import ChapterDirectory from '../scriptures/ChapterDirectory';
+import UserSettings from '../user/UserSettings';
+import UserProfile from '../user/UserProfile';
 import {QueryCache, ReactQueryCacheProvider} from 'react-query';
-import Nav from './Nav';
-import Places from './Places';
-import Things from './Things';
+import Nav from '../nav/Nav';
+import Places from '../places/Places';
+import Things from '../things/Things';
 
 const queryCache = new QueryCache();
 

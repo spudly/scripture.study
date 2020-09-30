@@ -2,12 +2,12 @@ import React, {useState, FC} from 'react';
 import {Mark, Speaker} from '../utils/types';
 import {MdRecordVoiceOver} from 'react-icons/md';
 import classnames from 'classnames';
-import CircleButton from './reusable/CircleButton';
+import CircleButton from '../widgets/CircleButton';
 import {VerseSelection} from '../utils/types';
-import Spinner from './reusable/Spinner';
+import Spinner from '../widgets/Spinner';
 import createId from '../utils/createId';
-import SpeakerSelect from './SpeakerSelect';
-import Overlay from './reusable/Overlay';
+import SpeakerSelect from '../people/SpeakerSelect';
+import Overlay from '../widgets/Overlay';
 
 const buildSpeakerMarks = (
   selections: Array<VerseSelection>,

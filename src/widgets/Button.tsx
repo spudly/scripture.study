@@ -1,5 +1,5 @@
 import React, {FC} from 'react';
-import {Unstyled} from '../../utils/types';
+import {Unstyled} from '../utils/types';
 import classnames from 'classnames';
 
 const Button: FC<Unstyled<'button'> & {minimal?: boolean}> = ({

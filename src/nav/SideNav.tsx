@@ -5,7 +5,7 @@ import React, {
   useContext,
   useEffect,
 } from 'react';
-import Overlay from './reusable/Overlay';
+import Overlay from '../widgets/Overlay';
 import classnames from 'classnames';
 import {
   MdClose,
@@ -19,13 +19,13 @@ import {VscBook} from 'react-icons/vsc';
 import {ImBooks} from 'react-icons/im';
 import {BiBook} from 'react-icons/bi';
 import {FiLogOut} from 'react-icons/fi';
-import Button from './reusable/Button';
+import Button from '../widgets/Button';
 import {NavLink} from 'react-router-dom';
 import UserContext from '../utils/UserContext';
 import hasRole from '../utils/hasRole';
 import useScripturesRouteMatch from '../utils/useScripturesRouteMatch';
 import scriptureLinkHref from '../utils/scriptureLinkHref';
-import {queries} from '../data-sources/fetch';
+import {queries} from '../api/api.client';
 import {useQuery} from 'react-query';
 import {Book, Volume} from '../utils/types';
 import useBoolean from '../utils/useBoolean';

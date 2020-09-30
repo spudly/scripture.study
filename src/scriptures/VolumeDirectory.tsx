@@ -1,9 +1,9 @@
 import React, {FC} from 'react';
 import Directory, {DirectoryItem} from './Directory';
 import {get, compareBy} from '@spudly/pushpop';
-import {queries} from '../data-sources/fetch';
+import {queries} from '../api/api.client';
 import {useQuery} from 'react-query';
-import Spinner from './reusable/Spinner';
+import Spinner from '../widgets/Spinner';
 import scriptureLinkHref from '../utils/scriptureLinkHref';
 
 const compareSortPosition = compareBy(get('sortPosition'));

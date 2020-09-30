@@ -1,6 +1,6 @@
 import React, {FC} from 'react';
 import {MdMenu} from 'react-icons/md';
-import Button from './reusable/Button';
+import Button from '../widgets/Button';
 
 const TopNav: FC<{openSideNav: () => void}> = ({openSideNav}) => {
   return (

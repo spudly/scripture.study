@@ -1,6 +1,6 @@
 import {useState} from 'react';
 import type {Mutations, MutationState} from './types';
-import {mutations} from '../data-sources/fetch';
+import {mutations} from '../api/api.client';
 
 const useMutation = <NAME extends keyof Mutations>(
   name: NAME,

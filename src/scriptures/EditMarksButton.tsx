@@ -2,10 +2,10 @@ import React, {useState, FC} from 'react';
 import {Mark, Speaker} from '../utils/types';
 import {MdEdit} from 'react-icons/md';
 import classnames from 'classnames';
-import CircleButton from './reusable/CircleButton';
-import SpeakerSelect from './SpeakerSelect';
-import Spinner from './reusable/Spinner';
-import Overlay from './reusable/Overlay';
+import CircleButton from '../widgets/CircleButton';
+import SpeakerSelect from '../people/SpeakerSelect';
+import Spinner from '../widgets/Spinner';
+import Overlay from '../widgets/Overlay';
 
 const EditMarksButton: FC<{
   updateMarks: (marks: Array<Mark>) => void;

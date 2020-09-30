@@ -4,7 +4,7 @@ import webpackDevMiddleware from 'webpack-dev-middleware';
 import webpackHotMiddleware from 'webpack-hot-middleware';
 import webpackConfig from './webpack.config.js';
 import {logger} from './utils/logger';
-import router from './router';
+import router from './api/router';
 
 const PORT = process.env.PORT;
 

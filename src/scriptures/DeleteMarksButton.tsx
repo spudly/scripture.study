@@ -1,7 +1,7 @@
 import React, {FC} from 'react';
 import {MdDelete} from 'react-icons/md';
-import CircleButton from './reusable/CircleButton';
-import Spinner from './reusable/Spinner';
+import CircleButton from '../widgets/CircleButton';
+import Spinner from '../widgets/Spinner';
 import {Mark} from '../utils/types';
 
 const DeleteMarksButton: FC<{

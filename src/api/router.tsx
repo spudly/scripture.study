@@ -2,9 +2,7 @@ import path from 'path';
 import express, {Handler} from 'express';
 import bodyParser from 'body-parser';
 import cookieParser from 'cookie-parser';
-import queryRoute from './api/query/[query]';
-import mutationRoute from './api/mutation/[mutation]';
-import {logger, requestLogger} from './utils/logger';
+import {logger, requestLogger} from '../utils/logger';
 import csurf from 'csurf';
 import helmet from 'helmet';
 import React from 'react';
@@ -12,8 +10,29 @@ import session from 'express-session';
 import {renderToStaticNodeStream} from 'react-dom/server';
 import passport from 'passport';
 import Auth0Strategy from 'passport-auth0';
-import hasRole from './utils/hasRole';
-import Page from './components/Page';
+import hasRole from '../utils/hasRole';
+import Page from '../app/Page';
+import {queries, mutations} from './api.server';
+import {Mutations} from '../utils/types';
+import {Request as ExpressRequest, Response as ExpressResponse} from 'express';
+
+const queryRoute = async (req: ExpressRequest, resp: ExpressResponse) => {
+  requestLogger(req, resp);
+  const query = (req as any).params?.query ?? req.query.query;
+  const arg = req.query.arg;
+  const queryFn: Function = queries[query as keyof typeof queries];
+  const args: any = Array.isArray(arg) ? arg : arg != null ? [arg] : [];
+  req.log.info({query, args}, 'Query');
+  const result = await queryFn(...args);
+  resp.json(result);
+};
+
+const mutationRoute = async (req: ExpressRequest, resp: ExpressResponse) => {
+  requestLogger(req, resp);
+  const mutation = (req as any).params?.mutation ?? req.query.mutation;
+  req.log.info({mutation, body: req.body}, 'Mutation');
+  resp.json(await mutations[mutation as keyof Mutations](req.body));
+};
 
 const publicDir = path.join(__dirname, '../public');
 

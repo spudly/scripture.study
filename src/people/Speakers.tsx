@@ -1,16 +1,16 @@
 import React, {FC, useState} from 'react';
 import useAsync from '../utils/useAsync';
-import {queries, mutations} from '../data-sources/fetch';
-import Spinner from './reusable/Spinner';
-import ErrorAlert from './reusable/ErrorAlert';
+import {queries, mutations} from '../api/api.client';
+import Spinner from '../widgets/Spinner';
+import ErrorAlert from '../widgets/ErrorAlert';
 import {MdEdit} from 'react-icons/md';
 import {useId} from '@reach/auto-id';
-import Table from './reusable/Table';
-import Dialog from './reusable/Dialog';
-import Input from './reusable/Input';
-import Textarea from './reusable/Textarea';
-import Button from './reusable/Button';
-import FormGroup from './reusable/FormGroup';
+import Table from '../widgets/Table';
+import Dialog from '../widgets/Dialog';
+import Input from '../widgets/Input';
+import Textarea from '../widgets/Textarea';
+import Button from '../widgets/Button';
+import FormGroup from '../widgets/FormGroup';
 import {NewSpeaker} from '../utils/types';
 import compareSpeakers from '../utils/compareSpeakers';
 
