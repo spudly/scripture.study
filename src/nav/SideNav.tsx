@@ -8,7 +8,9 @@ import React, {
 import Overlay from '../widgets/Overlay';
 import classnames from 'classnames';
 import {
+  MdAccessTime,
   MdClose,
+  MdCompareArrows,
   MdKeyboardArrowRight,
   MdPeople,
   MdPlace,
@@ -19,6 +21,8 @@ import {VscBook} from 'react-icons/vsc';
 import {ImBooks} from 'react-icons/im';
 import {BiBook} from 'react-icons/bi';
 import {FiLogOut} from 'react-icons/fi';
+import {RiQuestionLine} from 'react-icons/ri';
+import {BsCardHeading} from 'react-icons/bs';
 import Button from '../widgets/Button';
 import {NavLink} from 'react-router-dom';
 import UserContext from '../utils/UserContext';
@@ -242,6 +246,7 @@ const SideNav: FC<{isOpen: boolean; close: () => void}> = ({isOpen, close}) => {
         </SideNavLinkBranch>
 
         {/* TODO: update the people area such that you don't need admin privs to have read-only access */}
+        {/* TODO: as part of the "people" section, include their relationships to other people, and a place to show a geneology chart */}
         {user && hasRole(user, 'author') && (
           <SideNavLink href="/speakers" icon={<MdPeople />} onClick={close}>
             People
@@ -254,6 +259,30 @@ const SideNav: FC<{isOpen: boolean; close: () => void}> = ({isOpen, close}) => {
 
         <SideNavLink href="/things" icon={<MdWidgets />} onClick={close}>
           Things
+        </SideNavLink>
+
+        <SideNavLink href="/timeline" icon={<MdAccessTime />} onClick={close}>
+          Timeline
+        </SideNavLink>
+
+        <SideNavLink
+          href="/questions"
+          icon={<RiQuestionLine />}
+          onClick={close}
+        >
+          Questions
+        </SideNavLink>
+
+        <SideNavLink
+          href="/comparisons"
+          icon={<MdCompareArrows />}
+          onClick={close}
+        >
+          Comparisons
+        </SideNavLink>
+
+        <SideNavLink href="/topics" icon={<BsCardHeading />} onClick={close}>
+          Topics
         </SideNavLink>
 
         <div className="flex-1" />

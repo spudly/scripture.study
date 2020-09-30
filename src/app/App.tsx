@@ -14,6 +14,10 @@ import {QueryCache, ReactQueryCacheProvider} from 'react-query';
 import Nav from '../nav/Nav';
 import Places from '../places/Places';
 import Things from '../things/Things';
+import Comparisons from '../comparisons/Comparisons';
+import Questions from '../questions/Questions';
+import Timeline from '../timeline/Timeline';
+import Topics from '../topics/Topics';
 
 const queryCache = new QueryCache();
 
@@ -31,6 +35,12 @@ const App: FC = () => {
                   <Route path="/speakers" component={Speakers} />
                   <Route path="/places" component={Places} />
                   <Route path="/things" component={Things} />
+
+                  <Route path="/comparisons" component={Comparisons} />
+                  <Route path="/timeline" component={Timeline} />
+                  <Route path="/topics" component={Topics} />
+                  <Route path="/questions" component={Questions} />
+
                   <Route path="/scriptures" exact component={VolumeDirectory} />
                   <Route
                     path="/scriptures/:volume"
