@@ -1,4 +1,4 @@
-import React, {FC} from 'react';
+import React, {FC, useCallback} from 'react';
 import Directory, {DirectoryItem} from './Directory';
 import {get, compareBy} from '@spudly/pushpop';
 import {queries} from '../api/api.client';
@@ -7,19 +7,20 @@ import Spinner from '../widgets/Spinner';
 import useScripturesRouteMatch from '../utils/useScripturesRouteMatch';
 import scriptureLinkHref from '../utils/scriptureLinkHref';
 
-const compareSortPosition = compareBy(get('sortPosition'));
+const compareOrder = compareBy(get('order'));
 
 const BookDirectory: FC = () => {
   const {volumeTitle} = useScripturesRouteMatch();
   if (!volumeTitle) {
     throw new Error('Missing volume title');
   }
-  const {data: volume} = useQuery(`getVolumeByTitle(${volumeTitle})`, () =>
-    queries.getVolumeByTitle(volumeTitle),
+  const {data: volume} = useQuery(
+    ['volumes', volumeTitle],
+    useCallback((key, title) => queries.getVolumeByTitle(title), []),
   );
   const {data: books} = useQuery(
-    `getAllBooksByVolumeId(${volume?.id})`,
-    () => queries.getAllBooksByVolumeId(volume!.id),
+    ['books', volume?.id],
+    useCallback((key, volumeId) => queries.getAllBooksByVolumeId(volumeId), []),
     {enabled: volume},
   );
 
@@ -29,7 +30,7 @@ const BookDirectory: FC = () => {
 
   return (
     <Directory>
-      {books.sort(compareSortPosition).map((book) => (
+      {books.sort(compareOrder).map((book) => (
         <DirectoryItem
           key={book.id}
           href={scriptureLinkHref(volume.title, book.title)}

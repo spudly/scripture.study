@@ -7,35 +7,35 @@ import React, {
   useContext,
 } from 'react';
 import classnames from 'classnames';
-import {Mark, Verse as $Verse, Speaker} from '../utils/types';
-import sortByRange from '../utils/sortByRange';
+import {MarkRecord, VerseRecord, PersonRecord, ID} from '../utils/types';
+import sortByStartIndex from '../utils/sortByStartIndex';
 import {theme} from '../utils/themes';
-import {unique} from '@spudly/pushpop';
+import {isNotNil, unique} from '@spudly/pushpop';
 import {MdRecordVoiceOver} from 'react-icons/md';
 import ErrorBoundary from '../widgets/ErrorBoundary';
 import UserContext from '../utils/UserContext';
 import hasRole from '../utils/hasRole';
 
 const SpeakerIndicator: FC<{
-  speakerId: string;
-  speakers: Array<Speaker>;
+  speakerId: ID;
+  speakers: Array<PersonRecord>;
 }> = ({speakers, speakerId}) => {
   const speaker = speakers.find((s) => s.id === speakerId);
   if (!speaker) {
     return null;
   }
-  const {name, description} = speaker;
+  const {name, biography} = speaker;
   return (
     <div
       className="inline-block w-16 h-16 mx-2 align-middle overflow-hidden select-none"
       data-selection-ignore
-      title={[name, description].filter((x) => x != null).join(', ')}
+      title={[name, biography].filter((x) => x != null).join(', ')}
     >
       <div className="flex justify-center">
         <MdRecordVoiceOver />
       </div>
       <div className="text-xs text-center truncate uppercase leading-none flex-1 min-w-0 pt-1">
-        {name ?? description}
+        {name ?? biography}
       </div>
     </div>
   );
@@ -44,11 +44,11 @@ const SpeakerIndicator: FC<{
 const VerseFragment: FC<{
   children: ReactNode;
   isVerseNumber?: boolean;
-  marks: Array<Pick<Mark, 'id' | 'type' | 'speakerId'>>;
+  marks: Array<MarkRecord>;
   selectMarks: Dispatch<SetStateAction<string[]>>;
   selectedMarkIds: Array<string>;
   speakerIds: Array<string>;
-  speakers: Array<Speaker>;
+  speakers: Array<PersonRecord>;
 }> = ({
   isVerseNumber = false,
   children,
@@ -62,7 +62,7 @@ const VerseFragment: FC<{
     m.type === 'speaker' ? [m.speakerId] : [],
   );
   const user = useContext(UserContext);
-  const isAuthor = hasRole(user, 'author');
+  const isAuthor = hasRole('author', user);
   const lastSpeakerId = speakerIds[speakerIds.length - 1];
   const lastMark = marks[marks.length - 1];
   const classes = classnames(
@@ -117,13 +117,13 @@ const VerseFragment: FC<{
 };
 
 const Verse: FC<{
-  id: $Verse['id'];
-  number: $Verse['number'];
-  text: $Verse['text'];
+  id: VerseRecord['id'];
+  number: VerseRecord['number'];
+  text: VerseRecord['text'];
   selectMarks: Dispatch<SetStateAction<string[]>>;
   selectedMarkIds: Array<string>;
-  speakers: Array<Speaker>;
-  marks: Array<Mark>;
+  speakers: Array<PersonRecord>;
+  marks: Array<MarkRecord>;
 }> = ({
   id,
   text,
@@ -137,22 +137,29 @@ const Verse: FC<{
   const speakerIds = useMemo(
     () =>
       unique(
-        (allMarks || [])
-          .filter((mark) => mark.type === 'speaker')
-          .map((mark) => mark.speakerId),
+        (allMarks || []).flatMap((mark) => {
+          if (mark.type === 'speaker') {
+            return [mark.speakerId];
+          }
+          return [];
+        }),
       ),
     [allMarks],
   );
-  const sortedMarks = sortByRange(marks);
+  const sortedMarks = sortByStartIndex(marks);
   const breakpoints = unique([
     0,
-    ...sortedMarks.flatMap((note) => note.range ?? []).sort((a, b) => a - b),
+    ...sortedMarks
+      .flatMap((mark) => [mark.startIndex, mark.endIndex])
+      .filter(isNotNil)
+      .sort((a, b) => a - b),
   ]);
 
   const getMarksAt = (index: number) =>
     sortedMarks.filter((mark) => {
-      const [start, end = text.length] = mark.range ?? [0, text.length];
-      return index >= start && index < end;
+      const startIndex = mark.startIndex ?? 0;
+      const endIndex = mark.endIndex ?? text.length;
+      return index >= startIndex && index < endIndex;
     });
 
   return (

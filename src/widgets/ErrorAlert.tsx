@@ -3,7 +3,7 @@ import {MdErrorOutline} from 'react-icons/md';
 import classnames from 'classnames';
 
 type Props = {
-  error: Error;
+  error: unknown;
   grow?: boolean;
 };
 
@@ -19,7 +19,11 @@ const ErrorAlert: FC<Props> = ({error, grow}) => (
     />
     {process.env.NODE_ENV === 'development' && (
       <pre className="text-left text-base">
-        {error.stack ?? error.message ?? JSON.stringify(error)}
+        {typeof error === 'string'
+          ? error
+          : error instanceof Error
+          ? error.stack ?? error.message
+          : JSON.stringify(error)}
       </pre>
     )}
   </div>

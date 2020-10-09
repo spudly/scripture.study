@@ -1,4 +1,5 @@
-import React, {FC} from 'react';
+/* eslint-disable react-hooks/exhaustive-deps */
+import React, {FC, useCallback} from 'react';
 import Directory, {DirectoryItem} from './Directory';
 import {get, compareBy} from '@spudly/pushpop';
 import {queries} from '../api/api.client';
@@ -14,19 +15,25 @@ const BookDirectory: FC = () => {
   if (!volumeTitle || !bookTitle) {
     throw new Error('Missing volume or book title');
   }
-  const {data: volume} = useQuery(`getVolumeByTitle(${volumeTitle})`, () =>
-    queries.getVolumeByTitle(volumeTitle),
+  const {data: volume} = useQuery(
+    ['volumes', volumeTitle],
+    useCallback((key, title) => queries.getVolumeByTitle(title), []),
   );
   const {data: book} = useQuery(
-    `getBookByTitle(${volume?.id}, ${bookTitle})`,
-    () => queries.getBookByTitle(volume!.id, bookTitle),
+    ['books', volume?.id, bookTitle],
+    useCallback(
+      (key, volumeId, title) => queries.getBookByTitle(volumeId, title),
+      [volume, bookTitle],
+    ),
     {enabled: volume && bookTitle},
   );
-  const {
-    data: chapters,
-  } = useQuery(
-    `getChaptersByBookId(${volume?.id}, ${book?.id})`,
-    () => queries.getAllChaptersByBookId(volume!.id, book!.id),
+  const {data: chapters} = useQuery(
+    ['chapters', volume?.id, book?.id],
+    useCallback(
+      (key, volumeId, bookId) =>
+        queries.getAllChaptersByBookId(volumeId, bookId),
+      [volume, book],
+    ),
     {enabled: volume && book},
   );
 

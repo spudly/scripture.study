@@ -1,164 +1,26 @@
-import {ObjectID} from 'mongodb';
 import {ReactElement} from 'react';
-
-type MyUser = {
-  id: string;
-  displayName: string;
-  gender?: string;
-  ageRange?: {
-    min: number;
-    max?: number;
-  };
-  picture?: string;
-  profileUrl?: string;
-  username?: string;
-  birthday: string;
-  roles?: Array<string>;
-  provider: string;
-  name?: {
-    familyName: string;
-    givenName: string;
-    middleName?: string;
-  };
-  emails?: Array<{
-    value: string;
-    type?: string;
-  }>;
-  photos?: Array<{
-    value: string;
-  }>;
-};
-
-export type User = MyUser;
 
 declare global {
   namespace Express {
-    interface User extends MyUser {}
+    interface User extends UserWithRoles {}
+    interface SessionData {
+      user: UserWithRoles;
+    }
   }
 }
 
-export type VolumeDoc = {
-  _id: ObjectID;
-  title: string;
-  longTitle: string;
-  shortTitle: string;
-  sortPosition: number;
-};
-
-export type Volume = {
-  id: string;
-  title: string;
-  longTitle: string;
-  shortTitle: string;
-  sortPosition: number;
-};
-
-export type VerseDoc = {
-  _id: ObjectID;
-  number: number;
-  text: string;
-  title: string;
-  shortTitle: string;
-  volumeId: ObjectID;
-  bookId: ObjectID;
-  chapterId: ObjectID;
-};
-
-export type Verse = {
-  id: string;
-  number: number;
-  text: string;
-  title: string;
-  shortTitle: string;
-  volumeId: string;
-  bookId: string;
-  chapterId: string;
-  marks?: Array<Mark>;
-};
-
-export type BookDoc = {
-  _id: ObjectID;
-  volumeId: ObjectID;
-  title: string;
-  longTitle: string;
-  subtitle: string;
-  shortTitle: string;
-  sortPosition: number;
-};
-
-export type Book = {
-  id: string;
-  volumeId: string;
-  title: string;
-  longTitle: string;
-  subtitle: string;
-  shortTitle: string;
-  sortPosition: number;
-};
-
-export type ChapterDoc = {
-  _id: ObjectID;
-  bookId: ObjectID;
-  volumeId: ObjectID;
-  number: number;
-};
-
-export type Chapter = {
-  id: string;
-  bookId: string;
-  volumeId: string;
-  number: number;
-};
-
-export type Volumes = {
-  volumeTitles: Array<string>;
-};
-
 export type VerseSelection = {
-  volumeId: string;
-  chapterId: string;
-  verseId: string;
-  range: Array<number> | null;
+  verseId: ID;
+  startIndex: number | null;
+  endIndex: number | null;
 };
 
-export type MarkDoc = {
-  _id: ObjectID;
-  type: string;
-  speakerId: ObjectID;
-  verseId: ObjectID;
-  chapterId: ObjectID;
-  volumeId: ObjectID;
-  range: Array<number> | null;
-  isActive: boolean;
-  lastUpdated: number;
-};
-
-export type Mark = {
-  id: string;
-  type: string;
-  speakerId: string;
-  verseId: string;
-  chapterId: string;
-  volumeId: string;
-  range: Array<number> | null;
-  isActive: boolean;
-  lastUpdated: number;
-};
-
-export type SpeakerDoc = {
-  _id: ObjectID;
-  name: string | undefined;
-  description?: string | undefined;
-};
+export type ID = string;
 
 export type VolumeMeta = {
   key: 'lastUpdated';
   value: number;
 };
-
-export type NewSpeaker = {id?: string; name?: string; description?: string};
-
-export type Speaker = {id: string; name?: string; description?: string};
 
 export type StateMicroTheme = {
   bgColor: string;
@@ -173,17 +35,17 @@ export type MicroTheme = {
   activated: StateMicroTheme;
 };
 
-export type DrawerView = {type: 'CREATE_ANNOTATIONS'; marks: Array<Mark>};
+export type DrawerView = {type: 'CREATE_ANNOTATIONS'; marks: Array<MarkRecord>};
 
 export type Unstyled<T extends keyof JSX.IntrinsicElements> = Omit<
   JSX.IntrinsicElements[T],
   'className' | 'style'
 >;
 
-export type SlimVolume = {id: string; title: string};
-export type SlimBook = {id: string; title: string; numChapters: number};
-export type SlimChapter = {id: string; number: number; numVerses: number};
-export type SlimVerse = {id: string; number: number};
+export type SlimVolume = {id: ID; title: string};
+export type SlimBook = {id: ID; title: string; numChapters: number};
+export type SlimChapter = {id: ID; number: number; numVerses: number};
+export type SlimVerse = {id: ID; number: number};
 
 export type SlimBookAndChapter = {book: SlimBook; chapter: SlimChapter};
 
@@ -191,29 +53,8 @@ export type SlimBookAndChapterAndVerse = SlimBookAndChapter & {
   verse: SlimVerse;
 };
 
-export type ApiResponse =
-  | {type: 'volumes'; volumes: Volume[]}
-  | {type: 'volume'; volume: Volume}
-  | {type: 'book'; book: Book}
-  | {
-      type: 'chapter';
-      verses: Verse[];
-      prev: SlimBookAndChapter;
-      next: SlimBookAndChapter;
-    }
-  | {
-      type: 'verses';
-      verses: Verse[];
-    }
-  | {
-      type: 'verse';
-      verse: Verse;
-      prev: SlimBookAndChapterAndVerse;
-      next: SlimBookAndChapterAndVerse;
-    };
-
 export type DirectoryEntry = {
-  id: string;
+  id: ID;
   href: string;
   title: string;
 };
@@ -222,76 +63,131 @@ export type PromiseResult<PROMISE> = PROMISE extends Promise<infer RESULT>
   ? RESULT
   : never;
 
-export type QueryOptions = {noCache?: boolean};
+export type QueryOptions = {};
 
 export interface Queries {
-  getAllVolumes(opts?: QueryOptions): Promise<Array<Volume>>;
-  getVolumeByTitle(title: string, opts?: QueryOptions): Promise<Volume>;
+  getAllVolumes(opts?: QueryOptions): Promise<Array<VolumeRecord>>;
+  getVolumeByTitle(title: string, opts?: QueryOptions): Promise<VolumeRecord>;
   getAllBooksByVolumeId(
-    volumeId: string,
+    volumeId: ID,
     opts?: QueryOptions,
-  ): Promise<Array<Book>>;
+  ): Promise<Array<BookRecord>>;
   getChapterById(
-    volumeId: string,
-    chapterId: string,
+    volumeId: ID,
+    chapterId: ID,
     opts?: QueryOptions,
-  ): Promise<Chapter>;
+  ): Promise<ChapterRecord>;
   getBookById(
-    volumeId: string,
-    bookId: string,
+    volumeId: ID,
+    bookId: ID,
     opts?: QueryOptions,
-  ): Promise<Book>;
+  ): Promise<BookRecord>;
   getBookByTitle(
-    volumeId: string,
+    volumeId: ID,
     title: string,
     opts?: QueryOptions,
-  ): Promise<Book>;
+  ): Promise<BookRecord>;
   getAllChaptersByBookId(
-    volumeId: string,
-    bookId: string,
+    volumeId: ID,
+    bookId: ID,
     opts?: QueryOptions,
-  ): Promise<Array<Chapter>>;
+  ): Promise<Array<ChapterRecord>>;
   getChapterByBookIdAndNumber(
-    volumeId: string,
-    bookId: string,
+    volumeId: ID,
+    bookId: ID,
     number: string | number,
     opts?: QueryOptions,
-  ): Promise<Chapter>;
+  ): Promise<ChapterRecord>;
   getAllVersesByChapterId(
-    volumeId: string,
-    chapterId: string,
+    volumeId: ID,
+    chapterId: ID,
     opts?: QueryOptions,
-  ): Promise<Array<Verse>>;
+  ): Promise<Array<VerseRecord>>;
   queryPrevChapterUrl(
-    volumeId: string,
-    chapterId: string,
+    volumeId: ID,
+    chapterId: ID,
     opts?: QueryOptions,
   ): Promise<string | null>;
   queryNextChapterUrl(
-    volumeId: string,
-    chapterId: string,
+    volumeId: ID,
+    chapterId: ID,
     opts?: QueryOptions,
   ): Promise<string | null>;
-  getAllSpeakers(opts?: QueryOptions): Promise<Array<Speaker>>;
+  getAllPeople(opts?: QueryOptions): Promise<Array<PersonRecord>>;
   getAllMarksByChapterId(
-    volumeId: string,
-    chapterId: string,
+    volumeId: ID,
+    chapterId: ID,
     opts?: QueryOptions,
-  ): Promise<Array<Mark>>;
-  getAllMarksByVolumeId(
-    volumeId: string,
-    opts?: QueryOptions,
-  ): Promise<Array<Mark>>;
-  getAllUpdatedMarksByVolumeId(
-    volumeId: string,
-    since: number,
-    opts?: QueryOptions,
-  ): Promise<Array<Mark>>;
+  ): Promise<Array<MarkRecord>>;
+  getUserById(userId: ID): Promise<UserRecord>;
+  getUserRolesById(userId: ID): Promise<Array<RoleRecord>>;
 }
 
+export type MutationRequestBody<RECORD> = {
+  create?: Array<Unsaved<RECORD>>;
+  update?: Array<RECORD>;
+  delete?: Array<ID>;
+  approve?: Array<ID>;
+  disapprove?: Array<ID>;
+};
+
+export type MutationResponseBody = {
+  createdIds?: string[];
+  updatedIds?: string[];
+  deletedIds?: string[];
+  approvedIds?: string[];
+  disapprovedIds?: string[];
+};
+
+export type RoleName = 'admin' | 'moderator' | 'author';
+
+export type UserWithRoles = UserRecord & {roles: Array<RoleName>};
+
 export interface Mutations {
-  createOrUpdateMarks(marks: Array<Mark>): Promise<void>;
-  createOrUpdateSpeaker(speaker: NewSpeaker): Promise<void>;
+  createAnswer(
+    answer: Unsaved<AnswerRecord>,
+    user?: UserWithRoles,
+  ): Promise<ID>;
+  createEvent(event: Unsaved<EventRecord>, user?: UserWithRoles): Promise<ID>;
+  createList(list: Unsaved<ListRecord>, user?: UserWithRoles): Promise<ID>;
+  createListItem(
+    listitem: Unsaved<ListItemRecord>,
+    user?: UserWithRoles,
+  ): Promise<ID>;
+  createMark(mark: Unsaved<MarkRecord>, user?: UserWithRoles): Promise<ID>;
+  createPerson(
+    person: Unsaved<PersonRecord>,
+    user?: UserWithRoles,
+  ): Promise<ID>;
+  createPlace(place: Unsaved<PlaceRecord>, user?: UserWithRoles): Promise<ID>;
+  createQuestion(
+    question: Unsaved<QuestionRecord>,
+    user?: UserWithRoles,
+  ): Promise<ID>;
+  createThing(thing: Unsaved<ThingRecord>, user?: UserWithRoles): Promise<ID>;
+
+  updateAnswer(answer: AnswerRecord, user?: UserWithRoles): Promise<void>;
+  updateEvent(event: EventRecord, user?: UserWithRoles): Promise<void>;
+  updateList(list: ListRecord, user?: UserWithRoles): Promise<void>;
+  updateListItem(listitem: ListItemRecord, user?: UserWithRoles): Promise<void>;
+  updateMark(mark: MarkRecord, user?: UserWithRoles): Promise<void>;
+  updatePerson(person: PersonRecord, user?: UserWithRoles): Promise<void>;
+  updatePlace(place: PlaceRecord, user?: UserWithRoles): Promise<void>;
+  updateQuestion(question: QuestionRecord, user?: UserWithRoles): Promise<void>;
+  updateThing(thing: ThingRecord, user?: UserWithRoles): Promise<void>;
+
+  approve(patchId: ID, user?: UserWithRoles): Promise<ID>;
+  disapprove(patchId: ID): Promise<void>;
+
+  deleteAnswer: (id: ID, user?: UserWithRoles) => Promise<void>;
+  deleteEvent: (id: ID, user?: UserWithRoles) => Promise<void>;
+  deleteList: (id: ID, user?: UserWithRoles) => Promise<void>;
+  deleteListItem: (id: ID, user?: UserWithRoles) => Promise<void>;
+  deleteMark: (id: ID, user?: UserWithRoles) => Promise<void>;
+  deletePerson: (id: ID, user?: UserWithRoles) => Promise<void>;
+  deletePlace: (id: ID, user?: UserWithRoles) => Promise<void>;
+  deleteQuestion: (id: ID, user?: UserWithRoles) => Promise<void>;
+  deleteThing: (id: ID, user?: UserWithRoles) => Promise<void>;
 }
 
 export type MutationState =
@@ -308,3 +204,231 @@ export type ChildElements<T> = T | T[];
 export type TableSection = NativeElement<'thead' | 'tbody' | 'tfoot'>;
 export type TableRow = NativeElement<'tr'>;
 export type TableCell = NativeElement<'th' | 'td'>;
+
+export type Audited<T, INCLUDE_APPROVAL extends boolean = true> = T & {
+  lastUpdatedBy: string;
+  lastUpdatedDate: number;
+} & (INCLUDE_APPROVAL extends true
+    ? {
+        approvedBy: string;
+        approvedDate: number;
+      }
+    : {});
+
+export type UserRecord = {
+  id: ID;
+  googleId: string | null;
+  givenName: string | null;
+  familyName: string | null;
+  name: string | null;
+  email: string | null;
+  photo: string | null;
+};
+
+export type SessionRecord = {
+  id: ID;
+  data: Express.SessionData;
+  expirationDate: number;
+};
+
+export type RoleRecord = {
+  id: ID;
+  name: RoleName;
+};
+
+export type UserRoleRecord = {id: ID; userId: ID; roleId: ID};
+
+export type AnswerRecord = {
+  id: ID;
+  questionId: ID;
+  text: string;
+};
+
+export type BookRecord = {
+  id: ID;
+  title: string;
+  longTitle: string;
+  subtitle: string;
+  volumeId: ID;
+  order: number;
+  abbr: string;
+};
+
+export type ChapterRecord = {
+  id: ID;
+  bookId: ID;
+  number: number;
+  summary: string | null;
+};
+
+export type EventRecord = {
+  id: ID;
+  name: string;
+  description: string;
+};
+
+export type SpeakerMarkRecord = {
+  id: ID;
+  type: 'speaker';
+  startIndex: number | null;
+  endIndex: number | null;
+  verseId: ID;
+  speakerId: ID;
+  personId: null;
+  placeId: null;
+  thingId: null;
+  eventId: null;
+};
+
+export type MentionMarkRecord = {
+  id: ID;
+  type: 'mention';
+  startIndex: number | null;
+  endIndex: number | null;
+  verseId: string | null;
+  speakerId: null;
+  personId: string | null;
+  placeId: string | null;
+  thingId: string | null;
+  eventId: string | null;
+};
+
+export type MarkRecord = SpeakerMarkRecord | MentionMarkRecord;
+
+export type PersonRecord = {
+  id: ID;
+  name: string | null;
+  biography: string | null;
+  fatherId: string | null;
+  motherId: string | null;
+};
+
+export type ListRecord = {
+  id: ID;
+  name: string;
+  description: string | null;
+};
+
+export type ListItemRecord = {
+  id: ID;
+  listId: ID;
+  text: string;
+};
+
+export type PlaceRecord = {
+  id: ID;
+  name: string;
+  position: string;
+};
+
+export type QuestionRecord = {
+  id: ID;
+  text: string;
+  verseId: string | null;
+  personId: string | null;
+  placeId: string | null;
+  thingId: string | null;
+  eventId: string | null;
+};
+
+export type ThingRecord = {
+  id: ID;
+  name: string;
+  description: string;
+};
+
+export type VerseRecord = {
+  id: ID;
+  chapterId: ID;
+  number: number;
+  text: string;
+};
+
+export type VolumeRecord = {
+  id: ID;
+  title: string;
+  longTitle: string;
+  abbr: string;
+  order: number;
+};
+
+export type Unsaved<RECORD> = Omit<RECORD, 'id'>;
+
+export type PatchRecord = {id: ID; editedRecordId: string | null} & (
+  | {
+      table: 'answers';
+      data: Unsaved<AnswerRecord>;
+    }
+  | {
+      table: 'books';
+      data: Unsaved<BookRecord>;
+    }
+  | {
+      table: 'chapters';
+      data: Unsaved<VerseRecord>;
+    }
+  | {
+      table: 'events';
+      data: Unsaved<EventRecord>;
+    }
+  | {
+      table: 'marks';
+      data: Unsaved<MarkRecord>;
+    }
+  | {
+      table: 'people';
+      data: Unsaved<PersonRecord>;
+    }
+  | {
+      table: 'places';
+      data: Unsaved<PlaceRecord>;
+    }
+  | {
+      table: 'questions';
+      data: Unsaved<QuestionRecord>;
+    }
+  | {
+      table: 'roles';
+      data: Unsaved<RoleRecord>;
+    }
+  | {
+      table: 'things';
+      data: Unsaved<ThingRecord>;
+    }
+  | {
+      table: 'verses';
+      data: Unsaved<VerseRecord>;
+    }
+  | {
+      table: 'volumes';
+      data: Unsaved<VolumeRecord>;
+    }
+  | {
+      table: 'lists';
+      data: Unsaved<ListRecord>;
+    }
+  | {
+      table: 'list_items';
+      data: Unsaved<ListItemRecord>;
+    }
+);
+
+export type GoogleAccessTokenData = {
+  access_token: string;
+  expires_in: number;
+  refresh_token: string;
+  scope: string;
+  token_type: string;
+  id_token: string;
+};
+
+export type GoogleUserInfo = {
+  id: string;
+  email?: string;
+  verified_email?: boolean;
+  name?: string;
+  given_name?: string;
+  family_name?: string;
+  picture?: string;
+  locale?: string;
+};

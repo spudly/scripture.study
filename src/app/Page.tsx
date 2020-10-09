@@ -5,7 +5,6 @@ const Page: FC<{csrfToken: string}> = ({csrfToken}) => (
     <head>
       <link rel="shortcut icon" href="/favicon.ico" type="image/x-icon" />
       <link rel="icon" href="/favicon.ico" type="image/x-icon" />
-      <link rel="manifest" href="/manifest.json" />
       <meta name="theme-color" content="#bee3f8" />
       <meta name="viewport" content="width=device-width, initial-scale=1" />
       <meta name="CSRF-Token" content={csrfToken} />

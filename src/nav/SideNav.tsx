@@ -2,6 +2,7 @@ import React, {
   ComponentProps,
   FC,
   ReactNode,
+  useCallback,
   useContext,
   useEffect,
 } from 'react';
@@ -15,6 +16,7 @@ import {
   MdPeople,
   MdPlace,
   MdSettings,
+  MdPerson,
   MdWidgets,
 } from 'react-icons/md';
 import {VscBook} from 'react-icons/vsc';
@@ -31,7 +33,7 @@ import useScripturesRouteMatch from '../utils/useScripturesRouteMatch';
 import scriptureLinkHref from '../utils/scriptureLinkHref';
 import {queries} from '../api/api.client';
 import {useQuery} from 'react-query';
-import {Book, Volume} from '../utils/types';
+import {BookRecord, VolumeRecord} from '../utils/types';
 import useBoolean from '../utils/useBoolean';
 
 const SideNavLink: FC<{
@@ -95,65 +97,66 @@ const SideNavLinkBranch: FC<
 };
 
 const ChapterLinks: FC<{
-  volume: Volume;
-  book: Book;
+  volume: VolumeRecord;
+  book: BookRecord;
   closeSideNav: () => void;
 }> = ({volume, book, closeSideNav}) => {
-  const {
-    data: chapters,
-  } = useQuery(`getChaptersByBookId(${volume?.id}, ${book?.id})`, () =>
-    queries.getAllChaptersByBookId(volume.id, book.id),
+  const {data: chapters} = useQuery(
+    ['chapters', volume.id, book.id],
+    useCallback(
+      (key, volumeId, bookId) =>
+        queries.getAllChaptersByBookId(volumeId, bookId),
+      [],
+    ),
   );
 
   return (
     <div className="flex flex-wrap pl-8">
       {chapters?.map((chapter) => (
-        <>
-          <NavLink
-            to={scriptureLinkHref(volume.title, book.title, chapter.number)}
-            className="block m-2 p-2 w-12 h-12 text-center"
-            activeClassName="bg-gray-700"
-            onClick={closeSideNav}
-          >
-            {chapter.number}
-          </NavLink>
-        </>
+        <NavLink
+          key={chapter.id}
+          to={scriptureLinkHref(volume.title, book.title, chapter.number)}
+          className="block m-2 p-2 w-12 h-12 text-center"
+          activeClassName="bg-gray-700"
+          onClick={closeSideNav}
+        >
+          {chapter.number}
+        </NavLink>
       ))}
     </div>
   );
 };
 
 const BookLinks: FC<{
-  volume: Volume;
+  volume: VolumeRecord;
   bookTitle?: string;
   closeSideNav: () => void;
 }> = ({volume, bookTitle, closeSideNav}) => {
   const {data: books} = useQuery(
-    `getAllBooksByVolumeId(${volume.id})`,
-    () => queries.getAllBooksByVolumeId(volume!.id),
+    ['books', volume.id],
+    useCallback((key, volumeId) => queries.getAllBooksByVolumeId(volumeId), []),
     {enabled: volume},
   );
 
   return (
     <>
       {books?.map((book) => (
-        <>
-          <SideNavLinkBranch
-            isOpen={book.title === bookTitle}
-            href={scriptureLinkHref(volume.title, book.title)}
-            icon={<BiBook />}
-            label={book.title}
-            level={2}
-          >
-            {book.title === bookTitle && (
-              <ChapterLinks
-                volume={volume}
-                book={book}
-                closeSideNav={closeSideNav}
-              />
-            )}
-          </SideNavLinkBranch>
-        </>
+        <SideNavLinkBranch
+          key={book.id}
+          isOpen={book.title === bookTitle}
+          href={scriptureLinkHref(volume.title, book.title)}
+          icon={<BiBook />}
+          label={book.title}
+          level={2}
+        >
+          {book.title === bookTitle && (
+            <ChapterLinks
+              volume={volume}
+              book={book}
+              closeSideNav={closeSideNav}
+            />
+          )}
+        </SideNavLinkBranch>
       ))}
     </>
   );
@@ -164,28 +167,27 @@ const VolumeLinks: FC<{
   bookTitle?: string;
   closeSideNav: () => void;
 }> = ({volumeTitle, bookTitle, closeSideNav}) => {
-  const {data: volumes} = useQuery('getAllVolumes', queries.getAllVolumes);
+  const {data: volumes} = useQuery(['volumes'], queries.getAllVolumes);
 
   return (
     <>
       {volumes?.map((volume) => (
-        <>
-          <SideNavLinkBranch
-            isOpen={volume.title === volumeTitle}
-            href={scriptureLinkHref(volume.title)}
-            icon={<ImBooks />}
-            label={volume.title}
-            level={1}
-          >
-            {volume.title === volumeTitle && (
-              <BookLinks
-                volume={volume}
-                bookTitle={bookTitle}
-                closeSideNav={closeSideNav}
-              />
-            )}
-          </SideNavLinkBranch>
-        </>
+        <SideNavLinkBranch
+          key={volume.id}
+          isOpen={volume.title === volumeTitle}
+          href={scriptureLinkHref(volume.title)}
+          icon={<ImBooks />}
+          label={volume.title}
+          level={1}
+        >
+          {volume.title === volumeTitle && (
+            <BookLinks
+              volume={volume}
+              bookTitle={bookTitle}
+              closeSideNav={closeSideNav}
+            />
+          )}
+        </SideNavLinkBranch>
       ))}
     </>
   );
@@ -247,7 +249,7 @@ const SideNav: FC<{isOpen: boolean; close: () => void}> = ({isOpen, close}) => {
 
         {/* TODO: update the people area such that you don't need admin privs to have read-only access */}
         {/* TODO: as part of the "people" section, include their relationships to other people, and a place to show a geneology chart */}
-        {user && hasRole(user, 'author') && (
+        {user && hasRole('author', user) && (
           <SideNavLink href="/speakers" icon={<MdPeople />} onClick={close}>
             People
           </SideNavLink>
@@ -285,6 +287,14 @@ const SideNav: FC<{isOpen: boolean; close: () => void}> = ({isOpen, close}) => {
           Topics
         </SideNavLink>
 
+        <SideNavLink href="/topics" icon={<BsCardHeading />} onClick={close}>
+          Lists
+        </SideNavLink>
+
+        <SideNavLink href="/topics" icon={<BsCardHeading />} onClick={close}>
+          Search
+        </SideNavLink>
+
         <div className="flex-1" />
         <SideNavDivider />
 
@@ -292,17 +302,10 @@ const SideNav: FC<{isOpen: boolean; close: () => void}> = ({isOpen, close}) => {
           <>
             <SideNavLink
               href="/user/profile"
-              icon={
-                <img
-                  src={user.picture}
-                  alt={user.displayName}
-                  className="rounded-full"
-                  style={{height: '1em', width: '1em'}}
-                />
-              }
+              icon={<MdPerson />}
               onClick={close}
             >
-              {user.name?.givenName ?? user.displayName}
+              {user.name}
             </SideNavLink>
             <SideNavLink
               href={`/user/settings`}
@@ -316,7 +319,7 @@ const SideNav: FC<{isOpen: boolean; close: () => void}> = ({isOpen, close}) => {
             </SideNavLink>
           </>
         ) : (
-          <SideNavLink external href="/auth/login">
+          <SideNavLink external href="/auth/google">
             Login
           </SideNavLink>
         )}

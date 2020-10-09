@@ -3,14 +3,14 @@ import {Switch, Route, Redirect} from 'react-router';
 import Chapter from '../scriptures/Chapter';
 import ErrorBoundary from '../widgets/ErrorBoundary';
 import Authenticate from '../auth/Authenticate';
-import Speakers from '../people/Speakers';
+import People from '../people/People';
 import Title from '../widgets/Title';
 import VolumeDirectory from '../scriptures/VolumeDirectory';
 import BookDirectory from '../scriptures/BookDirectory';
 import ChapterDirectory from '../scriptures/ChapterDirectory';
 import UserSettings from '../user/UserSettings';
 import UserProfile from '../user/UserProfile';
-import {QueryCache, ReactQueryCacheProvider} from 'react-query';
+import {ReactQueryCacheProvider} from 'react-query';
 import Nav from '../nav/Nav';
 import Places from '../places/Places';
 import Things from '../things/Things';
@@ -18,8 +18,8 @@ import Comparisons from '../comparisons/Comparisons';
 import Questions from '../questions/Questions';
 import Timeline from '../timeline/Timeline';
 import Topics from '../topics/Topics';
-
-const queryCache = new QueryCache();
+import {ReactQueryDevtools} from 'react-query-devtools';
+import queryCache from '../utils/queryCache';
 
 const App: FC = () => {
   return (
@@ -32,7 +32,7 @@ const App: FC = () => {
                 <Switch>
                   <Route path="/user/profile" component={UserProfile} />
                   <Route path="/user/settings" component={UserSettings} />
-                  <Route path="/speakers" component={Speakers} />
+                  <Route path="/speakers" component={People} />
                   <Route path="/places" component={Places} />
                   <Route path="/things" component={Things} />
 
@@ -65,7 +65,7 @@ const App: FC = () => {
             <Nav />
           </Authenticate>
         </Title>
-        {/* <ReactQueryDevtools initialIsOpen={false} /> */}
+        <ReactQueryDevtools />
       </ReactQueryCacheProvider>
     </>
   );

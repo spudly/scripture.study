@@ -1,4 +1,4 @@
-import {Verse as $Verse, VerseSelection} from './types';
+import {VerseRecord, VerseSelection} from './types';
 import isEmptySelection from './isEmptySelection';
 
 const getVerseId = (el: HTMLElement) => el.dataset.verse;
@@ -42,9 +42,7 @@ const getTextOffsetRelativeToContainer = (
 const getClosestVerseElement = (node: Node) =>
   node.parentElement?.closest('[data-verse]') as HTMLElement | undefined;
 
-const getSelectedVerses = <
-  VERSE extends Pick<$Verse, 'id' | 'volumeId' | 'chapterId'>
->(
+const getSelectedVerses = <VERSE extends Pick<VerseRecord, 'id' | 'chapterId'>>(
   verses: Array<VERSE>,
   startContainer: HTMLElement,
   endContainer: HTMLElement,
@@ -60,9 +58,7 @@ const getSelectedVerses = <
 };
 
 const createVerseSelections = (
-  verses: Array<
-    Pick<$Verse, 'id' | 'chapterId' | 'volumeId' | 'number' | 'text'>
-  >,
+  verses: Array<Pick<VerseRecord, 'id' | 'chapterId' | 'number' | 'text'>>,
   selection: Selection,
 ): Array<VerseSelection> | null => {
   if (isEmptySelection(selection)) {
@@ -100,18 +96,8 @@ const createVerseSelections = (
       const isLast = index === selectedVerses.length - 1;
       return {
         verseId: v.id,
-        chapterId: v.chapterId,
-        volumeId: v.volumeId,
-        range:
-          isFirst && isLast
-            ? lastVerseOffset >= v.text.length
-              ? [firstVerseOffset]
-              : [firstVerseOffset, lastVerseOffset]
-            : isFirst
-            ? [firstVerseOffset]
-            : isLast
-            ? [0, lastVerseOffset]
-            : null,
+        startIndex: isFirst ? firstVerseOffset : null,
+        endIndex: isLast ? lastVerseOffset : null,
       };
     },
   );

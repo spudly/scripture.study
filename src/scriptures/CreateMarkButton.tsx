@@ -1,18 +1,18 @@
 import React, {useState, FC} from 'react';
-import {Mark, Speaker} from '../utils/types';
+import {ID, MarkRecord, PersonRecord} from '../utils/types';
 import {MdRecordVoiceOver} from 'react-icons/md';
 import classnames from 'classnames';
 import CircleButton from '../widgets/CircleButton';
 import {VerseSelection} from '../utils/types';
 import Spinner from '../widgets/Spinner';
 import createId from '../utils/createId';
-import SpeakerSelect from '../people/SpeakerSelect';
+import PersonSelect from '../people/PersonSelect';
 import Overlay from '../widgets/Overlay';
 
 const buildSpeakerMarks = (
   selections: Array<VerseSelection>,
-  speakerId: string,
-): Array<Mark> =>
+  speakerId: ID,
+): Array<MarkRecord> =>
   selections.map((selection) => ({
     ...selection,
     id: createId(),
@@ -20,13 +20,17 @@ const buildSpeakerMarks = (
     isActive: true,
     lastUpdated: Date.now(),
     speakerId,
+    personId: null,
+    placeId: null,
+    thingId: null,
+    eventId: null,
   }));
 
 const CreateMarkButton: FC<{
   selections: Array<VerseSelection>;
-  createMarks: (marks: Array<Mark>) => void;
+  createMarks: (marks: Array<MarkRecord>) => void;
   isCreating?: boolean;
-  speakers: Array<Speaker>;
+  speakers: Array<PersonRecord>;
 }> = ({selections, createMarks, isCreating, speakers}) => {
   const [isOpen, setIsOpen] = useState(false);
 
@@ -52,8 +56,8 @@ const CreateMarkButton: FC<{
           )}
         >
           <div className="pr-6">
-            <SpeakerSelect
-              speakers={speakers}
+            <PersonSelect
+              value=""
               onClick={(e) => e.stopPropagation()}
               onChange={(e) => {
                 const speaker = e.currentTarget.value;

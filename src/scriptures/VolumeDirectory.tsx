@@ -6,10 +6,10 @@ import {useQuery} from 'react-query';
 import Spinner from '../widgets/Spinner';
 import scriptureLinkHref from '../utils/scriptureLinkHref';
 
-const compareSortPosition = compareBy(get('sortPosition'));
+const compareOrder = compareBy(get('order'));
 
 const VolumeDirectory: FC = () => {
-  const {data: volumes} = useQuery('getAllVolumes', queries.getAllVolumes);
+  const {data: volumes} = useQuery('volumes', queries.getAllVolumes);
 
   if (!volumes) {
     return <Spinner />;
@@ -17,7 +17,7 @@ const VolumeDirectory: FC = () => {
 
   return (
     <Directory>
-      {volumes.sort(compareSortPosition).map((volume) => (
+      {volumes.sort(compareOrder).map((volume) => (
         <DirectoryItem key={volume.id} href={scriptureLinkHref(volume.title)}>
           {volume.longTitle}
         </DirectoryItem>

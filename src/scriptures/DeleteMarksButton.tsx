@@ -2,21 +2,19 @@ import React, {FC} from 'react';
 import {MdDelete} from 'react-icons/md';
 import CircleButton from '../widgets/CircleButton';
 import Spinner from '../widgets/Spinner';
-import {Mark} from '../utils/types';
+import {ID, MarkRecord} from '../utils/types';
 
 const DeleteMarksButton: FC<{
-  marks: Array<Mark>;
+  marks: Array<MarkRecord>;
   selectedMarkIds: string[];
-  updateMarks: (marks: Array<Mark>) => void;
+  deleteMarks: (ids: Array<ID>) => void;
   isDeleting: boolean;
-}> = ({selectedMarkIds, marks, updateMarks, isDeleting}) => (
+}> = ({selectedMarkIds, marks, deleteMarks, isDeleting}) => (
   <CircleButton
     themeId="red"
     onClick={() =>
-      updateMarks(
-        marks
-          .filter((m) => selectedMarkIds.includes(m.id))
-          .map((m) => ({...m, isActive: false, lastUpdated: Date.now()})),
+      deleteMarks(
+        marks.filter((m) => selectedMarkIds.includes(m.id)).map((m) => m.id),
       )
     }
     disabled={isDeleting}

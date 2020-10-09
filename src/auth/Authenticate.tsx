@@ -1,9 +1,9 @@
 import React, {FC, useState, useEffect} from 'react';
 import UserContext from '../utils/UserContext';
-import {User} from '../utils/types';
+import {UserWithRoles} from '../utils/types';
 
 const Authorize: FC = ({children}) => {
-  const [user, setUser] = useState<User | null>(null);
+  const [user, setUser] = useState<UserWithRoles | null>(null);
   useEffect(() => {
     const effect = async () => {
       const response = await fetch('/auth/user');

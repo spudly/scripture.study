@@ -1,17 +1,17 @@
 import React, {useState, FC} from 'react';
-import {Mark, Speaker} from '../utils/types';
+import {MarkRecord, PersonRecord, SpeakerMarkRecord} from '../utils/types';
 import {MdEdit} from 'react-icons/md';
 import classnames from 'classnames';
 import CircleButton from '../widgets/CircleButton';
-import SpeakerSelect from '../people/SpeakerSelect';
+import PersonSelect from '../people/PersonSelect';
 import Spinner from '../widgets/Spinner';
 import Overlay from '../widgets/Overlay';
 
 const EditMarksButton: FC<{
-  updateMarks: (marks: Array<Mark>) => void;
+  updateMarks: (marks: Array<MarkRecord>) => void;
   isUpdating?: boolean;
-  marks: Array<Mark>;
-  speakers: Array<Speaker>;
+  marks: Array<MarkRecord>;
+  speakers: Array<PersonRecord>;
   selectedMarkIds: string[];
 }> = ({updateMarks, isUpdating, speakers, marks, selectedMarkIds}) => {
   const [isOpen, setIsOpen] = useState(false);
@@ -41,20 +41,21 @@ const EditMarksButton: FC<{
             )}
           >
             <div className="pr-6">
-              <SpeakerSelect
-                speakers={speakers}
+              <PersonSelect
                 onClick={(e) => e.stopPropagation()}
                 onChange={(e) => {
-                  const speakerId = e.currentTarget.value;
-                  if (speakerId) {
+                  const personId = e.currentTarget.value;
+                  if (personId) {
                     setIsOpen(false);
                     updateMarks(
                       marks
                         .filter((m) => selectedMarkIds.includes(m.id))
+                        .filter(
+                          (m): m is SpeakerMarkRecord => m.type === 'speaker',
+                        )
                         .map((m) => ({
                           ...m,
-                          speakerId,
-                          lastUpdated: Date.now(),
+                          speakerId: personId,
                         })),
                     );
                   }
