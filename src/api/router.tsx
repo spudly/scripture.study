@@ -94,16 +94,6 @@ const mutationRoute = <RECORD extends {id: ID}>(
   resp.json(result);
 };
 
-// const mySession = session({
-//   secret: process.env.SESSION_SECRET!,
-//   cookie: {
-//     secure: process.env.NODE_ENV === 'production',
-//     sameSite: true,
-//   },
-//   resave: false,
-//   saveUninitialized: true,
-// });
-
 const sendCurrentUser: Handler = (req, resp, next) => {
   const user = req.user;
   if (user) {

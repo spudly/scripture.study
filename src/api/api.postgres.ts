@@ -30,10 +30,9 @@ import {
 import hasRole from '../utils/hasRole';
 import {logger} from '../utils/logger';
 
-const {PG_USER, PG_PASSWORD} = process.env;
+const {DATABASE_URL} = process.env;
 
-const sql = new sequelize.Sequelize('scripture_study', PG_USER!, PG_PASSWORD!, {
-  host: 'localhost',
+const sql = new sequelize.Sequelize(DATABASE_URL!, {
   dialect: 'postgres',
   ssl: process.env.NODE_ENV === 'production',
   define: {
