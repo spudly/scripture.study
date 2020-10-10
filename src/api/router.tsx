@@ -34,7 +34,7 @@ const queryRoute: Handler = async (req, resp) => {
   resp.json(result);
 };
 
-const publicDir = path.join(__dirname, '../public');
+const publicDir = path.join(__dirname, '../../public');
 
 const authorize = (role: RoleName | null = null): Handler => (
   req,
