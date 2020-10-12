@@ -9,6 +9,8 @@ declare global {
   }
 }
 
+export type Point = {x: number; y: number};
+
 export type VerseSelection = {
   verseId: ID;
   startIndex: number | null;
@@ -63,130 +65,221 @@ export type PromiseResult<PROMISE> = PROMISE extends Promise<infer RESULT>
   ? RESULT
   : never;
 
+/** @deprecated */
 export type QueryOptions = {};
 
+/** @deprecated */
 export interface Queries {
+  /** @deprecated */
   getAllVolumes(opts?: QueryOptions): Promise<Array<VolumeRecord>>;
+
+  /** @deprecated */
   getVolumeByTitle(title: string, opts?: QueryOptions): Promise<VolumeRecord>;
+
+  /** @deprecated */
   getAllBooksByVolumeId(
     volumeId: ID,
     opts?: QueryOptions,
   ): Promise<Array<BookRecord>>;
+
+  /** @deprecated */
   getChapterById(
     volumeId: ID,
     chapterId: ID,
     opts?: QueryOptions,
   ): Promise<ChapterRecord>;
+
+  /** @deprecated */
   getBookById(
     volumeId: ID,
     bookId: ID,
     opts?: QueryOptions,
   ): Promise<BookRecord>;
+
+  /** @deprecated */
   getBookByTitle(
     volumeId: ID,
     title: string,
     opts?: QueryOptions,
   ): Promise<BookRecord>;
+
+  /** @deprecated */
   getAllChaptersByBookId(
     volumeId: ID,
     bookId: ID,
     opts?: QueryOptions,
   ): Promise<Array<ChapterRecord>>;
+
+  /** @deprecated */
   getChapterByBookIdAndNumber(
     volumeId: ID,
     bookId: ID,
     number: string | number,
     opts?: QueryOptions,
   ): Promise<ChapterRecord>;
+
+  /** @deprecated */
   getAllVersesByChapterId(
     volumeId: ID,
     chapterId: ID,
     opts?: QueryOptions,
   ): Promise<Array<VerseRecord>>;
+
+  /** @deprecated */
   queryPrevChapterUrl(
     volumeId: ID,
     chapterId: ID,
     opts?: QueryOptions,
   ): Promise<string | null>;
+
+  /** @deprecated */
   queryNextChapterUrl(
     volumeId: ID,
     chapterId: ID,
     opts?: QueryOptions,
   ): Promise<string | null>;
+
+  /** @deprecated */
   getAllPeople(opts?: QueryOptions): Promise<Array<PersonRecord>>;
+
+  /** @deprecated */
   getAllMarksByChapterId(
     volumeId: ID,
     chapterId: ID,
     opts?: QueryOptions,
   ): Promise<Array<MarkRecord>>;
+
+  /** @deprecated */
   getUserById(userId: ID): Promise<UserRecord>;
+
+  /** @deprecated */
   getUserRolesById(userId: ID): Promise<Array<RoleRecord>>;
 }
 
-export type MutationRequestBody<RECORD> = {
+export type BulkMutationRequestBody<RECORD> = {
   create?: Array<Unsaved<RECORD>>;
   update?: Array<RECORD>;
   delete?: Array<ID>;
-  approve?: Array<ID>;
-  disapprove?: Array<ID>;
 };
 
-export type MutationResponseBody = {
+export type BulkMutationResponseBody = {
   createdIds?: string[];
   updatedIds?: string[];
   deletedIds?: string[];
-  approvedIds?: string[];
-  disapprovedIds?: string[];
 };
 
 export type RoleName = 'admin' | 'moderator' | 'author';
 
 export type UserWithRoles = UserRecord & {roles: Array<RoleName>};
 
+/** @deprecated */
 export interface Mutations {
+  /** @deprecated */
   createAnswer(
     answer: Unsaved<AnswerRecord>,
     user?: UserWithRoles,
   ): Promise<ID>;
+
+  /** @deprecated */
   createEvent(event: Unsaved<EventRecord>, user?: UserWithRoles): Promise<ID>;
+
+  /** @deprecated */
   createList(list: Unsaved<ListRecord>, user?: UserWithRoles): Promise<ID>;
+
+  /** @deprecated */
   createListItem(
     listitem: Unsaved<ListItemRecord>,
     user?: UserWithRoles,
   ): Promise<ID>;
+
+  /** @deprecated */
   createMark(mark: Unsaved<MarkRecord>, user?: UserWithRoles): Promise<ID>;
+
+  /** @deprecated */
   createPerson(
     person: Unsaved<PersonRecord>,
     user?: UserWithRoles,
   ): Promise<ID>;
+
+  /** @deprecated */
+  createPersonLink(
+    person: Unsaved<PersonLinkRecord>,
+    user?: UserWithRoles,
+  ): Promise<ID>;
+
+  /** @deprecated */
   createPlace(place: Unsaved<PlaceRecord>, user?: UserWithRoles): Promise<ID>;
+
+  /** @deprecated */
   createQuestion(
     question: Unsaved<QuestionRecord>,
     user?: UserWithRoles,
   ): Promise<ID>;
+
+  /** @deprecated */
   createThing(thing: Unsaved<ThingRecord>, user?: UserWithRoles): Promise<ID>;
 
+  /** @deprecated */
   updateAnswer(answer: AnswerRecord, user?: UserWithRoles): Promise<void>;
+
+  /** @deprecated */
   updateEvent(event: EventRecord, user?: UserWithRoles): Promise<void>;
+
+  /** @deprecated */
   updateList(list: ListRecord, user?: UserWithRoles): Promise<void>;
+
+  /** @deprecated */
   updateListItem(listitem: ListItemRecord, user?: UserWithRoles): Promise<void>;
+
+  /** @deprecated */
   updateMark(mark: MarkRecord, user?: UserWithRoles): Promise<void>;
+
+  /** @deprecated */
   updatePerson(person: PersonRecord, user?: UserWithRoles): Promise<void>;
+
+  /** @deprecated */
+  updatePersonLink(
+    personLink: PersonLinkRecord,
+    user?: UserWithRoles,
+  ): Promise<void>;
+
+  /** @deprecated */
   updatePlace(place: PlaceRecord, user?: UserWithRoles): Promise<void>;
+
+  /** @deprecated */
   updateQuestion(question: QuestionRecord, user?: UserWithRoles): Promise<void>;
+
+  /** @deprecated */
   updateThing(thing: ThingRecord, user?: UserWithRoles): Promise<void>;
 
-  approve(patchId: ID, user?: UserWithRoles): Promise<ID>;
-  disapprove(patchId: ID): Promise<void>;
-
+  /** @deprecated */
   deleteAnswer: (id: ID, user?: UserWithRoles) => Promise<void>;
+
+  /** @deprecated */
   deleteEvent: (id: ID, user?: UserWithRoles) => Promise<void>;
+
+  /** @deprecated */
   deleteList: (id: ID, user?: UserWithRoles) => Promise<void>;
+
+  /** @deprecated */
   deleteListItem: (id: ID, user?: UserWithRoles) => Promise<void>;
+
+  /** @deprecated */
   deleteMark: (id: ID, user?: UserWithRoles) => Promise<void>;
+
+  /** @deprecated */
   deletePerson: (id: ID, user?: UserWithRoles) => Promise<void>;
+
+  /** @deprecated */
+  deletePersonLink: (id: ID, user?: UserWithRoles) => Promise<void>;
+
+  /** @deprecated */
   deletePlace: (id: ID, user?: UserWithRoles) => Promise<void>;
+
+  /** @deprecated */
   deleteQuestion: (id: ID, user?: UserWithRoles) => Promise<void>;
+
+  /** @deprecated */
   deleteThing: (id: ID, user?: UserWithRoles) => Promise<void>;
 }
 
@@ -299,8 +392,13 @@ export type PersonRecord = {
   id: ID;
   name: string | null;
   biography: string | null;
-  fatherId: string | null;
-  motherId: string | null;
+};
+
+export type PersonLinkRecord = {
+  id: ID;
+  fromPersonId: ID;
+  type: 'childOf' | 'spouseOf' | 'descendantOf';
+  toPersonId: ID;
 };
 
 export type ListRecord = {
@@ -378,6 +476,10 @@ export type PatchRecord = {id: ID; editedRecordId: string | null} & (
   | {
       table: 'people';
       data: Unsaved<PersonRecord>;
+    }
+  | {
+      table: 'people_links';
+      data: Unsaved<PersonLinkRecord>;
     }
   | {
       table: 'places';

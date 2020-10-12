@@ -250,7 +250,7 @@ const SideNav: FC<{isOpen: boolean; close: () => void}> = ({isOpen, close}) => {
         {/* TODO: update the people area such that you don't need admin privs to have read-only access */}
         {/* TODO: as part of the "people" section, include their relationships to other people, and a place to show a geneology chart */}
         {user && hasRole('author', user) && (
-          <SideNavLink href="/speakers" icon={<MdPeople />} onClick={close}>
+          <SideNavLink href="/people" icon={<MdPeople />} onClick={close}>
             People
           </SideNavLink>
         )}

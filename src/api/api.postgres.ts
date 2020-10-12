@@ -26,6 +26,7 @@ import {
   ChapterRecord,
   GoogleUserInfo,
   SessionRecord,
+  PersonLinkRecord,
 } from '../utils/types';
 import hasRole from '../utils/hasRole';
 import {logger} from '../utils/logger';
@@ -413,22 +414,6 @@ const Person = sql.define<Model<Audited<PersonRecord>, Audited<PersonRecord>>>(
       type: sequelize.TEXT,
       allowNull: true,
     },
-    fatherId: {
-      type: sequelize.UUIDV4,
-      allowNull: true,
-      references: {
-        model: 'person',
-        key: 'id',
-      },
-    },
-    motherId: {
-      type: sequelize.UUIDV4,
-      allowNull: true,
-      references: {
-        model: 'person',
-        key: 'id',
-      },
-    },
     lastUpdatedBy: {
       type: sequelize.UUIDV4,
       allowNull: false,
@@ -459,6 +444,66 @@ const Person = sql.define<Model<Audited<PersonRecord>, Audited<PersonRecord>>>(
   {
     tableName: 'people',
   },
+);
+
+const PersonLink = sql.define<
+  Model<Audited<PersonLinkRecord>, Audited<PersonLinkRecord>>
+>(
+  'people_links',
+  {
+    id: {
+      type: sequelize.UUIDV4,
+      allowNull: false,
+      primaryKey: true,
+    },
+    fromPersonId: {
+      type: sequelize.UUIDV4,
+      allowNull: false,
+      references: {
+        model: Person,
+        key: 'id',
+      },
+    },
+    type: {
+      type: sequelize.TEXT,
+      allowNull: false,
+    },
+    toPersonId: {
+      type: sequelize.UUIDV4,
+      allowNull: false,
+      references: {
+        model: Person,
+        key: 'id',
+      },
+    },
+    lastUpdatedDate: {
+      get: dateGetter,
+      type: sequelize.DATE,
+      allowNull: false,
+    },
+    lastUpdatedBy: {
+      type: sequelize.UUIDV4,
+      allowNull: false,
+      references: {
+        model: User,
+        key: 'id',
+      },
+    },
+    approvedDate: {
+      get: dateGetter,
+      type: sequelize.DATE,
+      allowNull: false,
+    },
+    approvedBy: {
+      type: sequelize.UUIDV4,
+      allowNull: false,
+      references: {
+        model: User,
+        key: 'id',
+      },
+    },
+  },
+  {tableName: 'people_links'},
 );
 
 const Place = sql.define<Model<Audited<PlaceRecord>, Audited<PlaceRecord>>>(
@@ -1333,74 +1378,6 @@ const makeDeleteRecord = (ModelClass: ModelCtor<Model<any, any>>) => async (
   await ModelClass.destroy({where: {id}});
 };
 
-const getModelForPatchRecord = <P extends PatchRecord>(
-  patch: P,
-): ModelCtor<
-  Model<Audited<P['data'] & {id: ID}>, Audited<P['data'] & {id: ID}>>
-> => {
-  switch (patch.table) {
-    case 'people':
-      return Person;
-    case 'answers':
-      return Answer;
-    case 'books':
-      return Book;
-    case 'chapters':
-      return Chapter;
-    case 'events':
-      return Event;
-    case 'list_items':
-      return ListItem;
-    case 'lists':
-      return List;
-    case 'marks':
-      return Mark;
-    case 'places':
-      return Place;
-    case 'questions':
-      return Question;
-    case 'roles':
-      return Role;
-    case 'things':
-      return Thing;
-    case 'volumes':
-      return Volume;
-    case 'verses':
-      return Verse;
-    default: {
-      const neverTable: never = patch.table;
-      throw new Error(`Unknown table: ${String(neverTable)}`);
-    }
-  }
-};
-
-const approve = async (patchId: ID, user?: UserWithRoles) => {
-  if (!user || !hasRole('moderator', user)) {
-    throw new Error('forbidden');
-  }
-  const patch = (await Patch.findOne({where: {id: patchId}}))?.get();
-  if (!patch) {
-    throw new Error('Not Found');
-  }
-
-  const now = Date.now();
-  const newRecord: Audited<typeof patch['data'] & {id: ID}> = {
-    ...patch.data,
-    id: uuid(),
-    lastUpdatedBy: user.id,
-    lastUpdatedDate: now,
-    approvedBy: user.id,
-    approvedDate: now,
-  };
-  const ModelClass = getModelForPatchRecord(patch);
-  const record = await ModelClass.create(newRecord);
-  return record.get().id;
-};
-
-const disapprove = async (id: ID): Promise<void> => {
-  await Patch.destroy({where: {id}});
-};
-
 export const queries: Queries = {
   getAllVolumes,
   getVolumeByTitle,
@@ -1426,6 +1403,7 @@ export const mutations: Mutations = {
   createListItem: makeCreateRecord('list_items', ListItem),
   createMark: makeCreateRecord('marks', Mark),
   createPerson: makeCreateRecord('people', Person),
+  createPersonLink: makeCreateRecord('people_links', PersonLink),
   createPlace: makeCreateRecord('places', Place),
   createQuestion: makeCreateRecord('questions', Question),
   createThing: makeCreateRecord('things', Thing),
@@ -1436,12 +1414,10 @@ export const mutations: Mutations = {
   updateListItem: makeUpdateRecord('list_items', ListItem),
   updateMark: makeUpdateRecord('marks', Mark),
   updatePerson: makeUpdateRecord('people', Person),
+  updatePersonLink: makeUpdateRecord('people_links', PersonLink),
   updatePlace: makeUpdateRecord('places', Place),
   updateQuestion: makeUpdateRecord('questions', Question),
   updateThing: makeUpdateRecord('things', Thing),
-
-  approve,
-  disapprove,
 
   deleteAnswer: makeDeleteRecord(Answer),
   deleteEvent: makeDeleteRecord(Event),
@@ -1449,6 +1425,7 @@ export const mutations: Mutations = {
   deleteListItem: makeDeleteRecord(ListItem),
   deleteMark: makeDeleteRecord(Mark),
   deletePerson: makeDeleteRecord(Person),
+  deletePersonLink: makeDeleteRecord(PersonLink),
   deletePlace: makeDeleteRecord(Place),
   deleteQuestion: makeDeleteRecord(Question),
   deleteThing: makeDeleteRecord(Thing),
@@ -1473,5 +1450,6 @@ export {
   Question,
   Answer,
   Session,
+  PersonLink,
   findOrCreateOrUpdateGoogleUser,
 };

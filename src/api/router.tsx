@@ -10,18 +10,44 @@ import React from 'react';
 import {renderToStaticNodeStream} from 'react-dom/server';
 import hasRole from '../utils/hasRole';
 import Page from '../app/Page';
-import {queries as q, mutations as m} from './api.postgres';
+import {
+  queries as q,
+  mutations as m,
+  Answer,
+  Event,
+  List,
+  ListItem,
+  Mark,
+  Person,
+  Place,
+  Question,
+  Thing,
+  Volume,
+  PersonLink,
+} from './api.postgres';
 import {
   ID,
-  MutationRequestBody,
-  MutationResponseBody,
+  BulkMutationRequestBody,
+  BulkMutationResponseBody,
   RoleName,
   UserWithRoles,
   Unsaved,
+  ListRecord,
+  Audited,
+  AnswerRecord,
+  EventRecord,
+  MarkRecord,
+  PlaceRecord,
+  PersonRecord,
+  QuestionRecord,
+  ThingRecord,
+  VolumeRecord,
+  PersonLinkRecord,
 } from '../utils/types';
 import {googleCallbackMiddleware, googleLoginMiddleware} from './google-auth';
 import session from 'express-session';
 import SessionStore from './SessionStore';
+import {Model, ModelCtor} from 'sequelize/types';
 
 const queryRoute: Handler = async (req, resp) => {
   requestLogger(req, resp);
@@ -45,7 +71,7 @@ const authorize = (role: RoleName | null = null): Handler => (
     return next();
   }
   // req.session!.returnTo = '/';
-  if (req.url.startsWith('/api')) {
+  if (!req.url.startsWith('/api')) {
     resp.redirect('/auth/google');
     return;
   }
@@ -54,13 +80,42 @@ const authorize = (role: RoleName | null = null): Handler => (
   });
 };
 
+const getRoute = <RECORD extends {id: ID}>(
+  ModelClass: ModelCtor<Model<RECORD, RECORD>>,
+): Handler => async (req, resp, next) => {
+  try {
+    const {limit, offset, sortBy, sortOrder, ...where} = req.query;
+    console.log({
+      query: req.query,
+      where: where as Partial<Audited<RECORD>>,
+      limit: limit ? Number(limit) : undefined,
+      offset: offset ? Number(offset) : undefined,
+      order: sortBy
+        ? [[sortBy as string, sortOrder === 'DESC' ? 'DESC' : 'ASC']]
+        : [],
+    });
+    const models = await ModelClass.findAll({
+      where: where as Partial<Audited<RECORD>>,
+      limit: limit ? Number(limit) : undefined,
+      offset: offset ? Number(offset) : undefined,
+      order: sortBy
+        ? [[sortBy as string, sortOrder === 'DESC' ? 'DESC' : 'ASC']]
+        : [],
+    });
+    resp.json(models.map((m) => m.get()));
+  } catch (error) {
+    req.log.error({error}, 'error');
+    next(error);
+  }
+};
+
 const mutationRoute = <RECORD extends {id: ID}>(
   createFn?: (record: Unsaved<RECORD>, user?: UserWithRoles) => Promise<ID>,
   updateFn?: (record: RECORD, user?: UserWithRoles) => Promise<void>,
   deleteFn?: (id: ID, user?: UserWithRoles) => Promise<void>,
 ): Handler => async (req, resp, next) => {
-  const actions: MutationRequestBody<RECORD> = req.body;
-  const result: MutationResponseBody = {};
+  const actions: BulkMutationRequestBody<RECORD> = req.body;
+  const result: BulkMutationResponseBody = {};
   // TODO: start transaction
   try {
     if (actions.create && createFn) {
@@ -75,15 +130,6 @@ const mutationRoute = <RECORD extends {id: ID}>(
     if (actions.delete && deleteFn) {
       await Promise.all(actions.delete.map((id) => deleteFn(id, req.user)));
       result.deletedIds = actions.delete;
-    }
-
-    if (actions.approve && hasRole('moderator', req.user)) {
-      await Promise.all(actions.approve.map((id) => m.approve(id, req.user)));
-      result.approvedIds = actions.approve;
-    }
-    if (actions.disapprove && hasRole('moderator', req.user)) {
-      await Promise.all(actions.disapprove.map((id) => m.disapprove(id)));
-      result.disapprovedIds = actions.disapprove;
     }
     // TODO: commit transaction
   } catch (error) {
@@ -109,102 +155,118 @@ const sendHtml: Handler = async (req, resp) => {
   renderToStaticNodeStream(<Page csrfToken={req.csrfToken()} />).pipe(resp);
 };
 
-const router = express
-  .Router()
-  .use(helmet())
-  .use(cookieParser())
-  .use(csurf({cookie: true}))
-  .use(
-    session({
-      store: new SessionStore(),
-      genid: () => uuid(),
-      secret: process.env.SESSION_SECRET!,
-      cookie: {
-        secure: process.env.NODE_ENV !== 'development',
-      },
-      resave: false,
-      saveUninitialized: true,
-    }),
-  )
-  .use((req, _resp, next) => {
-    req.user = req.session?.user;
-    next();
-  })
-  .use(requestLogger)
-  .use(express.static(publicDir, {index: false}))
-  .get('/auth/google', googleLoginMiddleware)
-  .get('/auth/google/callback', googleCallbackMiddleware)
-  .get('/auth/user', sendCurrentUser)
-  .get('/api/query/:query', queryRoute)
+const router = express.Router();
+router.use(helmet());
+router.use(cookieParser());
+router.use(csurf({cookie: true}));
+router.use(
+  session({
+    store: new SessionStore(),
+    genid: () => uuid(),
+    secret: process.env.SESSION_SECRET!,
+    cookie: {
+      secure: process.env.NODE_ENV !== 'development',
+    },
+    resave: false,
+    saveUninitialized: true,
+  }),
+);
+router.use((req, _resp, next) => {
+  req.user = req.session?.user;
+  next();
+});
+router.use(requestLogger);
+router.use(express.static(publicDir, {index: false}));
+router.get('/auth/google', googleLoginMiddleware);
+router.get('/auth/google/callback', googleCallbackMiddleware);
+router.get('/auth/user', sendCurrentUser);
+router.get('/api/query/:query', queryRoute);
+router
+  .route('/api/answers')
+  .get(getRoute<AnswerRecord>(Answer))
   .post(
-    '/api/answers',
     authorize('author'),
     bodyParser.json(),
     mutationRoute(m.createAnswer, m.updateAnswer, m.deleteAnswer),
-  )
+  );
+router
+  .route('/api/events')
+  .get(getRoute<EventRecord>(Event))
   .post(
-    '/api/events',
     authorize('author'),
     bodyParser.json(),
     mutationRoute(m.createEvent, m.updateEvent, m.deleteEvent),
-  )
+  );
+router
+  .route('/api/lists')
+  .get(getRoute<ListRecord>(List))
   .post(
-    '/api/lists',
     authorize('author'),
     bodyParser.json(),
     mutationRoute(m.createList, m.updateList, m.deleteList),
-  )
+  );
+router
+  .route('/api/list-items')
+  .get(getRoute<ListRecord>(ListItem))
   .post(
-    '/api/list-items',
     authorize('author'),
     bodyParser.json(),
     mutationRoute(m.createListItem, m.updateListItem, m.deleteListItem),
-  )
+  );
+router
+  .route('/api/marks')
+  .get(getRoute<MarkRecord>(Mark))
   .post(
-    '/api/marks',
     authorize('author'),
     bodyParser.json(),
     mutationRoute(m.createMark, m.updateMark, m.deleteMark),
-  )
+  );
+router
+  .route('/api/people')
+  .get(getRoute<PersonRecord>(Person))
   .post(
-    '/api/people',
     authorize('author'),
     bodyParser.json(),
     mutationRoute(m.createPerson, m.updatePerson, m.deletePerson),
-  )
+  );
+router
+  .route('/api/places')
+  .get(getRoute<PlaceRecord>(Place))
   .post(
-    '/api/places',
     authorize('author'),
     bodyParser.json(),
     mutationRoute(m.createPlace, m.updatePlace, m.deletePlace),
-  )
+  );
+router
+  .route('/api/questions')
+  .get(getRoute<QuestionRecord>(Question))
   .post(
-    '/api/questions',
     authorize('author'),
     bodyParser.json(),
     mutationRoute(m.createQuestion, m.updateQuestion, m.deleteQuestion),
-  )
+  );
+router
+  .route('/api/things')
+  .get(getRoute<ThingRecord>(Thing))
   .post(
-    '/api/things',
     authorize('author'),
     bodyParser.json(),
     mutationRoute(m.createThing, m.updateThing, m.deleteThing),
-  )
+  );
+router
+  .route('/api/people-links')
+  .get(getRoute<PersonLinkRecord>(PersonLink))
   .post(
-    '/api/approve',
-    authorize('moderator'),
+    authorize('author'),
     bodyParser.json(),
-    mutationRoute(),
-  )
-  .post(
-    '/api/disapprove',
-    authorize('moderator'),
-    bodyParser.json(),
-    mutationRoute(),
-  )
-  .get('/manifest.json', (_req, resp) => {
-    resp.status(404).send('');
-  })
-  .get('*', sendHtml); // TODO: whitelist html urls so that other stuff can respond w/404
+    mutationRoute(m.createPersonLink, m.updatePersonLink, m.deletePersonLink),
+  );
+
+router.route('/api/volumes').get(getRoute<VolumeRecord>(Volume));
+router.get('/manifest.json', (_req, resp) => {
+  resp.status(404).send('');
+});
+
+router.get('*', sendHtml); // TODO: whitelist html urls so that other stuff can respond w/404
 
 export default router;

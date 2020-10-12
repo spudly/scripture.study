@@ -23,6 +23,9 @@ module.exports = {
       maxHeight: (theme) => ({
         ...theme('height'),
       }),
+      flex: {
+        '2': '2 2 0%',
+      },
       fontFamily: {
         sans: [
           'system-ui',

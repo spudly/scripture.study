@@ -38,6 +38,7 @@ const PersonSelect: FC<ComponentProps<typeof Select>> = ({
   return (
     <Select
       {...rest}
+      value={value}
       onChange={(e) => {
         setPersonIdUsed(e.currentTarget.value);
         onChange?.(e);

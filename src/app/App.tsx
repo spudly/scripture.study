@@ -20,6 +20,7 @@ import Timeline from '../timeline/Timeline';
 import Topics from '../topics/Topics';
 import {ReactQueryDevtools} from 'react-query-devtools';
 import queryCache from '../utils/queryCache';
+import Person from '../people/Person';
 
 const App: FC = () => {
   return (
@@ -27,12 +28,16 @@ const App: FC = () => {
       <ReactQueryCacheProvider queryCache={queryCache}>
         <Title title="scripture.study">
           <Authenticate>
-            <div className="min-h-screen flex flex-col bg-gray-200 pt-20">
+            <div className="min-h-screen flex flex-col bg-gray-200 pt-20 px-4 sm:px-32">
               <ErrorBoundary grow>
                 <Switch>
                   <Route path="/user/profile" component={UserProfile} />
                   <Route path="/user/settings" component={UserSettings} />
-                  <Route path="/speakers" component={People} />
+                  <Route
+                    path="/people/:id"
+                    render={({match}) => <Person id={match.params.id} />}
+                  />
+                  <Route path="/people" component={People} />
                   <Route path="/places" component={Places} />
                   <Route path="/things" component={Things} />
 

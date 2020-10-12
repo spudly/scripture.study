@@ -11,7 +11,7 @@ import {
   MarkRecord,
   VerseSelection,
   PersonRecord,
-  MutationResponseBody,
+  BulkMutationResponseBody,
   Unsaved,
   ID,
 } from '../utils/types';
@@ -46,17 +46,17 @@ const Verses: FC<{
   };
 
   const [createMarks, {isLoading: isCreatingMarks}] = useMutation<
-    MutationResponseBody,
+    BulkMutationResponseBody,
     Error,
     {marks: Array<Unsaved<MarkRecord>>}
   >(
-    ({marks}): Promise<MutationResponseBody> =>
+    ({marks}): Promise<BulkMutationResponseBody> =>
       bulkMutation<MarkRecord>('/api/marks', {create: marks}),
     {onSuccess: handleSuccess},
   );
 
   const [updateMarks, {isLoading: isUpdatingMarks}] = useMutation<
-    MutationResponseBody,
+    BulkMutationResponseBody,
     Error,
     {
       marks: Array<MarkRecord>;
@@ -68,7 +68,7 @@ const Verses: FC<{
   );
 
   const [deleteMarks, {isLoading: isDeletingMarks}] = useMutation<
-    MutationResponseBody,
+    BulkMutationResponseBody,
     Error,
     {ids: Array<ID>}
   >(
@@ -309,28 +309,26 @@ const ChapterPage: FC = () => {
 
   return (
     <Title title={`${volume.longTitle} | ${book.title} ${chapter.number}`}>
-      <div className="flex-1 flex flex-col px-4 sm:px-32">
-        {chapter.number === 1 && (
-          <h1 className="text-center text-6xl uppercase font-serif">
-            {book.longTitle}
-          </h1>
-        )}
-        <h2 className="text-center text-4xl uppercase font-serif">
-          {chapter.number === 1 ? 'Chapter' : book.title} {chapter.number}
-        </h2>
+      {chapter.number === 1 && (
+        <h1 className="text-center text-6xl uppercase font-serif">
+          {book.longTitle}
+        </h1>
+      )}
+      <h2 className="text-center text-4xl uppercase font-serif">
+        {chapter.number === 1 ? 'Chapter' : book.title} {chapter.number}
+      </h2>
 
-        <Spacer y={8} />
+      <Spacer y={8} />
 
-        <p className="text-4xl italic font-serif">
-          Lorem ipsum dolor sit amet, consectetur adipiscing elit. Mauris luctus
-          suscipit congue. Quisque accumsan posuere elementum. Morbi nec sapien
-          convallis, condimentum diam non, aliquet tellus.
-        </p>
+      <p className="text-4xl italic font-serif">
+        Lorem ipsum dolor sit amet, consectetur adipiscing elit. Mauris luctus
+        suscipit congue. Quisque accumsan posuere elementum. Morbi nec sapien
+        convallis, condimentum diam non, aliquet tellus.
+      </p>
 
-        <Spacer y={8} />
-        <Pagination prevHref={prev} nextHref={next} />
-        <Verses verses={verses} speakers={people ?? []} marks={marks ?? []} />
-      </div>
+      <Spacer y={8} />
+      <Pagination prevHref={prev} nextHref={next} />
+      <Verses verses={verses} speakers={people ?? []} marks={marks ?? []} />
     </Title>
   );
 };

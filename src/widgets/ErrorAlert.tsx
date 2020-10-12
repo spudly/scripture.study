@@ -1,6 +1,5 @@
 import React, {FC} from 'react';
 import {MdErrorOutline} from 'react-icons/md';
-import classnames from 'classnames';
 
 type Props = {
   error: unknown;
@@ -10,15 +9,11 @@ type Props = {
 const ErrorAlert: FC<Props> = ({error, grow}) => (
   <div className="flex-1 flex flex-col items-center justify-center bg-red-200 border border-red-800 text-red-800 p-2">
     <MdErrorOutline
-      height="auto"
-      width="auto"
-      className={classnames({
-        'h-4 w-4': !grow,
-        'flex-1 max-w-64': grow,
-      })}
+      size="auto"
+      className={grow ? 'flex-1 max-w-64' : 'h-4 w-4'}
     />
     {process.env.NODE_ENV === 'development' && (
-      <pre className="text-left text-base">
+      <pre className="text-left text-base w-full overflow-x-auto">
         {typeof error === 'string'
           ? error
           : error instanceof Error
