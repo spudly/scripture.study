@@ -4,7 +4,7 @@ import {PersonRecord} from '../utils/types';
 import serializePerson from '../utils/serializePerson';
 import comparePeople from '../utils/comparePeople';
 import {useQuery} from 'react-query';
-import {queries} from '../api/api.client';
+import {getAllPeople} from '../api/api.client';
 import ErrorAlert from '../widgets/ErrorAlert';
 import Spinner from '../widgets/Spinner';
 import useRecentItems from '../utils/useRecentItems';
@@ -16,9 +16,9 @@ const PersonSelect: FC<ComponentProps<typeof Select>> = ({
 }) => {
   const [recentPersonIds, setPersonIdUsed] = useRecentItems('recentPeople', 5);
 
-  const {data: people, error, isLoading} = useQuery(
+  const {data: {items: people = undefined} = {}, error, isLoading} = useQuery(
     ['people'],
-    queries.getAllPeople,
+    getAllPeople,
   );
 
   if (isLoading) {

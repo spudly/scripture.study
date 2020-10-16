@@ -1,5 +1,5 @@
 import React, {ComponentProps, FC, useEffect, useRef, useState} from 'react';
-import {Audited, PersonLinkRecord, PersonRecord} from '../utils/types';
+import {PersonLinkRecord, PersonRecord} from '../utils/types';
 import CircleButton from '../widgets/CircleButton';
 import useToggle from '../utils/useToggle';
 import PersonLinkDialog from './PersonLinkDialog';
@@ -11,8 +11,8 @@ import useResizeObserver from './useResizeObserver';
 import centerBy from '../utils/centerBy';
 
 const FamilyTree: FC<{
-  self: Audited<PersonRecord>;
-  links: Array<Audited<PersonLinkRecord>>;
+  self: PersonRecord;
+  links: Array<PersonLinkRecord>;
 }> = ({self, links}) => {
   const [arrows, setArrows] = useState<Array<ComponentProps<typeof Arrow>>>([]);
   const rootRef = useRef<HTMLDivElement | null>(null);

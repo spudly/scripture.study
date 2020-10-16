@@ -1,14 +1,8 @@
 import {useId} from '@reach/auto-id';
 import React, {FC, useState} from 'react';
 import {useMutation, useQueryCache} from 'react-query';
-import {mutations} from '../api/api.client';
-import {
-  Audited,
-  ID,
-  PersonLinkRecord,
-  PersonRecord,
-  Unsaved,
-} from '../utils/types';
+import {createPersonLink, updatePersonLink} from '../api/api.client';
+import {ID, PersonLinkRecord, PersonRecord, Unsaved} from '../utils/types';
 import Button from '../widgets/Button';
 import Dialog from '../widgets/Dialog';
 import FormGroup from '../widgets/FormGroup';
@@ -22,8 +16,8 @@ const createOrUpdatePersonLink = async ({
   otherPersonId,
   reverse,
 }: {
-  self: Audited<PersonRecord>;
-  link?: Audited<PersonLinkRecord>;
+  self: PersonRecord;
+  link?: PersonLinkRecord;
   type: PersonLinkRecord['type'];
   otherPersonId: ID;
   reverse: boolean;
@@ -40,18 +34,18 @@ const createOrUpdatePersonLink = async ({
         toPersonId: otherPersonId,
       };
   if (link) {
-    await mutations.updatePersonLink({
+    await updatePersonLink({
       ...link,
       ...values,
     });
   } else {
-    await mutations.createPersonLink(values);
+    await createPersonLink(values);
   }
 };
 
 const PersonLinkDialog: FC<{
-  self: Audited<PersonRecord>;
-  link?: Audited<PersonLinkRecord>;
+  self: PersonRecord;
+  link?: PersonLinkRecord;
   close: () => void;
 }> = ({self, link, close}) => {
   const [type, setType] = useState<PersonLinkRecord['type'] | null>(null);
@@ -73,7 +67,7 @@ const PersonLinkDialog: FC<{
       <FormGroup label="Relationship" labelFor={typeFieldId}>
         <Select
           id={typeFieldId}
-          value={type ?? ''}
+          value={`${reverse ? 'reverse:' : ''}${type ?? ''}`}
           onChange={(e) => {
             const {value} = e.currentTarget;
             setType(

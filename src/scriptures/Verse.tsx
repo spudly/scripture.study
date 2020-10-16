@@ -15,6 +15,7 @@ import {MdRecordVoiceOver} from 'react-icons/md';
 import ErrorBoundary from '../widgets/ErrorBoundary';
 import UserContext from '../utils/UserContext';
 import hasRole from '../utils/hasRole';
+import {Link} from 'react-router-dom';
 
 const SpeakerIndicator: FC<{
   speakerId: ID;
@@ -26,18 +27,19 @@ const SpeakerIndicator: FC<{
   }
   const {name, biography} = speaker;
   return (
-    <div
-      className="inline-block w-16 h-16 mx-2 align-middle overflow-hidden select-none"
+    <Link
+      to={`/people/${speakerId}`}
+      className="inline-flex flex-col justify-center w-rel-8 h-rel-8 mx-rel-1 align-middle overflow-hidden select-none transform hover:scale-110"
       data-selection-ignore
       title={[name, biography].filter((x) => x != null).join(', ')}
     >
       <div className="flex justify-center">
         <MdRecordVoiceOver />
       </div>
-      <div className="text-xs text-center truncate uppercase leading-none flex-1 min-w-0 pt-1">
+      <div className="text-rel-3xs text-center truncate uppercase leading-none min-w-0 pt-1">
         {name ?? biography}
       </div>
-    </div>
+    </Link>
   );
 };
 
@@ -45,8 +47,8 @@ const VerseFragment: FC<{
   children: ReactNode;
   isVerseNumber?: boolean;
   marks: Array<MarkRecord>;
-  selectMarks: Dispatch<SetStateAction<string[]>>;
-  selectedMarkIds: Array<string>;
+  selectMarks?: Dispatch<SetStateAction<string[]>>;
+  selectedMarkIds?: Array<string>;
   speakerIds: Array<string>;
   speakers: Array<PersonRecord>;
 }> = ({
@@ -69,15 +71,15 @@ const VerseFragment: FC<{
     lastSpeakerId &&
       theme(allSpeakerIds.indexOf(lastSpeakerId), {
         states:
-          isVerseNumber || !isAuthor
+          isVerseNumber || !isAuthor || !selectMarks
             ? ['default']
-            : selectedMarkIds.includes(lastMark.id)
+            : selectedMarkIds?.includes(lastMark.id)
             ? ['activated']
             : undefined,
         colors: ['bgColor', 'textColor'],
       }),
-    'py-4',
-    {'cursor-pointer': isAuthor && marks.length !== 0},
+    'py-rel-2',
+    {'cursor-pointer': isAuthor && marks.length !== 0 && selectMarks},
   );
   const mark = marks.length ? (
     <mark className={classes}>
@@ -90,20 +92,24 @@ const VerseFragment: FC<{
     </mark>
   ) : null;
   return mark ? (
-    isAuthor ? (
+    isAuthor && selectMarks ? (
       <>
         {/* eslint-disable-next-line jsx-a11y/anchor-is-valid */}
         <a
           // TODO: for now, we'll support selecting a single mark. eventually it'd be nice to prompt the user to choose which mark they want to select.
-          onClick={(e) => {
-            e.stopPropagation();
-            const markId = marks[marks.length - 1].id;
-            if (e.ctrlKey) {
-              selectMarks((markIds) => [...(markIds ?? []), markId]);
-            } else {
-              selectMarks([markId]);
-            }
-          }}
+          onClick={
+            selectMarks
+              ? (e) => {
+                  e.stopPropagation();
+                  const markId = marks[marks.length - 1].id;
+                  if (e.ctrlKey) {
+                    selectMarks((markIds) => [...(markIds ?? []), markId]);
+                  } else {
+                    selectMarks([markId]);
+                  }
+                }
+              : undefined
+          }
         >
           {mark}
         </a>
@@ -120,8 +126,8 @@ const Verse: FC<{
   id: VerseRecord['id'];
   number: VerseRecord['number'];
   text: VerseRecord['text'];
-  selectMarks: Dispatch<SetStateAction<string[]>>;
-  selectedMarkIds: Array<string>;
+  selectMarks?: Dispatch<SetStateAction<string[]>>;
+  selectedMarkIds?: Array<string>;
   speakers: Array<PersonRecord>;
   marks: Array<MarkRecord>;
 }> = ({
@@ -166,7 +172,7 @@ const Verse: FC<{
     <blockquote
       data-verse={id}
       key={id}
-      className="content-center mb-6 text-4xl leading-loose text-justify font-serif"
+      className="content-center mb-rel-6 leading-loose text-justify font-serif"
     >
       <span className="select-none">{number} </span>
       {breakpoints.reduce((elements, breakpoint, index) => {

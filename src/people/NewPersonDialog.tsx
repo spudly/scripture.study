@@ -1,5 +1,5 @@
 import React, {FC, useState} from 'react';
-import {mutations} from '../api/api.client';
+import {createPerson, updatePerson} from '../api/api.client';
 import ErrorAlert from '../widgets/ErrorAlert';
 import {useId} from '@reach/auto-id';
 import Dialog from '../widgets/Dialog';
@@ -23,14 +23,15 @@ const NewPersonDialog: FC<{
 
   const save = async () => {
     try {
-      if ('id' in person && person.id != null) {
-        await mutations.updatePerson({
-          ...person,
+      // @ts-expect-error
+      if (person.id) {
+        await updatePerson({
+          ...(person as PersonRecord),
           name,
           biography,
         });
       } else {
-        await mutations.createPerson({name, biography});
+        await createPerson({name, biography});
       }
       queryCache.invalidateQueries('people');
       close();

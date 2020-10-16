@@ -162,10 +162,10 @@ export type BulkMutationRequestBody<RECORD> = {
   delete?: Array<ID>;
 };
 
-export type BulkMutationResponseBody = {
-  createdIds?: string[];
-  updatedIds?: string[];
-  deletedIds?: string[];
+export type BulkMutationResponseBody<RECORD> = {
+  created?: RECORD[];
+  updated?: RECORD[];
+  deleted?: ID[];
 };
 
 export type RoleName = 'admin' | 'moderator' | 'author';
@@ -298,15 +298,13 @@ export type TableSection = NativeElement<'thead' | 'tbody' | 'tfoot'>;
 export type TableRow = NativeElement<'tr'>;
 export type TableCell = NativeElement<'th' | 'td'>;
 
-export type Audited<T, INCLUDE_APPROVAL extends boolean = true> = T & {
+export type EditableRecord = {
+  id: ID;
   lastUpdatedBy: string;
   lastUpdatedDate: number;
-} & (INCLUDE_APPROVAL extends true
-    ? {
-        approvedBy: string;
-        approvedDate: number;
-      }
-    : {});
+  approvedBy: string;
+  approvedDate: number;
+};
 
 export type UserRecord = {
   id: ID;
@@ -335,7 +333,7 @@ export type AnswerRecord = {
   id: ID;
   questionId: ID;
   text: string;
-};
+} & EditableRecord;
 
 export type BookRecord = {
   id: ID;
@@ -345,20 +343,20 @@ export type BookRecord = {
   volumeId: ID;
   order: number;
   abbr: string;
-};
+} & EditableRecord;
 
 export type ChapterRecord = {
   id: ID;
   bookId: ID;
   number: number;
   summary: string | null;
-};
+} & EditableRecord;
 
 export type EventRecord = {
   id: ID;
   name: string;
   description: string;
-};
+} & EditableRecord;
 
 export type SpeakerMarkRecord = {
   id: ID;
@@ -371,7 +369,7 @@ export type SpeakerMarkRecord = {
   placeId: null;
   thingId: null;
   eventId: null;
-};
+} & EditableRecord;
 
 export type MentionMarkRecord = {
   id: ID;
@@ -384,7 +382,7 @@ export type MentionMarkRecord = {
   placeId: string | null;
   thingId: string | null;
   eventId: string | null;
-};
+} & EditableRecord;
 
 export type MarkRecord = SpeakerMarkRecord | MentionMarkRecord;
 
@@ -392,32 +390,32 @@ export type PersonRecord = {
   id: ID;
   name: string | null;
   biography: string | null;
-};
+} & EditableRecord;
 
 export type PersonLinkRecord = {
   id: ID;
   fromPersonId: ID;
   type: 'childOf' | 'spouseOf' | 'descendantOf';
   toPersonId: ID;
-};
+} & EditableRecord;
 
 export type ListRecord = {
   id: ID;
   name: string;
   description: string | null;
-};
+} & EditableRecord;
 
 export type ListItemRecord = {
   id: ID;
   listId: ID;
   text: string;
-};
+} & EditableRecord;
 
 export type PlaceRecord = {
   id: ID;
   name: string;
   position: string;
-};
+} & EditableRecord;
 
 export type QuestionRecord = {
   id: ID;
@@ -427,20 +425,20 @@ export type QuestionRecord = {
   placeId: string | null;
   thingId: string | null;
   eventId: string | null;
-};
+} & EditableRecord;
 
 export type ThingRecord = {
   id: ID;
   name: string;
   description: string;
-};
+} & EditableRecord;
 
 export type VerseRecord = {
   id: ID;
   chapterId: ID;
   number: number;
   text: string;
-};
+} & EditableRecord;
 
 export type VolumeRecord = {
   id: ID;
@@ -448,72 +446,9 @@ export type VolumeRecord = {
   longTitle: string;
   abbr: string;
   order: number;
-};
+} & EditableRecord;
 
-export type Unsaved<RECORD> = Omit<RECORD, 'id'>;
-
-export type PatchRecord = {id: ID; editedRecordId: string | null} & (
-  | {
-      table: 'answers';
-      data: Unsaved<AnswerRecord>;
-    }
-  | {
-      table: 'books';
-      data: Unsaved<BookRecord>;
-    }
-  | {
-      table: 'chapters';
-      data: Unsaved<VerseRecord>;
-    }
-  | {
-      table: 'events';
-      data: Unsaved<EventRecord>;
-    }
-  | {
-      table: 'marks';
-      data: Unsaved<MarkRecord>;
-    }
-  | {
-      table: 'people';
-      data: Unsaved<PersonRecord>;
-    }
-  | {
-      table: 'people_links';
-      data: Unsaved<PersonLinkRecord>;
-    }
-  | {
-      table: 'places';
-      data: Unsaved<PlaceRecord>;
-    }
-  | {
-      table: 'questions';
-      data: Unsaved<QuestionRecord>;
-    }
-  | {
-      table: 'roles';
-      data: Unsaved<RoleRecord>;
-    }
-  | {
-      table: 'things';
-      data: Unsaved<ThingRecord>;
-    }
-  | {
-      table: 'verses';
-      data: Unsaved<VerseRecord>;
-    }
-  | {
-      table: 'volumes';
-      data: Unsaved<VolumeRecord>;
-    }
-  | {
-      table: 'lists';
-      data: Unsaved<ListRecord>;
-    }
-  | {
-      table: 'list_items';
-      data: Unsaved<ListItemRecord>;
-    }
-);
+export type Unsaved<RECORD> = Omit<RECORD, 'id' | keyof EditableRecord>;
 
 export type GoogleAccessTokenData = {
   access_token: string;
@@ -533,4 +468,21 @@ export type GoogleUserInfo = {
   family_name?: string;
   picture?: string;
   locale?: string;
+};
+
+export type MarkRecordPlus = MarkRecord & {
+  verse: VerseRecord & {
+    chapter: ChapterRecord & {
+      book: BookRecord & {
+        volume: VolumeRecord;
+      };
+    };
+  };
+};
+
+export type GetAllResponseBody<ITEM> = {
+  count: number;
+  limit: number | null;
+  offset: number;
+  items: Array<ITEM>;
 };

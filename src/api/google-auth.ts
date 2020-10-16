@@ -6,7 +6,7 @@ import {
   GoogleUserInfo,
   UserWithRoles,
 } from '../utils/types';
-import {findOrCreateOrUpdateGoogleUser, queries} from './api.postgres';
+import {findOrCreateOrUpdateGoogleUser, getUserRolesById} from './api.postgres';
 
 const {
   GOOGLE_OAUTH_CLIENT_ID = '',
@@ -70,7 +70,7 @@ export const googleCallbackMiddleware: Handler = async (req, resp) => {
   const tokenData = await fetchAccessTokenData(req.query.code as string);
   const profile = await fetchUserProfile(tokenData.access_token);
   const user = await findOrCreateOrUpdateGoogleUser(profile);
-  const roles = await queries.getUserRolesById(user.id);
+  const roles = await getUserRolesById(user.id);
   const userWithRoles: UserWithRoles = {
     ...user,
     roles: roles.map((r) => r.name),

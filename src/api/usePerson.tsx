@@ -1,22 +1,25 @@
 import {useCallback} from 'react';
 import {useQuery} from 'react-query';
 import fetchJson from '../utils/fetchJson';
-import {stringify} from 'querystring';
-import {Audited, ID, PersonRecord} from '../utils/types';
+import type {GetAllResponseBody, ID, PersonRecord} from '../utils/types';
 
 const usePerson = (id?: ID | null) => {
-  const {data: [person] = [], isLoading, error} = useQuery(
+  const {
+    data: {items: [person] = [] as Array<PersonRecord>} = {},
+    isLoading,
+    error,
+  } = useQuery(
     ['people', id],
     useCallback(
       (key, personId) =>
-        fetchJson<Array<Audited<PersonRecord>>>(
-          `/api/people?${stringify({id: personId})}`,
+        fetchJson<GetAllResponseBody<PersonRecord>>(
+          `/api/people?id=${encodeURIComponent(personId)}`,
         ),
       [],
     ),
     {enabled: id != null},
   );
-  return [person, isLoading, error] as const;
+  return [person as PersonRecord | undefined, isLoading, error] as const;
 };
 
 export default usePerson;

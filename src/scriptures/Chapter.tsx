@@ -26,8 +26,19 @@ import UserContext from '../utils/UserContext';
 import hasRole from '../utils/hasRole';
 import Title from '../widgets/Title';
 import {useMutation, useQuery} from 'react-query';
-import {bulkMutation, queries} from '../api/api.client';
+import {
+  getVolumeByTitle,
+  getBookByVolumeIdAndTitle,
+  getChapterByBookIdAndNumber,
+  getAllVersesByChapterId,
+  getAllMarksByChapterId,
+  getAdjacentChapters,
+  getAllPeople,
+  bulkMutation,
+} from '../api/api.client';
 import queryCache from '../utils/queryCache';
+import scriptureLinkHref from '../utils/scriptureLinkHref';
+import Heading from '../widgets/Heading';
 
 const Verses: FC<{
   verses: Array<VerseRecord>;
@@ -46,17 +57,17 @@ const Verses: FC<{
   };
 
   const [createMarks, {isLoading: isCreatingMarks}] = useMutation<
-    BulkMutationResponseBody,
+    BulkMutationResponseBody<MarkRecord>,
     Error,
     {marks: Array<Unsaved<MarkRecord>>}
   >(
-    ({marks}): Promise<BulkMutationResponseBody> =>
+    ({marks}): Promise<BulkMutationResponseBody<MarkRecord>> =>
       bulkMutation<MarkRecord>('/api/marks', {create: marks}),
     {onSuccess: handleSuccess},
   );
 
   const [updateMarks, {isLoading: isUpdatingMarks}] = useMutation<
-    BulkMutationResponseBody,
+    BulkMutationResponseBody<MarkRecord>,
     Error,
     {
       marks: Array<MarkRecord>;
@@ -68,7 +79,7 @@ const Verses: FC<{
   );
 
   const [deleteMarks, {isLoading: isDeletingMarks}] = useMutation<
-    BulkMutationResponseBody,
+    BulkMutationResponseBody<MarkRecord>,
     Error,
     {ids: Array<ID>}
   >(
@@ -194,13 +205,13 @@ const ChapterPage: FC = () => {
     error: volumeError,
   } = useQuery(
     ['volumes', refToTitle(volumeRef)],
-    useCallback((key, title) => queries.getVolumeByTitle(title), []),
+    useCallback((key, title) => getVolumeByTitle(title), []),
   );
 
   const {data: book, isLoading: isBookLoading, error: bookError} = useQuery(
     ['books', volume?.id, refToTitle(bookRef)],
     useCallback(
-      (key, volumeId, title) => queries.getBookByTitle(volumeId, title),
+      (key, volumeId, title) => getBookByVolumeIdAndTitle(volumeId, title),
       [],
     ),
     {
@@ -213,64 +224,49 @@ const ChapterPage: FC = () => {
     isLoading: isChapterLoading,
     error: chapterError,
   } = useQuery(
-    ['chapters', volume?.id, book?.id, refToNumber(chapterRef)],
+    ['chapters', book?.id, refToNumber(chapterRef)],
     useCallback(
-      (key, volumeId, bookId, number) =>
-        queries.getChapterByBookIdAndNumber(volumeId, bookId, number),
+      (key, bookId, number) => getChapterByBookIdAndNumber(bookId, number),
       [],
     ),
-    {enabled: volume != null && book != null},
+    {enabled: book != null},
   );
 
   const {
-    data: verses,
+    data: {items: verses = undefined} = {},
     isLoading: isVersesLoading,
     error: versesError,
   } = useQuery(
-    ['verses', volume?.id, chapter?.id],
-    useCallback(
-      (key, volumeId, chapterId) =>
-        queries.getAllVersesByChapterId(volumeId, chapterId),
-      [],
-    ),
-    {enabled: volume != null && chapter != null},
-  );
-
-  const {data: marks, isLoading: isMarksLoading, error: marksError} = useQuery(
-    ['marks', volume?.id, chapter?.id],
-    useCallback(
-      (key, volumeId, chapterId) =>
-        queries.getAllMarksByChapterId(volumeId, chapterId),
-      [],
-    ),
-    {enabled: volume != null && chapter != null},
-  );
-
-  const {data: prev, isLoading: isPrevLoading, error: prevError} = useQuery(
-    ['prevChapter', volume?.id, chapter?.id],
-    useCallback(
-      (key, volumeId, chapterId) =>
-        queries.queryPrevChapterUrl(volumeId, chapterId),
-      [],
-    ),
-    {enabled: volume != null && chapter != null},
-  );
-
-  const {data: next, isLoading: isNextLoading, error: nextError} = useQuery(
-    ['nextChapter', volume?.id, chapter?.id],
-    useCallback(
-      (key, volumeId, chapterId) =>
-        queries.queryNextChapterUrl(volumeId, chapterId),
-      [],
-    ),
+    ['verses', chapter?.id],
+    useCallback((key, chapterId) => getAllVersesByChapterId(chapterId), []),
     {enabled: volume != null && chapter != null},
   );
 
   const {
-    data: people,
+    data: {items: marks = undefined} = {},
+    isLoading: isMarksLoading,
+    error: marksError,
+  } = useQuery(
+    ['marks', chapter?.id],
+    useCallback((key, chapterId) => getAllMarksByChapterId(chapterId), []),
+    {enabled: volume != null && chapter != null},
+  );
+
+  const {
+    data: {prev, next} = {prev: null, next: null},
+    isLoading: isAdjacentLoading,
+    error: adjacentError,
+  } = useQuery(
+    ['prevChapter', chapter?.id],
+    useCallback((key, chapterId) => getAdjacentChapters(chapterId), []),
+    {enabled: volume != null && chapter != null},
+  );
+
+  const {
+    data: {items: people = undefined} = {},
     isLoading: isPeopleLoading,
     error: peopleError,
-  } = useQuery('people', queries.getAllPeople);
+  } = useQuery('people', getAllPeople);
 
   useEffect(() => {
     // TODO: use queryCache.prefetchQuery to fetch the data for the prev and next chapters
@@ -282,8 +278,7 @@ const ChapterPage: FC = () => {
     isBookLoading ||
     isVersesLoading ||
     isMarksLoading ||
-    isPrevLoading ||
-    isNextLoading ||
+    isAdjacentLoading ||
     isPeopleLoading
   ) {
     return <Spinner grow />;
@@ -295,8 +290,7 @@ const ChapterPage: FC = () => {
     bookError ??
     versesError ??
     marksError ??
-    prevError ??
-    nextError ??
+    adjacentError ??
     peopleError;
 
   if (!volume || !book || !chapter || !verses || !people) {
@@ -309,14 +303,10 @@ const ChapterPage: FC = () => {
 
   return (
     <Title title={`${volume.longTitle} | ${book.title} ${chapter.number}`}>
-      {chapter.number === 1 && (
-        <h1 className="text-center text-6xl uppercase font-serif">
-          {book.longTitle}
-        </h1>
-      )}
-      <h2 className="text-center text-4xl uppercase font-serif">
+      {chapter.number === 1 && <Heading center>{book.longTitle}</Heading>}
+      <Heading center level={2}>
         {chapter.number === 1 ? 'Chapter' : book.title} {chapter.number}
-      </h2>
+      </Heading>
 
       <Spacer y={8} />
 
@@ -327,8 +317,27 @@ const ChapterPage: FC = () => {
       </p>
 
       <Spacer y={8} />
-      <Pagination prevHref={prev} nextHref={next} />
-      <Verses verses={verses} speakers={people ?? []} marks={marks ?? []} />
+      <Pagination
+        prevHref={
+          prev &&
+          scriptureLinkHref(
+            prev.volume.title,
+            prev.book.title,
+            prev.chapter.number,
+          )
+        }
+        nextHref={
+          next &&
+          scriptureLinkHref(
+            next.volume.title,
+            next.book.title,
+            next.chapter.number,
+          )
+        }
+      />
+      <div className="text-4xl">
+        <Verses verses={verses} speakers={people ?? []} marks={marks ?? []} />
+      </div>
     </Title>
   );
 };

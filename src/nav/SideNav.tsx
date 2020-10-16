@@ -31,7 +31,11 @@ import UserContext from '../utils/UserContext';
 import hasRole from '../utils/hasRole';
 import useScripturesRouteMatch from '../utils/useScripturesRouteMatch';
 import scriptureLinkHref from '../utils/scriptureLinkHref';
-import {queries} from '../api/api.client';
+import {
+  getAllChaptersByBookId,
+  getAllBooksByVolumeId,
+  getAllVolumes,
+} from '../api/api.client';
 import {useQuery} from 'react-query';
 import {BookRecord, VolumeRecord} from '../utils/types';
 import useBoolean from '../utils/useBoolean';
@@ -101,13 +105,9 @@ const ChapterLinks: FC<{
   book: BookRecord;
   closeSideNav: () => void;
 }> = ({volume, book, closeSideNav}) => {
-  const {data: chapters} = useQuery(
-    ['chapters', volume.id, book.id],
-    useCallback(
-      (key, volumeId, bookId) =>
-        queries.getAllChaptersByBookId(volumeId, bookId),
-      [],
-    ),
+  const {data: {items: chapters = undefined} = {}} = useQuery(
+    ['chapters', book.id],
+    useCallback((key, bookId) => getAllChaptersByBookId(bookId), []),
   );
 
   return (
@@ -132,9 +132,9 @@ const BookLinks: FC<{
   bookTitle?: string;
   closeSideNav: () => void;
 }> = ({volume, bookTitle, closeSideNav}) => {
-  const {data: books} = useQuery(
+  const {data: {items: books = undefined} = {}} = useQuery(
     ['books', volume.id],
-    useCallback((key, volumeId) => queries.getAllBooksByVolumeId(volumeId), []),
+    useCallback((key, volumeId) => getAllBooksByVolumeId(volumeId), []),
     {enabled: volume},
   );
 
@@ -167,7 +167,10 @@ const VolumeLinks: FC<{
   bookTitle?: string;
   closeSideNav: () => void;
 }> = ({volumeTitle, bookTitle, closeSideNav}) => {
-  const {data: volumes} = useQuery(['volumes'], queries.getAllVolumes);
+  const {data: {items: volumes = undefined} = {}} = useQuery(
+    ['volumes'],
+    getAllVolumes,
+  );
 
   return (
     <>

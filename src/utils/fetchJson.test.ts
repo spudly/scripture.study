@@ -18,6 +18,6 @@ test('throws if non-ok status received', async () => {
     json: jest.fn().mockResolvedValue({it: 'works'}),
   });
   await expect(fetchJson('/test')).rejects.toThrow(
-    'fetchJson(/test): Internal Server Error',
+    'fetchJson(GET /test): Internal Server Error',
   );
 });

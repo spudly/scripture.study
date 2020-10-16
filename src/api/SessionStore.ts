@@ -1,8 +1,15 @@
 import {Store} from 'express-session';
-import {Op} from 'sequelize';
-import {Session} from './api.postgres';
+import {
+  countSessions,
+  createOrUpdateSession,
+  deleteAllSessions,
+  deleteExpiredSessions,
+  deleteSession,
+  getAllSessions,
+  getSession,
+  setSessionExpirationDate,
+} from './api.postgres';
 import {logger} from '../utils/logger';
-import sequelize from 'sequelize';
 
 type SessionMap = {[sessionId: string]: Express.SessionData};
 
@@ -18,11 +25,7 @@ class SessionStore extends Store {
   }
 
   async prune() {
-    const numPruned = await Session.destroy({
-      where: {
-        expirationDate: {[Op.lt]: sequelize.fn('NOW')},
-      },
-    });
+    const numPruned = await deleteExpiredSessions();
     logger.info(
       {numPruned},
       `[SessionStore]: Pruned ${numPruned} expired sessions`,
@@ -35,22 +38,22 @@ class SessionStore extends Store {
       sessionMap: SessionMap | null | undefined,
     ) => void,
   ): Promise<void> => {
-    let sessions: SessionMap | undefined = undefined;
+    let map: SessionMap | undefined = undefined;
     let error: Error | undefined = undefined;
     try {
-      const sessionModels = await Session.findAll({where: {}});
-      sessions = sessionModels.reduce<SessionMap>((prev, model) => {
-        const {id, data} = model.get();
-        return {
+      const sessions = await getAllSessions();
+      map = sessions.reduce<SessionMap>(
+        (prev, {id, data}) => ({
           ...prev,
           [id]: data,
-        };
-      }, {});
+        }),
+        {},
+      );
     } catch (err) {
       logger.error('[SessionStore] failed to get all sessions');
       error = err;
     }
-    callback(error, sessions);
+    callback(error, map);
   };
 
   /**
@@ -66,7 +69,7 @@ class SessionStore extends Store {
     let error: Error | undefined = undefined;
     try {
       logger.info('[SessionStore] destroyed session');
-      await Session.destroy({where: {id: sessionId}});
+      await deleteSession(sessionId);
     } catch (err) {
       logger.error('[SessionStore] failed to destroy session');
       error = err;
@@ -82,7 +85,7 @@ class SessionStore extends Store {
     let error: Error | undefined = undefined;
     try {
       logger.ingo('[SessionStore] destroyed all sessions');
-      await Session.destroy({where: {}});
+      await deleteAllSessions();
     } catch (err) {
       logger.error('[SessionStore] failed to destroy all sessions');
       error = err;
@@ -100,7 +103,7 @@ class SessionStore extends Store {
     let error: Error | undefined = undefined;
     let length: number | null | undefined = undefined;
     try {
-      length = await Session.count({where: {}});
+      length = await countSessions();
       logger.info({num: length}, '[SessionStore} number of active sessions');
     } catch (err) {
       logger.error('[SessionStore] failed to get number of active sessions');
@@ -124,8 +127,8 @@ class SessionStore extends Store {
     let error: Error | undefined = undefined;
     let data: Express.SessionData | null | undefined = undefined;
     try {
-      const model = await Session.findOne({where: {id: sessionId}});
-      data = model?.get().data;
+      const model = await getSession(sessionId);
+      data = model?.data;
       logger.info('[SessionStore] session data');
     } catch (err) {
       logger.error('[SessionStore] failed to get session data');
@@ -146,15 +149,8 @@ class SessionStore extends Store {
   ) => {
     let error: Error | undefined = undefined;
     try {
-      const model = await Session.findOne({where: {id: sessionId}});
       const expirationDate = Date.now() + SESSION_DURATION;
-      if (model) {
-        await model.update({data, expirationDate});
-        logger.info('[SessionSture] updated session');
-      } else {
-        await Session.create({id: sessionId, data, expirationDate});
-        logger.info('[SessionStore] created session');
-      }
+      await createOrUpdateSession(sessionId, data, expirationDate);
     } catch (err) {
       logger.error('[SessionStore] failed to create/update session');
       error = err;
@@ -178,12 +174,8 @@ class SessionStore extends Store {
   ) => {
     let error: Error | undefined = undefined;
     try {
-      const model = await Session.findOne({where: {id: sessionId}});
-      if (!model) {
-        throw new Error('[SessionStore] Session not found');
-      }
       const expirationDate = Date.now() + SESSION_DURATION;
-      await model.update({expirationDate});
+      await setSessionExpirationDate(sessionId, expirationDate);
       logger.info({expirationDate}, '[SessionStore] touched session');
     } catch (err) {
       logger.error('[SessionStore] failed to touch session');

@@ -1,7 +1,7 @@
 import React, {FC, useCallback} from 'react';
 import Directory, {DirectoryItem} from './Directory';
 import {get, compareBy} from '@spudly/pushpop';
-import {queries} from '../api/api.client';
+import {getVolumeByTitle, getAllBooksByVolumeId} from '../api/api.client';
 import {useQuery} from 'react-query';
 import Spinner from '../widgets/Spinner';
 import useScripturesRouteMatch from '../utils/useScripturesRouteMatch';
@@ -16,11 +16,11 @@ const BookDirectory: FC = () => {
   }
   const {data: volume} = useQuery(
     ['volumes', volumeTitle],
-    useCallback((key, title) => queries.getVolumeByTitle(title), []),
+    useCallback((key, title) => getVolumeByTitle(title), []),
   );
-  const {data: books} = useQuery(
+  const {data: {items: books = undefined} = {}} = useQuery(
     ['books', volume?.id],
-    useCallback((key, volumeId) => queries.getAllBooksByVolumeId(volumeId), []),
+    useCallback((key, volumeId) => getAllBooksByVolumeId(volumeId), []),
     {enabled: volume},
   );
 

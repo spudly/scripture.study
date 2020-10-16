@@ -2,7 +2,11 @@
 import React, {FC, useCallback} from 'react';
 import Directory, {DirectoryItem} from './Directory';
 import {get, compareBy} from '@spudly/pushpop';
-import {queries} from '../api/api.client';
+import {
+  getVolumeByTitle,
+  getBookByVolumeIdAndTitle,
+  getAllChaptersByBookId,
+} from '../api/api.client';
 import {useQuery} from 'react-query';
 import Spinner from '../widgets/Spinner';
 import useScripturesRouteMatch from '../utils/useScripturesRouteMatch';
@@ -17,23 +21,22 @@ const BookDirectory: FC = () => {
   }
   const {data: volume} = useQuery(
     ['volumes', volumeTitle],
-    useCallback((key, title) => queries.getVolumeByTitle(title), []),
+    useCallback((key, title) => getVolumeByTitle(title), []),
   );
   const {data: book} = useQuery(
     ['books', volume?.id, bookTitle],
     useCallback(
-      (key, volumeId, title) => queries.getBookByTitle(volumeId, title),
+      (key, volumeId, title) => getBookByVolumeIdAndTitle(volumeId, title),
       [volume, bookTitle],
     ),
     {enabled: volume && bookTitle},
   );
-  const {data: chapters} = useQuery(
-    ['chapters', volume?.id, book?.id],
-    useCallback(
-      (key, volumeId, bookId) =>
-        queries.getAllChaptersByBookId(volumeId, bookId),
-      [volume, book],
-    ),
+  const {data: {items: chapters = undefined} = {}} = useQuery(
+    ['chapters', book?.id],
+    useCallback((key, bookId) => getAllChaptersByBookId(bookId), [
+      volume,
+      book,
+    ]),
     {enabled: volume && book},
   );
 

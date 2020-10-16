@@ -1,5 +1,5 @@
 import React, {FC, useState} from 'react';
-import {queries} from '../api/api.client';
+import {getAllPeople} from '../api/api.client';
 import Spinner from '../widgets/Spinner';
 import ErrorAlert from '../widgets/ErrorAlert';
 import {MdEdit} from 'react-icons/md';
@@ -13,7 +13,10 @@ import AnchorLink from '../widgets/AnchorLink';
 import NewPersonDialog from './NewPersonDialog';
 
 const People: FC = () => {
-  const {data: people, error} = useQuery('people', queries.getAllPeople);
+  const {data: {items: people = undefined} = {}, error} = useQuery(
+    'people',
+    getAllPeople,
+  );
   const [editPerson, setEditPerson] = useState<
     PersonRecord | Unsaved<PersonRecord> | null
   >(null);

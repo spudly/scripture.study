@@ -1,21 +1,19 @@
 import React, {useState, FC} from 'react';
-import {ID, MarkRecord, PersonRecord} from '../utils/types';
+import {ID, MarkRecord, PersonRecord, Unsaved} from '../utils/types';
 import {MdRecordVoiceOver} from 'react-icons/md';
 import classnames from 'classnames';
 import CircleButton from '../widgets/CircleButton';
 import {VerseSelection} from '../utils/types';
 import Spinner from '../widgets/Spinner';
-import createId from '../utils/createId';
 import PersonSelect from '../people/PersonSelect';
 import Overlay from '../widgets/Overlay';
 
 const buildSpeakerMarks = (
   selections: Array<VerseSelection>,
   speakerId: ID,
-): Array<MarkRecord> =>
+): Array<Unsaved<MarkRecord>> =>
   selections.map((selection) => ({
     ...selection,
-    id: createId(),
     type: 'speaker',
     isActive: true,
     lastUpdated: Date.now(),
@@ -28,7 +26,7 @@ const buildSpeakerMarks = (
 
 const CreateMarkButton: FC<{
   selections: Array<VerseSelection>;
-  createMarks: (marks: Array<MarkRecord>) => void;
+  createMarks: (marks: Array<Unsaved<MarkRecord>>) => void;
   isCreating?: boolean;
   speakers: Array<PersonRecord>;
 }> = ({selections, createMarks, isCreating, speakers}) => {

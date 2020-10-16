@@ -1,7 +1,7 @@
 import React, {FC} from 'react';
 import Directory, {DirectoryItem} from './Directory';
 import {get, compareBy} from '@spudly/pushpop';
-import {queries} from '../api/api.client';
+import {getAllVolumes} from '../api/api.client';
 import {useQuery} from 'react-query';
 import Spinner from '../widgets/Spinner';
 import scriptureLinkHref from '../utils/scriptureLinkHref';
@@ -9,7 +9,10 @@ import scriptureLinkHref from '../utils/scriptureLinkHref';
 const compareOrder = compareBy(get('order'));
 
 const VolumeDirectory: FC = () => {
-  const {data: volumes} = useQuery('volumes', queries.getAllVolumes);
+  const {data: {items: volumes = undefined} = {}} = useQuery(
+    'volumes',
+    getAllVolumes,
+  );
 
   if (!volumes) {
     return <Spinner />;
