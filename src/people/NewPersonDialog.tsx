@@ -28,11 +28,11 @@ const NewPersonDialog: FC<{
       if (person.id) {
         await updatePerson({
           ...(person as PersonRecord),
-          name,
+          name: name || null,
           biography,
         });
       } else {
-        await createPerson({name, biography});
+        await createPerson({name: name || null, biography});
       }
       queryCache.invalidateQueries('people');
       close();
