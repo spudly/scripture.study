@@ -8,7 +8,7 @@ import Textarea from '../widgets/Textarea';
 import Button from '../widgets/Button';
 import FormGroup from '../widgets/FormGroup';
 import {PersonRecord, Unsaved} from '../utils/types';
-import {queryCache} from 'react-query';
+import {useQueryCache} from 'react-query';
 
 const NewPersonDialog: FC<{
   person: PersonRecord | Unsaved<PersonRecord>;
@@ -18,6 +18,7 @@ const NewPersonDialog: FC<{
   const bioFieldId = useId();
   const [name, setName] = useState(person.name ?? null);
   const [biography, setBiograpy] = useState(person.biography ?? null);
+  const queryCache = useQueryCache();
 
   const [error, setError] = useState<Error | null>(null);
 
