@@ -223,7 +223,7 @@ const Person: FC<{id: string}> = ({id}) => {
         </>
       )}
 
-      {links && links.length !== 0 && (
+      {links && (
         <>
           <Spacer y={8} />
           <Heading level={2}>Family</Heading>
