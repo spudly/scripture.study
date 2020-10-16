@@ -1,4 +1,4 @@
-import React, {FC, ReactElement, ReactNode, useMemo} from 'react';
+import React, {FC, ReactNode, useMemo} from 'react';
 import {useInfiniteQuery, useQuery} from 'react-query';
 import fetchJson from '../utils/fetchJson';
 import {stringify} from 'querystring';
@@ -112,6 +112,10 @@ const PersonVerses: FC<{
     markGroups,
   ]);
 
+  if (isFetching && !isFetchingMore) {
+    return <Spinner grow />;
+  }
+
   let prevChapter: ChapterRecord | null = null;
   const lastGroup = markGroups?.[markGroups.length - 1];
   return (
@@ -150,7 +154,7 @@ const PersonVerses: FC<{
       {canFetchMore && (
         <div className="text-center">
           <Button onClick={() => fetchMore()}>
-            {isFetching ? (
+            {isFetchingMore ? (
               <>
                 <Spinner />
                 <Spacer x={2} />
