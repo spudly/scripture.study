@@ -82,6 +82,8 @@ const PersonLinkDialog: FC<{
           <option value="spouseOf">Spouse</option>
           <option value="childOf">Parent</option>
           <option value="reverse:childOf">Child</option>
+          <option value="descendantOf">Ancestor</option>
+          <option value="reverse:descendantOf">Descendent</option>
         </Select>
       </FormGroup>
       <FormGroup label="Other Person" labelFor={otherPersonFieldId}>

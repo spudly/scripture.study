@@ -204,6 +204,10 @@ const makeTableRouter = <RECORD extends {id: ID}>(
   const deleteFn = makeDeleteRecord(ModelClass);
 
   router.get('/', makeGetAllRoute<RECORD>(ModelClass));
+  router.post('/', async (req, resp, next) => {
+    const record = await createFn(req.body, req.user!);
+    resp.json(record);
+  });
   router.post('/bulk', makeBulkRoute(createFn, updateFn, deleteFn));
   router.get('/:id', makeGetOneByIdRoute<RECORD>(ModelClass));
   router.put('/:id', async (req, resp, next) => {

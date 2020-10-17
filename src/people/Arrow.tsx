@@ -1,7 +1,11 @@
 import React, {FC} from 'react';
 import {Point} from '../utils/types';
 
-const Arrow: FC<{from: Point; to: Point}> = ({from, to}) => {
+const Arrow: FC<{from: Point; to: Point; dashed?: boolean}> = ({
+  from,
+  to,
+  dashed,
+}) => {
   const strokeWidth = 1;
   const buffer = 2;
   const top = Math.min(from.y, to.y) - buffer;
@@ -13,7 +17,7 @@ const Arrow: FC<{from: Point; to: Point}> = ({from, to}) => {
 
   return (
     <svg
-      className="absolute pointer-events-none text-gray-400"
+      className="absolute pointer-events-none text-gray-500"
       style={{
         top,
         left,
@@ -29,6 +33,7 @@ const Arrow: FC<{from: Point; to: Point}> = ({from, to}) => {
         y2={(to.y - top) / 2}
         stroke="currentColor"
         strokeWidth={strokeWidth}
+        strokeDasharray={dashed ? '6' : undefined}
       />
       <line
         x1={from.x - left}
@@ -37,6 +42,7 @@ const Arrow: FC<{from: Point; to: Point}> = ({from, to}) => {
         y2={(to.y - top) / 2}
         stroke="currentColor"
         strokeWidth={strokeWidth}
+        strokeDasharray={dashed ? '6' : undefined}
       />
 
       <line
@@ -46,6 +52,7 @@ const Arrow: FC<{from: Point; to: Point}> = ({from, to}) => {
         y2={to.y - top}
         stroke="currentColor"
         strokeWidth={strokeWidth}
+        strokeDasharray={dashed ? '6' : undefined}
       />
       <line />
     </svg>

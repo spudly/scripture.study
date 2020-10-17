@@ -175,36 +175,39 @@ const Person: FC<{id: string}> = ({id}) => {
   const {data: links} = useQuery(
     ['people_links', id],
     async (key: string, selfId: ID): Promise<Array<PersonLinkRecord>> => {
-      const [{items: parentLinks}, {items: childLinks}] = await Promise.all([
+      const [
+        {items: linksFromPerson},
+        {items: linksToPerson},
+      ] = await Promise.all([
         fetchJson<GetAllResponseBody<PersonLinkRecord>>(
           `/api/people-links?${stringify({
-            type: 'childOf',
             fromPersonId: selfId,
           })}`,
         ),
         fetchJson<GetAllResponseBody<PersonLinkRecord>>(
           `/api/people-links?${stringify({
-            type: 'childOf',
             toPersonId: selfId,
           })}`,
         ),
       ]);
       const siblingLinks = (
         await Promise.all(
-          parentLinks.map(async (parentLink) => {
-            const result = await fetchJson<
-              GetAllResponseBody<PersonLinkRecord>
-            >(
-              `/api/people-links?${stringify({
-                type: 'childOf',
-                toPersonId: parentLink.toPersonId,
-              })}`,
-            );
-            return result.items;
-          }),
+          linksFromPerson
+            .filter((l) => l.type === 'childOf')
+            .map(async (parentLink) => {
+              const result = await fetchJson<
+                GetAllResponseBody<PersonLinkRecord>
+              >(
+                `/api/people-links?${stringify({
+                  type: 'childOf',
+                  toPersonId: parentLink.toPersonId,
+                })}`,
+              );
+              return result.items;
+            }),
         )
       ).flat();
-      return [...parentLinks, ...siblingLinks, ...childLinks];
+      return [...linksFromPerson, ...siblingLinks, ...linksToPerson];
     },
   );
 

@@ -28,7 +28,7 @@ const FamilyTree: FC<{
     const rootRect = rootRef.current!.getBoundingClientRect()!;
     const newArrows: Array<ComponentProps<typeof Arrow>> = links.flatMap(
       (link) => {
-        if (link.type === 'childOf') {
+        if (link.type === 'childOf' || link.type === 'descendantOf') {
           if (
             !individualsRef.current[link.toPersonId] ||
             !individualsRef.current[link.toPersonId]
@@ -43,6 +43,7 @@ const FamilyTree: FC<{
           ]!.getBoundingClientRect();
           return [
             {
+              dashed: link.type === 'descendantOf',
               from: {
                 x: parentRect.left + parentRect.width / 2 - rootRect.left,
                 y: parentRect.bottom - rootRect.top,
@@ -60,6 +61,13 @@ const FamilyTree: FC<{
     );
     setArrows(newArrows);
   }, [links, width, height]);
+
+  const ancestorLinks = uniqBy((l) => l.toPersonId, links ?? []).filter(
+    (l) => l.type === 'descendantOf' && l.fromPersonId === self.id,
+  );
+  const descendantLinks = uniqBy((l) => l.toPersonId, links ?? []).filter(
+    (l) => l.type === 'descendantOf' && l.toPersonId === self.id,
+  );
 
   const parentLinks = uniqBy((l) => l.toPersonId, links ?? []).filter(
     (l) => l.type === 'childOf' && l.fromPersonId === self.id,
@@ -80,7 +88,7 @@ const FamilyTree: FC<{
     <>
       <div className="relative" ref={rootRef}>
         <div className="flex justify-around">
-          {parentLinks.map((link) => (
+          {[...ancestorLinks, ...parentLinks].map((link) => (
             <FamilyTreePerson
               key={link.id}
               id={link.toPersonId}
@@ -112,7 +120,7 @@ const FamilyTree: FC<{
           )}
         </div>
         <div className="flex justify-around">
-          {childLinks.map((link) => (
+          {[...childLinks, ...descendantLinks].map((link) => (
             <FamilyTreePerson
               key={link.id}
               id={link.fromPersonId}
