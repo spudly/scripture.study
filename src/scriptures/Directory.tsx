@@ -26,7 +26,7 @@ const DirectoryItem: FC<{
 );
 
 const Directory: FC = ({children}) => (
-  <div className="flex-1 flex justify-start items-start content-start flex-wrap overflow-y-auto">
+  <div className="flex-1 flex justify-around items-center content-around flex-wrap overflow-y-auto">
     {children}
   </div>
 );

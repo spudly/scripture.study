@@ -1,4 +1,4 @@
-import React, {FC, useState} from 'react';
+import React, {FC, useContext, useState} from 'react';
 import {getAllPeople} from '../api/api.client';
 import Spinner from '../widgets/Spinner';
 import ErrorAlert from '../widgets/ErrorAlert';
@@ -12,8 +12,11 @@ import {Link} from 'react-router-dom';
 import AnchorLink from '../widgets/AnchorLink';
 import EditPersonDialog from './EditPersonDialog';
 import CircleButton from '../widgets/CircleButton';
+import hasRole from '../utils/hasRole';
+import UserContext from '../utils/UserContext';
 
 const People: FC = () => {
+  const user = useContext(UserContext);
   const {data: {items: people = undefined} = {}, error} = useQuery(
     'people',
     getAllPeople,
@@ -68,16 +71,18 @@ const People: FC = () => {
                 </td>
                 <td>{person.biography ?? <em>None</em>}</td>
                 <td>
-                  <Button onClick={() => setEditPerson(person)}>
-                    <MdEdit />
-                  </Button>
+                  {hasRole('author', user) && (
+                    <Button onClick={() => setEditPerson(person)}>
+                      <MdEdit />
+                    </Button>
+                  )}
                 </td>
               </tr>
             ))}
           </tbody>
         </Table>
       </div>
-      {editPerson && (
+      {editPerson && hasRole('author', user) && (
         <EditPersonDialog
           person={editPerson}
           close={() => setEditPerson(null)}

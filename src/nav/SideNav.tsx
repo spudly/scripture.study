@@ -9,26 +9,19 @@ import React, {
 import Overlay from '../widgets/Overlay';
 import classnames from 'classnames';
 import {
-  MdAccessTime,
   MdClose,
-  MdCompareArrows,
   MdKeyboardArrowRight,
   MdPeople,
-  MdPlace,
   MdSettings,
   MdPerson,
-  MdWidgets,
 } from 'react-icons/md';
 import {VscBook} from 'react-icons/vsc';
 import {ImBooks} from 'react-icons/im';
 import {BiBook} from 'react-icons/bi';
 import {FiLogOut} from 'react-icons/fi';
-import {RiQuestionLine} from 'react-icons/ri';
-import {BsCardHeading} from 'react-icons/bs';
 import Button from '../widgets/Button';
 import {NavLink} from 'react-router-dom';
 import UserContext from '../utils/UserContext';
-import hasRole from '../utils/hasRole';
 import useScripturesRouteMatch from '../utils/useScripturesRouteMatch';
 import scriptureLinkHref from '../utils/scriptureLinkHref';
 import {
@@ -250,52 +243,8 @@ const SideNav: FC<{isOpen: boolean; close: () => void}> = ({isOpen, close}) => {
           )}
         </SideNavLinkBranch>
 
-        {/* TODO: update the people area such that you don't need admin privs to have read-only access */}
-        {/* TODO: as part of the "people" section, include their relationships to other people, and a place to show a geneology chart */}
-        {user && hasRole('author', user) && (
-          <SideNavLink href="/people" icon={<MdPeople />} onClick={close}>
-            People
-          </SideNavLink>
-        )}
-
-        <SideNavLink href="/places" icon={<MdPlace />} onClick={close}>
-          Places
-        </SideNavLink>
-
-        <SideNavLink href="/things" icon={<MdWidgets />} onClick={close}>
-          Things
-        </SideNavLink>
-
-        <SideNavLink href="/timeline" icon={<MdAccessTime />} onClick={close}>
-          Timeline
-        </SideNavLink>
-
-        <SideNavLink
-          href="/questions"
-          icon={<RiQuestionLine />}
-          onClick={close}
-        >
-          Questions
-        </SideNavLink>
-
-        <SideNavLink
-          href="/comparisons"
-          icon={<MdCompareArrows />}
-          onClick={close}
-        >
-          Comparisons
-        </SideNavLink>
-
-        <SideNavLink href="/topics" icon={<BsCardHeading />} onClick={close}>
-          Topics
-        </SideNavLink>
-
-        <SideNavLink href="/topics" icon={<BsCardHeading />} onClick={close}>
-          Lists
-        </SideNavLink>
-
-        <SideNavLink href="/topics" icon={<BsCardHeading />} onClick={close}>
-          Search
+        <SideNavLink href="/people" icon={<MdPeople />} onClick={close}>
+          People
         </SideNavLink>
 
         <div className="flex-1" />
