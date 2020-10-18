@@ -10,7 +10,7 @@ import FormGroup from '../widgets/FormGroup';
 import {PersonRecord, Unsaved} from '../utils/types';
 import {useQueryCache} from 'react-query';
 
-const NewPersonDialog: FC<{
+const EditPersonDialog: FC<{
   person: PersonRecord | Unsaved<PersonRecord>;
   close: () => void;
 }> = ({person, close}) => {
@@ -67,4 +67,4 @@ const NewPersonDialog: FC<{
   );
 };
 
-export default NewPersonDialog;
+export default EditPersonDialog;

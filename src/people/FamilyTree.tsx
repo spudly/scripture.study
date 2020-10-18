@@ -28,35 +28,31 @@ const FamilyTree: FC<{
     const rootRect = rootRef.current!.getBoundingClientRect()!;
     const newArrows: Array<ComponentProps<typeof Arrow>> = links.flatMap(
       (link) => {
-        if (link.type === 'childOf' || link.type === 'descendantOf') {
-          if (
-            !individualsRef.current[link.toPersonId] ||
-            !individualsRef.current[link.toPersonId]
-          ) {
-            debugger;
-          }
-          const parentRect = individualsRef.current[
-            link.toPersonId
-          ]!.getBoundingClientRect();
-          const childRect = individualsRef.current[
-            link.fromPersonId
-          ]!.getBoundingClientRect();
-          return [
-            {
-              dashed: link.type === 'descendantOf',
-              from: {
-                x: parentRect.left + parentRect.width / 2 - rootRect.left,
-                y: parentRect.bottom - rootRect.top,
-              },
-              to: {
-                x: childRect.left + childRect.width / 2 - rootRect.left,
-                y: childRect.top - rootRect.top,
-              },
-            },
-          ];
-        } else {
+        if (link.type !== 'childOf' && link.type !== 'descendantOf') {
           return [];
         }
+        const toRect = individualsRef.current[
+          link.toPersonId
+        ]?.getBoundingClientRect();
+        const fromRect = individualsRef.current[
+          link.fromPersonId
+        ]?.getBoundingClientRect();
+        if (!fromRect || !toRect) {
+          return [];
+        }
+        return [
+          {
+            dashed: link.type === 'descendantOf',
+            from: {
+              x: fromRect.left + fromRect.width / 2 - rootRect.left,
+              y: fromRect.top - rootRect.top,
+            },
+            to: {
+              x: toRect.left + toRect.width / 2 - rootRect.left,
+              y: toRect.bottom - rootRect.top,
+            },
+          },
+        ];
       },
     );
     setArrows(newArrows);

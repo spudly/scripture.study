@@ -242,11 +242,7 @@ const ChapterPage: FC = () => {
     {enabled: volume != null && chapter != null},
   );
 
-  const {
-    data: {items: marks = undefined} = {},
-    isLoading: isMarksLoading,
-    error: marksError,
-  } = useQuery(
+  const {data: marks, isLoading: isMarksLoading, error: marksError} = useQuery(
     ['marks', chapter?.id],
     useCallback((key, chapterId) => getAllMarksByChapterId(chapterId), []),
     {enabled: volume != null && chapter != null},

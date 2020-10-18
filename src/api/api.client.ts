@@ -96,7 +96,7 @@ export const getAllPeople = () =>
   fetchJson<GetAllResponseBody<PersonRecord>>('/api/people');
 
 export const getAllMarksByChapterId = (chapterId: ID) =>
-  fetchJson<GetAllResponseBody<MarkRecord>>(
+  fetchJson<Array<MarkRecord>>(
     `/api/marks/byChapterId/${encodeURIComponent(chapterId)}`,
   );
 

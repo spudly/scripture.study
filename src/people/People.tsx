@@ -10,7 +10,7 @@ import comparePeople from '../utils/comparePeople';
 import {useQuery} from 'react-query';
 import {Link} from 'react-router-dom';
 import AnchorLink from '../widgets/AnchorLink';
-import NewPersonDialog from './NewPersonDialog';
+import EditPersonDialog from './EditPersonDialog';
 import CircleButton from '../widgets/CircleButton';
 
 const People: FC = () => {
@@ -78,7 +78,7 @@ const People: FC = () => {
         </Table>
       </div>
       {editPerson && (
-        <NewPersonDialog
+        <EditPersonDialog
           person={editPerson}
           close={() => setEditPerson(null)}
         />
