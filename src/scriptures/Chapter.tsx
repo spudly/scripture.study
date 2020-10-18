@@ -62,7 +62,7 @@ const Verses: FC<{
     {marks: Array<Unsaved<MarkRecord>>}
   >(
     ({marks}): Promise<BulkMutationResponseBody<MarkRecord>> =>
-      bulkMutation<MarkRecord>('/api/marks', {create: marks}),
+      bulkMutation<MarkRecord>('/api/marks/bulk', {create: marks}),
     {onSuccess: handleSuccess},
   );
 
@@ -74,7 +74,7 @@ const Verses: FC<{
     }
   >(
     ({marks: newMarks}) =>
-      bulkMutation<MarkRecord>('/api/marks', {update: newMarks}),
+      bulkMutation<MarkRecord>('/api/marks/bulk', {update: newMarks}),
     {onSuccess: handleSuccess},
   );
 
@@ -83,7 +83,7 @@ const Verses: FC<{
     Error,
     {ids: Array<ID>}
   >(
-    ({ids}) => bulkMutation<MarkRecord>('/api/marks', {delete: ids}),
+    ({ids}) => bulkMutation<MarkRecord>('/api/marks/bulk', {delete: ids}),
     {onSuccess: handleSuccess},
   );
 
