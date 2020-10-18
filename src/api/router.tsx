@@ -32,6 +32,7 @@ import {
   getAdjacentChaptersById,
   getVersesAndMarksBySpeakerId,
   countVersesBySpeakerId,
+  sql,
 } from './api.postgres';
 import {
   ID,
@@ -135,8 +136,7 @@ const makeBulkRoute = <RECORD extends {id: ID}>(
   const actions: BulkMutationRequestBody<RECORD> = req.body;
   const result: BulkMutationResponseBody<RECORD> = {};
   try {
-    // @ts-expect-error: ts doesnt think this function exists
-    await sequelize.transaction(async (t: sequelize.Transaction) => {
+    await sql.transaction(async (t: sequelize.Transaction) => {
       if (actions.create) {
         result.created = await Promise.all(
           actions.create.map((r) => createFn(r, req.user!, t)),

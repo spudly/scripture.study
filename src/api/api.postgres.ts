@@ -1399,6 +1399,7 @@ export {
   Session,
   PersonLink,
   findOrCreateOrUpdateGoogleUser,
+  sql,
 };
 
 export const deleteExpiredSessions = async (): Promise<number> => {
