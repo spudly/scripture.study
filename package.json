@@ -11,12 +11,15 @@
     "build": "npm run build:typescript && npm run build:webpack",
     "build:typescript": "tsc",
     "build:webpack": "NODE_ENV=production webpack --config=src/webpack.config.js --json > stats.json",
+    "cypress": "start-server-and-test dev http://localhost:3000 cypress:run",
+    "cypress:open": "cypress open",
+    "cypress:run": "cypress run",
     "depcheck": "depcheck --ignores=\",@commitlint/*,@types/*,prettier,pretty-quick,sort-package-json,typescript,@fullhuman/postcss-purgecss,autoprefixer,tailwindcss,postcss-import,webpack-cli,pg,pg-hstore\"",
     "dev": "NODE_ENV=development BABEL_ENV=development PORT=3000 ts-node src/index.server.dev.tsx | pino-pretty",
+    "jest": "jest",
     "lint": "eslint . --ext .js,.jsx,.ts,.tsx",
     "start": "NODE_ENV=production node build/index.server.js",
-    "test": "jest",
-    "cypress:open": "cypress open"
+    "test": "npm run jest && npm run cypress"
   },
   "husky": {
     "hooks": {
@@ -74,13 +77,35 @@
     "trailingComma": "all"
   },
   "eslintConfig": {
-    "extends": "@spudly"
+    "env": {
+      "mocha": true
+    },
+    "extends": "@spudly",
+    "overrides": [
+      {
+        "files": [
+          "cypress/**/*.{spec,test}.*"
+        ],
+        "rules": {
+          "no-unused-expressions": "off"
+        }
+      }
+    ],
+    "globals": {
+      "cy": "readonly"
+    }
   },
   "eslintIgnore": [
     "node_modules",
     "build",
     "public"
   ],
+  "jest": {
+    "testPathIgnorePatterns": [
+      "/node_modules/",
+      "/cypress/"
+    ]
+  },
   "dependencies": {
     "@reach/auto-id": "^0.10.5",
     "@spudly/pushpop": "^2.1.3",
@@ -119,6 +144,7 @@
     "@fullhuman/postcss-purgecss": "^2.0.6",
     "@pmmmwh/react-refresh-webpack-plugin": "^0.4.1",
     "@spudly/eslint-config": "^6.0.0",
+    "@testing-library/cypress": "^7.0.1",
     "@types/autoprefixer": "^9.7.2",
     "@types/classnames": "^2.2.9",
     "@types/cookie-parser": "^1.4.2",
@@ -159,6 +185,7 @@
     "pretty-quick": "^2.0.1",
     "react-refresh": "^0.8.3",
     "sort-package-json": "^1.41.0",
+    "start-server-and-test": "^1.11.5",
     "style-loader": "^1.2.0",
     "tailwindcss": "^1.6.2",
     "ts-node": "^8.9.0",

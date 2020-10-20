@@ -9,3 +9,6 @@ coverage
 tmp
 temp
 *.dump
+cypress/integration/examples
+cypress/screenshots
+cypress/videos
