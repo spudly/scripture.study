@@ -14,6 +14,7 @@ const Arrow: FC<{from: Point; to: Point; dashed?: boolean}> = ({
     Math.max(Math.max(from.x, to.x) - left, strokeWidth) + buffer * 2;
   const height =
     Math.max(Math.max(from.y, to.y) - top, strokeWidth) + buffer * 2;
+  const vMiddle = (top - height) / 2;
 
   return (
     <svg
@@ -30,16 +31,16 @@ const Arrow: FC<{from: Point; to: Point; dashed?: boolean}> = ({
         x1={from.x - left}
         y1={from.y - top}
         x2={from.x - left}
-        y2={(to.y - top) / 2}
+        y2={vMiddle}
         stroke="currentColor"
         strokeWidth={strokeWidth}
         strokeDasharray={dashed ? '6' : undefined}
       />
       <line
         x1={from.x - left}
-        y1={(to.y - top) / 2}
+        y1={vMiddle}
         x2={to.x - left}
-        y2={(to.y - top) / 2}
+        y2={vMiddle}
         stroke="currentColor"
         strokeWidth={strokeWidth}
         strokeDasharray={dashed ? '6' : undefined}
@@ -47,7 +48,7 @@ const Arrow: FC<{from: Point; to: Point; dashed?: boolean}> = ({
 
       <line
         x1={to.x - left}
-        y1={(to.y - top) / 2}
+        y1={vMiddle}
         x2={to.x - left}
         y2={to.y - top}
         stroke="currentColor"

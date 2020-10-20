@@ -1,7 +1,7 @@
 import React, {FC, ComponentProps} from 'react';
 import Select from '../widgets/Select';
 import {PersonRecord} from '../utils/types';
-import serializePerson from '../utils/serializePerson';
+import {serializePerson} from '../utils/serializePerson';
 import comparePeople from '../utils/comparePeople';
 import {useQuery} from 'react-query';
 import {getAllPeople} from '../api/api.client';

@@ -15,9 +15,13 @@ const EditPersonDialog: FC<{
   close: () => void;
 }> = ({person, close}) => {
   const nameFieldId = useId();
-  const bioFieldId = useId();
+  const orderFieldId = useId();
+  const descriptionFieldId = useId();
   const [name, setName] = useState(person.name ?? null);
-  const [biography, setBiograpy] = useState(person.biography ?? null);
+  const [order, setOrder] = useState(person.order ?? null);
+  const [description, setDescriptiongrapy] = useState(
+    person.description ?? null,
+  );
   const queryCache = useQueryCache();
 
   const [error, setError] = useState<Error | null>(null);
@@ -29,10 +33,15 @@ const EditPersonDialog: FC<{
         await updatePerson({
           ...(person as PersonRecord),
           name: name || null,
-          biography,
+          order: order || null,
+          description,
         });
       } else {
-        await createPerson({name: name || null, biography});
+        await createPerson({
+          name: name || null,
+          order: order || null,
+          description,
+        });
       }
       queryCache.invalidateQueries('people');
       close();
@@ -52,11 +61,22 @@ const EditPersonDialog: FC<{
         />
       </FormGroup>
 
-      <FormGroup label="Description" labelFor={bioFieldId}>
+      <FormGroup label="Order" labelFor={orderFieldId}>
+        <Input
+          id={orderFieldId}
+          type="number"
+          min={1}
+          step={1}
+          value={order ?? ''}
+          onChange={(e) => setOrder(e.currentTarget.valueAsNumber)}
+        />
+      </FormGroup>
+
+      <FormGroup label="Description" labelFor={descriptionFieldId}>
         <Textarea
-          id={bioFieldId}
-          value={biography ?? ''}
-          onChange={(e) => setBiograpy(e.currentTarget.value)}
+          id={descriptionFieldId}
+          value={description ?? ''}
+          onChange={(e) => setDescriptiongrapy(e.currentTarget.value)}
         />
       </FormGroup>
 

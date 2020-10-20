@@ -123,3 +123,8 @@ export const updatePersonLink = async (personLink: PersonLinkRecord) =>
     method: 'PUT',
     body: JSON.stringify(personLink),
   });
+
+export const deletePersonLink = async ({id}: {id: ID}) =>
+  fetchJson<ID>(`/api/people-links/${id}`, {
+    method: 'DELETE',
+  });

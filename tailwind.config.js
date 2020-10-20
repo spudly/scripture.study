@@ -89,5 +89,6 @@ module.exports = {
   variants: {
     backgroundColor: ['responsive', 'hover', 'focus', 'active', 'odd', 'even'],
     scale: ['responsive', 'hover', 'focus', 'active'],
+    visibility: ['responsive', 'group-hover'],
   },
 };

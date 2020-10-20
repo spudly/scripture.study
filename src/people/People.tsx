@@ -14,6 +14,7 @@ import EditPersonDialog from './EditPersonDialog';
 import CircleButton from '../widgets/CircleButton';
 import hasRole from '../utils/hasRole';
 import UserContext from '../utils/UserContext';
+import {serializePerson, serializePersonJsx} from '../utils/serializePerson';
 
 const People: FC = () => {
   const user = useContext(UserContext);
@@ -42,7 +43,7 @@ const People: FC = () => {
             onClick={() =>
               setEditPerson({
                 name: null,
-                biography: null,
+                description: null,
               })
             }
           >
@@ -62,14 +63,14 @@ const People: FC = () => {
               <tr key={person.id}>
                 <td>
                   <Link to={`/people/${person.id}`} component={AnchorLink}>
-                    {person.name ?? <em>None</em>}
-                    <br />
-                    <small className="text-gray-500 whitespace-no-wrap">
-                      {person.id}
-                    </small>
+                    {person.name ? (
+                      serializePersonJsx(person, false)
+                    ) : (
+                      <em>Unnamed</em>
+                    )}
                   </Link>
                 </td>
-                <td>{person.biography ?? <em>None</em>}</td>
+                <td>{person.description ?? <em>No Description</em>}</td>
                 <td>
                   {hasRole('author', user) && (
                     <Button onClick={() => setEditPerson(person)}>

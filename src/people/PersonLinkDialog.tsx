@@ -48,9 +48,15 @@ const PersonLinkDialog: FC<{
   link?: PersonLinkRecord;
   close: () => void;
 }> = ({self, link, close}) => {
-  const [type, setType] = useState<PersonLinkRecord['type'] | null>(null);
-  const [otherPersonId, setOtherPersonId] = useState<ID | null>(null);
-  const [reverse, setReverse] = useState(false);
+  const [type, setType] = useState<PersonLinkRecord['type'] | null>(
+    link?.type ?? null,
+  );
+  const [reverse, setReverse] = useState(
+    link ? link.toPersonId === self.id : false,
+  );
+  const [otherPersonId, setOtherPersonId] = useState<ID | null>(
+    link ? (reverse ? link.fromPersonId : link.toPersonId) : null,
+  );
   const typeFieldId = useId();
   const otherPersonFieldId = useId();
   const queryCache = useQueryCache();

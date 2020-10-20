@@ -16,6 +16,7 @@ import ErrorBoundary from '../widgets/ErrorBoundary';
 import UserContext from '../utils/UserContext';
 import hasRole from '../utils/hasRole';
 import {Link} from 'react-router-dom';
+import {serializePerson, serializePersonJsx} from '../utils/serializePerson';
 
 const SpeakerIndicator: FC<{
   speakerId: ID;
@@ -25,19 +26,18 @@ const SpeakerIndicator: FC<{
   if (!speaker) {
     return null;
   }
-  const {name, biography} = speaker;
   return (
     <Link
       to={`/people/${speakerId}`}
       className="inline-flex flex-col justify-center w-rel-8 h-rel-8 mx-rel-1 align-middle overflow-hidden select-none transform hover:scale-110"
       data-selection-ignore
-      title={[name, biography].filter((x) => x != null).join(', ')}
+      title={serializePerson(speaker)}
     >
       <div className="flex justify-center">
         <MdRecordVoiceOver />
       </div>
       <div className="text-rel-3xs text-center truncate uppercase leading-none min-w-0 pt-1">
-        {name ?? biography}
+        {serializePersonJsx(speaker)}
       </div>
     </Link>
   );

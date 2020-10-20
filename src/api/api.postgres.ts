@@ -407,7 +407,11 @@ const Person = sql.define<Model<PersonRecord, PersonRecord>>(
       type: sequelize.TEXT,
       allowNull: true,
     },
-    biography: {
+    order: {
+      type: sequelize.INTEGER,
+      allowNull: true,
+    },
+    description: {
       type: sequelize.TEXT,
       allowNull: true,
     },
@@ -997,38 +1001,6 @@ export const getVersesAndMarksBySpeakerId = async (
   limit?: number,
   offset?: number,
 ): Promise<Array<MarkRecordPlus>> => {
-  // const verses = await Verse.findAll({
-  //   include: [
-  //     {
-  //       model: Mark,
-  //       required: true,
-  //       where: {
-  //         speakerId,
-  //       }
-  //     },
-  //     {
-  //       model: Chapter,
-  //       include: [
-  //         {
-  //           model: Book,
-  //           include: [
-  //             {
-  //               model: Volume,
-  //             },
-  //           ],
-  //         },
-  //       ],
-  //     },
-  //   ],
-  //   order: [
-  //     [Chapter, Book, Volume, 'order', 'ASC'],
-  //     [Chapter, Book, 'order', 'ASC'],
-  //     [Chapter, 'number', 'ASC'],
-  //     ['number', 'ASC'],
-  //   ],
-  //   limit,
-  //   offset,
-  // });
   const marks = await Mark.findAll({
     include: [
       {

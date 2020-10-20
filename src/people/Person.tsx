@@ -22,6 +22,7 @@ import Spacer from '../widgets/Spacer';
 import Button from '../widgets/Button';
 import Spinner from '../widgets/Spinner';
 import {isNotNil} from '@spudly/pushpop';
+import uniqBy from '../utils/uniqBy';
 
 const Box: FC = ({children}) => (
   <div className="border shadow p-2">{children}</div>
@@ -207,7 +208,11 @@ const Person: FC<{id: string}> = ({id}) => {
             }),
         )
       ).flat();
-      return [...linksFromPerson, ...siblingLinks, ...linksToPerson];
+      return uniqBy((link) => link.id, [
+        ...linksFromPerson,
+        ...siblingLinks,
+        ...linksToPerson,
+      ]);
     },
   );
 
@@ -219,10 +224,10 @@ const Person: FC<{id: string}> = ({id}) => {
     <>
       <Heading>{self.name}</Heading>
 
-      {self.biography && (
+      {self.description && (
         <>
-          <Heading level={2}>Biography</Heading>
-          <p>{self.biography}</p>
+          <Heading level={2}>Description</Heading>
+          <p>{self.description}</p>
         </>
       )}
 

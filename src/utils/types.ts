@@ -389,7 +389,8 @@ export type MarkRecord = SpeakerMarkRecord | MentionMarkRecord;
 export type PersonRecord = {
   id: ID;
   name: string | null;
-  biography: string | null;
+  order: number | null;
+  description: string | null;
 } & EditableRecord;
 
 export type PersonLinkRecord = {

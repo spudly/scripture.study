@@ -1,7 +1,13 @@
-import React, {ComponentProps, FC, useEffect, useRef, useState} from 'react';
+import React, {
+  ComponentProps,
+  FC,
+  useContext,
+  useEffect,
+  useRef,
+  useState,
+} from 'react';
 import {PersonLinkRecord, PersonRecord} from '../utils/types';
 import CircleButton from '../widgets/CircleButton';
-import useToggle from '../utils/useToggle';
 import PersonLinkDialog from './PersonLinkDialog';
 import {MdAdd} from 'react-icons/md';
 import FamilyTreePerson from './FamilyTreePerson';
@@ -9,20 +15,20 @@ import Arrow from './Arrow';
 import uniqBy from '../utils/uniqBy';
 import useResizeObserver from './useResizeObserver';
 import centerBy from '../utils/centerBy';
+import hasRole from '../utils/hasRole';
+import UserContext from '../utils/UserContext';
 
 const FamilyTree: FC<{
   self: PersonRecord;
   links: Array<PersonLinkRecord>;
 }> = ({self, links}) => {
+  const user = useContext(UserContext);
   const [arrows, setArrows] = useState<Array<ComponentProps<typeof Arrow>>>([]);
   const rootRef = useRef<HTMLDivElement | null>(null);
   const [width, height] = useResizeObserver(rootRef);
   const individualsRef = useRef<{[id: string]: HTMLDivElement | null}>({});
-  const [
-    showAddLinkDialog,
-    toggleShowAddLinkDialog,
-    setShowAddLinkDialog,
-  ] = useToggle(false);
+  const [showAddLinkDialog, setShowAddLinkDialog] = useState(false);
+  const [editLink, setEditLink] = useState<PersonLinkRecord | null>(null);
 
   useEffect(() => {
     const rootRect = rootRef.current!.getBoundingClientRect()!;
@@ -91,6 +97,8 @@ const FamilyTree: FC<{
               ref={(el) => {
                 individualsRef.current[link.toPersonId] = el;
               }}
+              link={link}
+              setEditLink={setEditLink}
             />
           ))}
         </div>
@@ -103,6 +111,8 @@ const FamilyTree: FC<{
               ref={(el) => {
                 individualsRef.current[link.fromPersonId] = el;
               }}
+              link={link}
+              setEditLink={setEditLink}
             />
           ))}
           {siblingLinks.find((l) => l.fromPersonId === self.id) ? null : (
@@ -112,6 +122,7 @@ const FamilyTree: FC<{
               ref={(el) => {
                 individualsRef.current[self.id] = el;
               }}
+              setEditLink={setEditLink}
             />
           )}
         </div>
@@ -123,22 +134,36 @@ const FamilyTree: FC<{
               ref={(el) => {
                 individualsRef.current[link.fromPersonId] = el;
               }}
+              link={link}
+              setEditLink={setEditLink}
             />
           ))}
         </div>
         {arrows.map((arrow, i) => (
           <Arrow key={i} {...arrow} />
         ))}
-        <div className="absolute right-0 bottom-0">
-          <CircleButton themeId="blue" onClick={toggleShowAddLinkDialog}>
-            <MdAdd />
-          </CircleButton>
-        </div>
+        {hasRole('author', user) && (
+          <div className="absolute right-0 bottom-0">
+            <CircleButton
+              themeId="blue"
+              onClick={() => setShowAddLinkDialog(true)}
+            >
+              <MdAdd />
+            </CircleButton>
+          </div>
+        )}
       </div>
       {showAddLinkDialog && (
         <PersonLinkDialog
           self={self}
           close={() => setShowAddLinkDialog(false)}
+        />
+      )}
+      {editLink && (
+        <PersonLinkDialog
+          self={self}
+          link={editLink}
+          close={() => setEditLink(null)}
         />
       )}
     </>
