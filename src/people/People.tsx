@@ -14,7 +14,7 @@ import EditPersonDialog from './EditPersonDialog';
 import CircleButton from '../widgets/CircleButton';
 import hasRole from '../utils/hasRole';
 import UserContext from '../utils/UserContext';
-import {serializePerson, serializePersonJsx} from '../utils/serializePerson';
+import {serializePersonJsx} from '../utils/serializePerson';
 
 const People: FC = () => {
   const user = useContext(UserContext);
@@ -43,6 +43,7 @@ const People: FC = () => {
             onClick={() =>
               setEditPerson({
                 name: null,
+                order: null,
                 description: null,
               })
             }

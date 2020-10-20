@@ -3,6 +3,7 @@ import {PersonRecord} from '../../types';
 export const nephi1: PersonRecord = {
   id: '5e4b6285f30cfc3b0b065fcb',
   name: 'Nephi',
+  order: 1,
   description: null,
   lastUpdatedBy: '9df824ef-8fd7-4242-8807-17dd00f09f13',
   lastUpdatedDate: 41525,
@@ -13,6 +14,7 @@ export const nephi1: PersonRecord = {
 export const nephi2: PersonRecord = {
   id: '5f48eb603c7b0409fccfc705',
   name: 'Nephi',
+  order: 2,
   description: 'Son of Helaman',
   lastUpdatedBy: '9df824ef-8fd7-4242-8807-17dd00f09f13',
   lastUpdatedDate: 41525,
@@ -23,6 +25,7 @@ export const nephi2: PersonRecord = {
 export const lehi1: PersonRecord = {
   id: '5e4b6285f30cfc3b0b065fc9',
   name: 'Lehi',
+  order: 1,
   description: null,
   lastUpdatedBy: '9df824ef-8fd7-4242-8807-17dd00f09f13',
   lastUpdatedDate: 41525,
@@ -33,6 +36,7 @@ export const lehi1: PersonRecord = {
 export const lehi4: PersonRecord = {
   id: '5f48eb693c7b0409fccfc706',
   name: 'Lehi',
+  order: 2,
   description: 'Son of Helaman',
   lastUpdatedBy: '9df824ef-8fd7-4242-8807-17dd00f09f13',
   lastUpdatedDate: 41525,
@@ -43,6 +47,7 @@ export const lehi4: PersonRecord = {
 export const armyOfHelaman: PersonRecord = {
   id: '5f2a955e918764028ed01da3',
   name: null,
+  order: null,
   description: 'Army of Helaman',
   lastUpdatedBy: '9df824ef-8fd7-4242-8807-17dd00f09f13',
   lastUpdatedDate: 41525,
