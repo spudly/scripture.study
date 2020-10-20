@@ -15,7 +15,8 @@
     "dev": "NODE_ENV=development BABEL_ENV=development PORT=3000 ts-node src/index.server.dev.tsx | pino-pretty",
     "lint": "eslint . --ext .js,.jsx,.ts,.tsx",
     "start": "NODE_ENV=production node build/index.server.js",
-    "test": "jest"
+    "test": "jest",
+    "cypress:open": "cypress open"
   },
   "husky": {
     "hooks": {
@@ -146,6 +147,7 @@
     "@types/webpack-hot-middleware": "^2.25.3",
     "babel-loader": "^8.1.0",
     "css-loader": "^3.5.3",
+    "cypress": "^5.4.0",
     "depcheck": "^1.0.0",
     "eslint": "^6.8.0",
     "husky": "^4.2.5",
