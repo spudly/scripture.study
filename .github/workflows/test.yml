@@ -26,22 +26,26 @@ jobs:
 
     steps:
       - uses: actions/checkout@v2
-      - name: Use Node.js ${{ matrix.node-version }}
+      - name: node v${{ matrix.node-version }}
         uses: actions/setup-node@v1
         with:
           node-version: ${{ matrix.node-version }}
-      - run: npm ci
-      - run: npm run depcheck
-      - run: npm run lint
-      - run: npm run build --if-present
-      - run: npm test
-      - name: Cypress run
+      - name: install
+        run: npm ci
+      - name: depcheck
+        run: npm run depcheck
+      - name: eslint
+        run: npm run lint
+      - name: build
+        run: npm run build
+      - name: jest
+        run: npm run jest
+      - name: cypress
         uses: cypress-io/github-action@v2
         with:
           install: false
           start: npm start
           wait-on: 'http://localhost:3000'
-          build: npm run build
         env:
           DATABASE_URL: postgres://postgres:postgres@localhost:5432/scripture_study
           SESSION_SECRET: ${{ secrets.SESSION_SECRET }}
