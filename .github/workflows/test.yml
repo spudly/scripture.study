@@ -43,7 +43,7 @@ jobs:
           wait-on: 'http://localhost:3000'
           build: npm run build
         env:
-          DATABASE_URL: postgres://postgres:postgres@$localhost:5432/scripture_study
+          DATABASE_URL: postgres://postgres:postgres@localhost:5432/scripture_study
           SESSION_SECRET: ${{ secrets.SESSION_SECRET }}
           GOOGLE_OAUTH_CLIENT_ID: 425704804623-04q55nmf47je6ejqua6b252t5dtptkfr.apps.googleusercontent.com
           GOOGLE_OAUTH_CLIENT_SECRET: ${{ secrets.GOOGLE_OAUTH_CLIENT_SECRET }}
