@@ -11,19 +11,19 @@
     "build": "npm run build:typescript && npm run build:webpack",
     "build:typescript": "tsc",
     "build:webpack": "NODE_ENV=production webpack --config=src/webpack.config.js --json > stats.json",
-    "cypress": "start-server-and-test dev http://localhost:3000 cypress:run",
     "cypress:open": "cypress open",
     "cypress:run": "cypress run",
+    "cypress:start-and-test": "start-server-and-test start http://localhost:3000 cypress:run",
     "depcheck": "depcheck --ignores=\",@commitlint/*,@types/*,prettier,pretty-quick,sort-package-json,typescript,@fullhuman/postcss-purgecss,autoprefixer,tailwindcss,postcss-import,webpack-cli,pg,pg-hstore\"",
     "dev": "NODE_ENV=development BABEL_ENV=development PORT=3000 ts-node src/index.server.dev.tsx | pino-pretty",
     "jest": "jest",
     "lint": "eslint . --ext .js,.jsx,.ts,.tsx",
     "start": "NODE_ENV=production node build/index.server.js",
-    "test": "npm run jest && npm run cypress"
+    "test": "npm run jest && npm run cypress:start-and-test"
   },
   "husky": {
     "hooks": {
-      "pre-commit": "npm run lint && npm run depcheck && npm run test && lint-staged",
+      "pre-commit": "npm run depcheck && lint-staged && npm run build && npm run test",
       "commit-msg": "commitlint -E HUSKY_GIT_PARAMS"
     }
   },

@@ -1,27 +1,51 @@
-name: Node.js CI
+name: Test
 on:
   push:
-    branches: [ develop, master ]
+    branches: [develop, master]
   pull_request:
-    branches: [ develop ]
+    branches: [develop]
 
 jobs:
-  build:
-
+  test:
     runs-on: ubuntu-latest
 
     strategy:
       matrix:
         node-version: [14.x]
 
+    services:
+      postgres:
+        image: postgres
+        env:
+          POSTGRES_PASSWORD: postgres
+        options: >-
+          --health-cmd pg_isready --health-internal 10s --health-timeout 5s
+          --health-retries 5
+        ports:
+          - 5432:5432
+
     steps:
-    - uses: actions/checkout@v2
-    - name: Use Node.js ${{ matrix.node-version }}
-      uses: actions/setup-node@v1
-      with:
-        node-version: ${{ matrix.node-version }}
-    - run: npm ci
-    - run: npm run depcheck
-    - run: npm run lint
-    - run: npm run build --if-present
-    - run: npm test
+      - uses: actions/checkout@v2
+      - name: Use Node.js ${{ matrix.node-version }}
+        uses: actions/setup-node@v1
+        with:
+          node-version: ${{ matrix.node-version }}
+      - run: npm ci
+      - run: npm run depcheck
+      - run: npm run lint
+      - run: npm run build --if-present
+      - run: npm test
+      - name: Cypress run
+        uses: cypress-io/github-action@v2
+        with:
+          install: false
+          start: npm start
+          wait-on: 'http://localhost:3000'
+          build: npm run build
+        env:
+          DATABASE_URL: postgres://postgres:postgres@$localhost:5432/scripture_study
+          SESSION_SECRET: ${{ secrets.SESSION_SECRET }}
+          GOOGLE_OAUTH_CLIENT_ID: 425704804623-04q55nmf47je6ejqua6b252t5dtptkfr.apps.googleusercontent.com
+          GOOGLE_OAUTH_CLIENT_SECRET: ${{ secrets.GOOGLE_OAUTH_CLIENT_SECRET }}
+          GOOGLE_OAUTH_CALLBACK_URL: http://localhost:3000/auth/google/callback
+          PORT: 3000
