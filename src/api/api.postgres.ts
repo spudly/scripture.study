@@ -56,7 +56,7 @@ const User = sql.define<Model<UserRecord, UserRecord>>(
   'user',
   {
     id: {
-      type: sequelize.UUIDV4,
+      type: sequelize.UUID,
       allowNull: false,
       primaryKey: true,
     },
@@ -96,7 +96,7 @@ const Session = sql.define<Model<SessionRecord, SessionRecord>>(
   'user',
   {
     id: {
-      type: sequelize.UUIDV4,
+      type: sequelize.UUID,
       allowNull: false,
       primaryKey: true,
     },
@@ -119,7 +119,7 @@ const Role = sql.define<Model<RoleRecord, RoleRecord>>(
   'role',
   {
     id: {
-      type: sequelize.UUIDV4,
+      type: sequelize.UUID,
       allowNull: false,
       primaryKey: true,
     },
@@ -138,12 +138,12 @@ const UserRole = sql.define<Model<UserRoleRecord, UserRoleRecord>>(
   'userRole',
   {
     id: {
-      type: sequelize.UUIDV4,
+      type: sequelize.UUID,
       allowNull: false,
       primaryKey: true,
     },
     userId: {
-      type: sequelize.UUIDV4,
+      type: sequelize.UUID,
       allowNull: false,
       references: {
         model: User,
@@ -151,7 +151,7 @@ const UserRole = sql.define<Model<UserRoleRecord, UserRoleRecord>>(
       },
     },
     roleId: {
-      type: sequelize.UUIDV4,
+      type: sequelize.UUID,
       allowNull: false,
       references: {
         model: Role,
@@ -168,7 +168,7 @@ const Volume = sql.define<Model<VolumeRecord, VolumeRecord>>(
   'volumes',
   {
     id: {
-      type: sequelize.UUIDV4,
+      type: sequelize.UUID,
       allowNull: false,
       primaryKey: true,
     },
@@ -190,7 +190,7 @@ const Volume = sql.define<Model<VolumeRecord, VolumeRecord>>(
       allowNull: false,
     },
     lastUpdatedBy: {
-      type: sequelize.UUIDV4,
+      type: sequelize.UUID,
       allowNull: false,
       references: {
         model: User,
@@ -208,7 +208,7 @@ const Volume = sql.define<Model<VolumeRecord, VolumeRecord>>(
       allowNull: false,
     },
     approvedBy: {
-      type: sequelize.UUIDV4,
+      type: sequelize.UUID,
       allowNull: false,
       references: {
         model: User,
@@ -225,7 +225,7 @@ const Book = sql.define<Model<BookRecord, BookRecord>>(
   'books',
   {
     id: {
-      type: sequelize.UUIDV4,
+      type: sequelize.UUID,
       allowNull: false,
       primaryKey: true,
       references: {
@@ -248,7 +248,7 @@ const Book = sql.define<Model<BookRecord, BookRecord>>(
       allowNull: true,
     },
     volumeId: {
-      type: sequelize.UUIDV4,
+      type: sequelize.UUID,
       allowNull: false,
     },
     order: {
@@ -265,7 +265,7 @@ const Book = sql.define<Model<BookRecord, BookRecord>>(
       allowNull: false,
     },
     lastUpdatedBy: {
-      type: sequelize.UUIDV4,
+      type: sequelize.UUID,
       allowNull: false,
       references: {model: User, key: 'id'},
     },
@@ -275,7 +275,7 @@ const Book = sql.define<Model<BookRecord, BookRecord>>(
       allowNull: false,
     },
     approvedBy: {
-      type: sequelize.UUIDV4,
+      type: sequelize.UUID,
       allowNull: false,
       references: {model: User, key: 'id'},
     },
@@ -289,7 +289,7 @@ const Chapter = sql.define<Model<ChapterRecord, ChapterRecord>>(
   'chapters',
   {
     id: {
-      type: sequelize.UUIDV4,
+      type: sequelize.UUID,
       allowNull: false,
       primaryKey: true,
       references: {
@@ -298,7 +298,7 @@ const Chapter = sql.define<Model<ChapterRecord, ChapterRecord>>(
       },
     },
     bookId: {
-      type: sequelize.UUIDV4,
+      type: sequelize.UUID,
       allowNull: false,
       unique: 'chapters_uniq_number',
     },
@@ -317,7 +317,7 @@ const Chapter = sql.define<Model<ChapterRecord, ChapterRecord>>(
       allowNull: false,
     },
     lastUpdatedBy: {
-      type: sequelize.UUIDV4,
+      type: sequelize.UUID,
       allowNull: false,
       references: {
         model: User,
@@ -330,7 +330,7 @@ const Chapter = sql.define<Model<ChapterRecord, ChapterRecord>>(
       allowNull: false,
     },
     approvedBy: {
-      type: sequelize.UUIDV4,
+      type: sequelize.UUID,
       allowNull: false,
       references: {
         model: User,
@@ -347,7 +347,7 @@ const Verse = sql.define<Model<VerseRecord, VerseRecord>>(
   'verses',
   {
     id: {
-      type: sequelize.UUIDV4,
+      type: sequelize.UUID,
       allowNull: false,
       primaryKey: true,
     },
@@ -360,7 +360,7 @@ const Verse = sql.define<Model<VerseRecord, VerseRecord>>(
       allowNull: false,
     },
     chapterId: {
-      type: sequelize.UUIDV4,
+      type: sequelize.UUID,
       allowNull: false,
       references: {
         model: Chapter,
@@ -373,7 +373,7 @@ const Verse = sql.define<Model<VerseRecord, VerseRecord>>(
       allowNull: false,
     },
     lastUpdatedBy: {
-      type: sequelize.UUIDV4,
+      type: sequelize.UUID,
       allowNull: false,
     },
     approvedDate: {
@@ -382,7 +382,7 @@ const Verse = sql.define<Model<VerseRecord, VerseRecord>>(
       allowNull: false,
     },
     approvedBy: {
-      type: sequelize.UUIDV4,
+      type: sequelize.UUID,
       allowNull: false,
       references: {
         model: User,
@@ -399,7 +399,7 @@ const Person = sql.define<Model<PersonRecord, PersonRecord>>(
   'person',
   {
     id: {
-      type: sequelize.UUIDV4,
+      type: sequelize.UUID,
       allowNull: false,
       primaryKey: true,
     },
@@ -416,7 +416,7 @@ const Person = sql.define<Model<PersonRecord, PersonRecord>>(
       allowNull: true,
     },
     lastUpdatedBy: {
-      type: sequelize.UUIDV4,
+      type: sequelize.UUID,
       allowNull: false,
       references: {
         model: User,
@@ -434,7 +434,7 @@ const Person = sql.define<Model<PersonRecord, PersonRecord>>(
       allowNull: false,
     },
     approvedBy: {
-      type: sequelize.UUIDV4,
+      type: sequelize.UUID,
       allowNull: false,
       references: {
         model: User,
@@ -451,12 +451,12 @@ const PersonLink = sql.define<Model<PersonLinkRecord, PersonLinkRecord>>(
   'people_links',
   {
     id: {
-      type: sequelize.UUIDV4,
+      type: sequelize.UUID,
       allowNull: false,
       primaryKey: true,
     },
     fromPersonId: {
-      type: sequelize.UUIDV4,
+      type: sequelize.UUID,
       allowNull: false,
       references: {
         model: Person,
@@ -468,7 +468,7 @@ const PersonLink = sql.define<Model<PersonLinkRecord, PersonLinkRecord>>(
       allowNull: false,
     },
     toPersonId: {
-      type: sequelize.UUIDV4,
+      type: sequelize.UUID,
       allowNull: false,
       references: {
         model: Person,
@@ -481,7 +481,7 @@ const PersonLink = sql.define<Model<PersonLinkRecord, PersonLinkRecord>>(
       allowNull: false,
     },
     lastUpdatedBy: {
-      type: sequelize.UUIDV4,
+      type: sequelize.UUID,
       allowNull: false,
       references: {
         model: User,
@@ -494,7 +494,7 @@ const PersonLink = sql.define<Model<PersonLinkRecord, PersonLinkRecord>>(
       allowNull: false,
     },
     approvedBy: {
-      type: sequelize.UUIDV4,
+      type: sequelize.UUID,
       allowNull: false,
       references: {
         model: User,
@@ -509,7 +509,7 @@ const Place = sql.define<Model<PlaceRecord, PlaceRecord>>(
   'places',
   {
     id: {
-      type: sequelize.UUIDV4,
+      type: sequelize.UUID,
       allowNull: false,
       primaryKey: true,
     },
@@ -528,7 +528,7 @@ const Place = sql.define<Model<PlaceRecord, PlaceRecord>>(
       allowNull: false,
     },
     lastUpdatedBy: {
-      type: sequelize.UUIDV4,
+      type: sequelize.UUID,
       allowNull: false,
       references: {
         model: User,
@@ -541,7 +541,7 @@ const Place = sql.define<Model<PlaceRecord, PlaceRecord>>(
       allowNull: false,
     },
     approvedBy: {
-      type: sequelize.UUIDV4,
+      type: sequelize.UUID,
       allowNull: false,
       references: {
         model: User,
@@ -558,7 +558,7 @@ const List = sql.define<Model<ListRecord, ListRecord>>(
   'lists',
   {
     id: {
-      type: sequelize.UUIDV4,
+      type: sequelize.UUID,
       allowNull: false,
       primaryKey: true,
     },
@@ -578,7 +578,7 @@ const List = sql.define<Model<ListRecord, ListRecord>>(
       allowNull: false,
     },
     lastUpdatedBy: {
-      type: sequelize.UUIDV4,
+      type: sequelize.UUID,
       allowNull: false,
       references: {
         model: User,
@@ -591,7 +591,7 @@ const List = sql.define<Model<ListRecord, ListRecord>>(
       allowNull: false,
     },
     approvedBy: {
-      type: sequelize.UUIDV4,
+      type: sequelize.UUID,
       allowNull: false,
       references: {
         model: User,
@@ -608,12 +608,12 @@ const ListItem = sql.define<Model<ListItemRecord, ListItemRecord>>(
   'list_items',
   {
     id: {
-      type: sequelize.UUIDV4,
+      type: sequelize.UUID,
       allowNull: false,
       primaryKey: true,
     },
     listId: {
-      type: sequelize.UUIDV4,
+      type: sequelize.UUID,
       allowNull: false,
       references: {
         model: List,
@@ -630,7 +630,7 @@ const ListItem = sql.define<Model<ListItemRecord, ListItemRecord>>(
       allowNull: false,
     },
     lastUpdatedBy: {
-      type: sequelize.UUIDV4,
+      type: sequelize.UUID,
       allowNull: false,
       references: {
         model: User,
@@ -643,7 +643,7 @@ const ListItem = sql.define<Model<ListItemRecord, ListItemRecord>>(
       allowNull: false,
     },
     approvedBy: {
-      type: sequelize.UUIDV4,
+      type: sequelize.UUID,
       allowNull: false,
       references: {
         model: User,
@@ -660,7 +660,7 @@ const Thing = sql.define<Model<ThingRecord, ThingRecord>>(
   'things',
   {
     id: {
-      type: sequelize.UUIDV4,
+      type: sequelize.UUID,
       allowNull: false,
       primaryKey: true,
     },
@@ -679,7 +679,7 @@ const Thing = sql.define<Model<ThingRecord, ThingRecord>>(
       allowNull: false,
     },
     lastUpdatedBy: {
-      type: sequelize.UUIDV4,
+      type: sequelize.UUID,
       allowNull: false,
       references: {
         model: User,
@@ -692,7 +692,7 @@ const Thing = sql.define<Model<ThingRecord, ThingRecord>>(
       allowNull: false,
     },
     approvedBy: {
-      type: sequelize.UUIDV4,
+      type: sequelize.UUID,
       allowNull: false,
       references: {
         model: User,
@@ -709,7 +709,7 @@ const Event = sql.define<Model<EventRecord, EventRecord>>(
   'events',
   {
     id: {
-      type: sequelize.UUIDV4,
+      type: sequelize.UUID,
       allowNull: false,
       primaryKey: true,
     },
@@ -728,7 +728,7 @@ const Event = sql.define<Model<EventRecord, EventRecord>>(
       allowNull: false,
     },
     lastUpdatedBy: {
-      type: sequelize.UUIDV4,
+      type: sequelize.UUID,
       allowNull: false,
       references: {
         model: User,
@@ -741,7 +741,7 @@ const Event = sql.define<Model<EventRecord, EventRecord>>(
       allowNull: false,
     },
     approvedBy: {
-      type: sequelize.UUIDV4,
+      type: sequelize.UUID,
       allowNull: false,
       references: {
         model: User,
@@ -758,7 +758,7 @@ const Mark = sql.define<Model<MarkRecord, MarkRecord>>(
   'marks',
   {
     id: {
-      type: sequelize.UUIDV4,
+      type: sequelize.UUID,
       allowNull: false,
       primaryKey: true,
     },
@@ -775,7 +775,7 @@ const Mark = sql.define<Model<MarkRecord, MarkRecord>>(
       allowNull: true,
     },
     verseId: {
-      type: sequelize.UUIDV4,
+      type: sequelize.UUID,
       allowNull: true,
       references: {
         model: Verse,
@@ -783,11 +783,11 @@ const Mark = sql.define<Model<MarkRecord, MarkRecord>>(
       },
     },
     speakerId: {
-      type: sequelize.UUIDV4,
+      type: sequelize.UUID,
       allowNull: true,
     },
     personId: {
-      type: sequelize.UUIDV4,
+      type: sequelize.UUID,
       allowNull: true,
       references: {
         model: Person,
@@ -795,7 +795,7 @@ const Mark = sql.define<Model<MarkRecord, MarkRecord>>(
       },
     },
     placeId: {
-      type: sequelize.UUIDV4,
+      type: sequelize.UUID,
       allowNull: true,
       references: {
         model: Place,
@@ -803,7 +803,7 @@ const Mark = sql.define<Model<MarkRecord, MarkRecord>>(
       },
     },
     thingId: {
-      type: sequelize.UUIDV4,
+      type: sequelize.UUID,
       allowNull: true,
       references: {
         model: Thing,
@@ -811,7 +811,7 @@ const Mark = sql.define<Model<MarkRecord, MarkRecord>>(
       },
     },
     eventId: {
-      type: sequelize.UUIDV4,
+      type: sequelize.UUID,
       allowNull: true,
       references: {
         model: Event,
@@ -819,7 +819,7 @@ const Mark = sql.define<Model<MarkRecord, MarkRecord>>(
       },
     },
     lastUpdatedBy: {
-      type: sequelize.UUIDV4,
+      type: sequelize.UUID,
       allowNull: false,
       references: {
         model: User,
@@ -837,7 +837,7 @@ const Mark = sql.define<Model<MarkRecord, MarkRecord>>(
       allowNull: false,
     },
     approvedBy: {
-      type: sequelize.UUIDV4,
+      type: sequelize.UUID,
       allowNull: false,
       references: {
         model: User,
@@ -854,7 +854,7 @@ const Question = sql.define<Model<QuestionRecord, QuestionRecord>>(
   'questions',
   {
     id: {
-      type: sequelize.UUIDV4,
+      type: sequelize.UUID,
       allowNull: false,
       primaryKey: true,
     },
@@ -863,7 +863,7 @@ const Question = sql.define<Model<QuestionRecord, QuestionRecord>>(
       allowNull: false,
     },
     verseId: {
-      type: sequelize.UUIDV4,
+      type: sequelize.UUID,
       allowNull: true,
       references: {
         model: Verse,
@@ -871,7 +871,7 @@ const Question = sql.define<Model<QuestionRecord, QuestionRecord>>(
       },
     },
     personId: {
-      type: sequelize.UUIDV4,
+      type: sequelize.UUID,
       allowNull: true,
       references: {
         model: Person,
@@ -879,7 +879,7 @@ const Question = sql.define<Model<QuestionRecord, QuestionRecord>>(
       },
     },
     placeId: {
-      type: sequelize.UUIDV4,
+      type: sequelize.UUID,
       allowNull: true,
       references: {
         model: Place,
@@ -887,7 +887,7 @@ const Question = sql.define<Model<QuestionRecord, QuestionRecord>>(
       },
     },
     thingId: {
-      type: sequelize.UUIDV4,
+      type: sequelize.UUID,
       allowNull: true,
       references: {
         model: Thing,
@@ -895,7 +895,7 @@ const Question = sql.define<Model<QuestionRecord, QuestionRecord>>(
       },
     },
     eventId: {
-      type: sequelize.UUIDV4,
+      type: sequelize.UUID,
       allowNull: true,
     },
     lastUpdatedDate: {
@@ -904,7 +904,7 @@ const Question = sql.define<Model<QuestionRecord, QuestionRecord>>(
       allowNull: false,
     },
     lastUpdatedBy: {
-      type: sequelize.UUIDV4,
+      type: sequelize.UUID,
       allowNull: false,
       references: {
         model: User,
@@ -917,7 +917,7 @@ const Question = sql.define<Model<QuestionRecord, QuestionRecord>>(
       allowNull: false,
     },
     approvedBy: {
-      type: sequelize.UUIDV4,
+      type: sequelize.UUID,
       allowNull: false,
       references: {
         model: User,
@@ -935,12 +935,12 @@ const Answer = sql.define<Model<AnswerRecord, AnswerRecord>>(
   'answers',
   {
     id: {
-      type: sequelize.UUIDV4,
+      type: sequelize.UUID,
       allowNull: false,
       primaryKey: true,
     },
     questionId: {
-      type: sequelize.UUIDV4,
+      type: sequelize.UUID,
       allowNull: false,
       references: {
         model: Question,
@@ -957,7 +957,7 @@ const Answer = sql.define<Model<AnswerRecord, AnswerRecord>>(
       allowNull: false,
     },
     lastUpdatedBy: {
-      type: sequelize.UUIDV4,
+      type: sequelize.UUID,
       allowNull: false,
       references: {
         model: User,
@@ -970,7 +970,7 @@ const Answer = sql.define<Model<AnswerRecord, AnswerRecord>>(
       allowNull: false,
     },
     approvedBy: {
-      type: sequelize.UUIDV4,
+      type: sequelize.UUID,
       allowNull: false,
       references: {
         model: User,
