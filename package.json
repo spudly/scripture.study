@@ -103,7 +103,8 @@
   "jest": {
     "testPathIgnorePatterns": [
       "/node_modules/",
-      "/cypress/"
+      "/cypress/",
+      "/build/"
     ]
   },
   "dependencies": {

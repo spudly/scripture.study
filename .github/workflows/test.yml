@@ -26,28 +26,32 @@ jobs:
 
     steps:
       - uses: actions/checkout@v2
-      - name: node v${{ matrix.node-version }}
+      - name: Use NodeJS v${{ matrix.node-version }}
         uses: actions/setup-node@v1
         with:
           node-version: ${{ matrix.node-version }}
-      - name: install
+      - name: Install Dependencies
         run: npm ci
-      - name: depcheck
+      - name: Dependency Check
         run: npm run depcheck
-      - name: eslint
+      - name: ESlint
         run: npm run lint
-      - name: build
+      - name: Build
         run: npm run build
-      - name: jest
+      - name: Jest
         run: npm run jest
-      - name: cypress
+      - name: Seed Database
+        run: npx ts-node src/db/seed.ts
+        env:
+          DATABASE_URL: postgres://postgres:postgres@localhost:5432/postgres
+      - name: Cypress
         uses: cypress-io/github-action@v2
         with:
           install: false
           start: npm start
           wait-on: 'http://localhost:3000'
         env:
-          DATABASE_URL: postgres://postgres:postgres@localhost:5432/scripture_study
+          DATABASE_URL: postgres://postgres:postgres@localhost:5432/postgres
           SESSION_SECRET: ${{ secrets.SESSION_SECRET }}
           GOOGLE_OAUTH_CLIENT_ID: 425704804623-04q55nmf47je6ejqua6b252t5dtptkfr.apps.googleusercontent.com
           GOOGLE_OAUTH_CLIENT_SECRET: ${{ secrets.GOOGLE_OAUTH_CLIENT_SECRET }}
