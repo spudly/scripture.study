@@ -1,4 +1,5 @@
 import {VolumeRecord} from '../utils/types';
+import {johnDoe} from './users';
 
 export const oldTestament: VolumeRecord = {
   lastUpdatedDate: 1601942400000,
@@ -8,8 +9,8 @@ export const oldTestament: VolumeRecord = {
   longTitle: 'The Old Testament',
   abbr: 'OT',
   order: 1,
-  lastUpdatedBy: '32c3a63c-9f3d-4d7b-ae82-157068d0ec90',
-  approvedBy: '32c3a63c-9f3d-4d7b-ae82-157068d0ec90',
+  lastUpdatedBy: johnDoe.id,
+  approvedBy: johnDoe.id,
 };
 
 export const bookOfMormon: VolumeRecord = {
@@ -20,8 +21,8 @@ export const bookOfMormon: VolumeRecord = {
   longTitle: 'The Book of Mormon',
   abbr: 'BoM',
   order: 3,
-  lastUpdatedBy: '32c3a63c-9f3d-4d7b-ae82-157068d0ec90',
-  approvedBy: '32c3a63c-9f3d-4d7b-ae82-157068d0ec90',
+  lastUpdatedBy: johnDoe.id,
+  approvedBy: johnDoe.id,
 };
 
 export default [oldTestament, bookOfMormon];

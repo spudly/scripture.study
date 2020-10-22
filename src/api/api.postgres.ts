@@ -228,10 +228,6 @@ const Book = sql.define<Model<BookRecord, BookRecord>>(
       type: sequelize.UUID,
       allowNull: false,
       primaryKey: true,
-      references: {
-        model: Volume,
-        key: 'id',
-      },
     },
     title: {
       type: sequelize.TEXT,
@@ -292,10 +288,6 @@ const Chapter = sql.define<Model<ChapterRecord, ChapterRecord>>(
       type: sequelize.UUID,
       allowNull: false,
       primaryKey: true,
-      references: {
-        model: Book,
-        key: 'id',
-      },
     },
     bookId: {
       type: sequelize.UUID,
@@ -983,18 +975,17 @@ const Answer = sql.define<Model<AnswerRecord, AnswerRecord>>(
   },
 );
 
-// associations
-Volume.hasMany(Book, {foreignKey: 'volumeId'});
-Book.belongsTo(Volume, {foreignKey: 'volumeId'});
+Volume.hasMany(Book);
+Book.belongsTo(Volume);
 
-Book.hasMany(Chapter, {foreignKey: 'bookId'});
-Chapter.belongsTo(Book, {foreignKey: 'bookId'});
+Book.hasMany(Chapter);
+Chapter.belongsTo(Book);
 
-Chapter.hasMany(Verse, {foreignKey: 'chapterId'});
-Verse.belongsTo(Chapter, {foreignKey: 'chapterId'});
+Chapter.hasMany(Verse);
+Verse.belongsTo(Chapter);
 
-Verse.hasMany(Mark, {foreignKey: 'verseId'});
-Mark.belongsTo(Verse, {foreignKey: 'verseId'});
+Verse.hasMany(Mark);
+Mark.belongsTo(Verse);
 
 export const getVersesAndMarksBySpeakerId = async (
   speakerId: ID,

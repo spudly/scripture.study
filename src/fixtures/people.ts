@@ -46,7 +46,7 @@ export const sariah: PersonRecord = {
 };
 
 export const lehi4: PersonRecord = {
-  id: '5f48eb693c7b0409fccfc706',
+  id: 'ff0aca43-3d9b-43fd-a1fc-af4a685e59df',
   name: 'Lehi',
   order: 2,
   description: 'Son of Helaman',
@@ -59,7 +59,7 @@ export const lehi4: PersonRecord = {
 export const armyOfHelaman: PersonRecord = {
   lastUpdatedDate: 1602028800000,
   approvedDate: 1602028800000,
-  id: 'ff0aca43-3d9b-43fd-a1fc-af4a685e59df',
+  id: 'fb6d73e5-5717-4817-aa58-539b464779e0',
   name: 'Lehi',
   order: null,
   description: '4 - Son of Helaman',

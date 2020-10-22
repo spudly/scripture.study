@@ -30,50 +30,50 @@ import marks from '../fixtures/marks';
 import peopleLinks from '../fixtures/peopleLinks';
 
 const seed = async () => {
-  await User.sync();
+  await User.sync({force: true});
   await User.bulkCreate(users);
 
-  await Role.sync();
+  await Role.sync({force: true});
   await Role.bulkCreate(roles);
 
-  await UserRole.sync();
+  await UserRole.sync({force: true});
   await UserRole.bulkCreate(userRoles);
 
-  await Volume.sync();
+  await Volume.sync({force: true});
   await Volume.bulkCreate(volumes);
 
-  await Book.sync();
+  await Book.sync({force: true});
   await Book.bulkCreate(books);
 
-  await Chapter.sync();
+  await Chapter.sync({force: true});
   await Chapter.bulkCreate(chapters);
 
-  await Verse.sync();
+  await Verse.sync({force: true});
   await Verse.bulkCreate(verses);
 
-  await Person.sync();
+  await Person.sync({force: true});
   await Person.bulkCreate(people);
 
-  await Place.sync();
+  await Place.sync({force: true});
 
-  await List.sync();
+  await List.sync({force: true});
 
-  await ListItem.sync();
+  await ListItem.sync({force: true});
 
-  await Thing.sync();
+  await Thing.sync({force: true});
 
-  await Event.sync();
+  await Event.sync({force: true});
 
-  await Mark.sync();
+  await Mark.sync({force: true});
   await Mark.bulkCreate(marks);
 
-  await Question.sync();
+  await Question.sync({force: true});
 
-  await Answer.sync();
+  await Answer.sync({force: true});
 
-  await Session.sync();
+  await Session.sync({force: true});
 
-  await PersonLink.sync();
+  await PersonLink.sync({force: true});
   await PersonLink.bulkCreate(peopleLinks);
 };
 
