@@ -42,14 +42,8 @@ jobs:
         run: npx ts-node src/db/seed.ts
         env:
           DATABASE_URL: postgres://postgres:postgres@localhost:5432/postgres
-      - name: Unit Tests
-        run: npm run test:unit
-      - name: Integration Tests
-        uses: cypress-io/github-action@v2
-        with:
-          install: false
-          start: npm run test:integration:start
-          wait-on: 'http://localhost:3000'
+      - name: Tests
+        run: npm test
         env:
           DATABASE_URL: postgres://postgres:postgres@localhost:5432/postgres
           SESSION_SECRET: ${{ secrets.SESSION_SECRET }}
