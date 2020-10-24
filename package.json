@@ -11,16 +11,15 @@
     "build": "npm run build:server && npm run build:client",
     "build:client": "rm stats.json; rm public/index.client.js; NODE_ENV=production webpack --config=build/webpack.config.js --json > stats.json",
     "build:server": "rm -rf build && tsc",
-    "coverage:clean": "rm -rf .nyc-output && rm -rf .coverage",
-    "depcheck": "depcheck --ignores=\",@commitlint/*,@types/*,prettier,pretty-quick,sort-package-json,typescript,@fullhuman/postcss-purgecss,autoprefixer,tailwindcss,postcss-import,webpack-cli,pg,pg-hstore,*-loader\"",
-    "dev": "NODE_ENV=development BABEL_ENV=development PORT=3000 ts-node src/index.server.dev.tsx | pino-pretty",
+    "depcheck": "depcheck --ignores=\",@commitlint/*,@types/*,prettier,pretty-quick,sort-package-json,typescript,@fullhuman/postcss-purgecss,autoprefixer,tailwindcss,postcss-import,webpack-cli,pg,pg-hstore,*-loader,babel-*\"",
+    "dev": "NODE_ENV=development npm run dev:server | pino-pretty",
+    "dev:server": "ts-node src/index.server.dev.tsx",
     "lint": "eslint . --ext .js,.jsx,.ts,.tsx",
     "start": "NODE_ENV=production node build/index.server.js",
-    "test": "npm run coverage:clean && npm run test:unit && npm run test:integration",
+    "test": "rm -rf .nyc-output && rm -rf coverage && npm run test:unit && npm run test:integration",
     "test:integration": "start-server-and-test test:integration:start http://localhost:3000 test:integration:run",
-    "test:integration:instrument": "nyc instrument src .src-instrumented && cp src/index.css .src-instrumented/",
     "test:integration:run": "cypress run",
-    "test:integration:start": "npm run test:integration:instrument && NODE_ENV=test ts-node .src-instrumented/index.server.dev.tsx",
+    "test:integration:start": "NODE_ENV=test nyc npm run dev:server",
     "test:unit": "jest --coverage"
   },
   "husky": {
@@ -107,7 +106,6 @@
       "src/**/*.{js,jsx,ts,tsx}",
       "!**/node_modules/**"
     ],
-    "coverageDirectory": ".coverage/unit",
     "testPathIgnorePatterns": [
       "/node_modules/",
       "/cypress/",
@@ -116,6 +114,7 @@
   },
   "nyc": {
     "all": true,
+    "cache": false,
     "exclude": [
       "**/*.test.*",
       "**/*.stories.*"
@@ -124,7 +123,7 @@
     "include": [
       "src/**/*.{ts,tsx}"
     ],
-    "report-dir": ".coverage/integration",
+    "report-dir": "coverage/integration",
     "reporter": [
       "text",
       "json",
@@ -199,6 +198,7 @@
     "@types/webpack-dev-middleware": "^3.7.0",
     "@types/webpack-hot-middleware": "^2.25.3",
     "babel-loader": "^8.1.0",
+    "babel-plugin-istanbul": "^6.0.0",
     "css-loader": "^3.5.3",
     "cypress": "^5.4.0",
     "depcheck": "^1.0.0",

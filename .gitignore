@@ -11,6 +11,5 @@ temp
 cypress/integration/examples
 cypress/screenshots
 cypress/videos
-.src-instrumented
 .nyc_output
-.coverage
+coverage

@@ -25,9 +25,7 @@ const config: Configuration = {
       mode === 'development'
         ? 'webpack-hot-middleware/client?name=index.client'
         : null,
-      `./${
-        process.env.NODE_ENV === 'test' ? '.src-instrumented' : 'src'
-      }/index.client.tsx`,
+      `./src/index.client.tsx`,
     ].filter(isNotNil),
   },
   output: {
@@ -47,6 +45,12 @@ const config: Configuration = {
         use: [
           {
             loader: 'babel-loader',
+            options:
+              process.env.NODE_ENV === 'test'
+                ? {
+                    plugins: ['istanbul'],
+                  }
+                : undefined,
           },
         ],
       },
