@@ -34,21 +34,21 @@ jobs:
         run: npm ci
       - name: Dependency Check
         run: npm run depcheck
-      - name: ESlint
-        run: npm run lint
       - name: Build
         run: npm run build
-      - name: Jest
-        run: npm run jest
+      - name: ESlint
+        run: npm run lint
       - name: Seed Database
         run: npx ts-node src/db/seed.ts
         env:
           DATABASE_URL: postgres://postgres:postgres@localhost:5432/postgres
-      - name: Cypress
+      - name: Unit Tests
+        run: npm run test:unit
+      - name: Integration Tests
         uses: cypress-io/github-action@v2
         with:
           install: false
-          start: npm start
+          start: npm run test:integration:start
           wait-on: 'http://localhost:3000'
         env:
           DATABASE_URL: postgres://postgres:postgres@localhost:5432/postgres
@@ -57,3 +57,5 @@ jobs:
           GOOGLE_OAUTH_CLIENT_SECRET: ${{ secrets.GOOGLE_OAUTH_CLIENT_SECRET }}
           GOOGLE_OAUTH_CALLBACK_URL: http://localhost:3000/auth/google/callback
           PORT: 3000
+      - name: Code Coverage
+        run: npx nyc report --reporter=text-summary
