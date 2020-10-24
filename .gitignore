@@ -5,7 +5,12 @@ public/*.js
 stats.json
 *Zone.Identifier
 scripts
-coverage
 tmp
 temp
 *.dump
+cypress/integration/examples
+cypress/screenshots
+cypress/videos
+.src-instrumented
+.nyc_output
+.coverage

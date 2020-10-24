@@ -1,27 +1,69 @@
-name: Node.js CI
+name: Test
 on:
   push:
-    branches: [ develop, master ]
+    branches: [develop, master]
   pull_request:
-    branches: [ develop ]
+    branches: [develop]
 
 jobs:
-  build:
-
+  test:
     runs-on: ubuntu-latest
 
     strategy:
       matrix:
         node-version: [14.x]
 
+    services:
+      postgres:
+        image: postgres
+        env:
+          POSTGRES_PASSWORD: postgres
+        options: >-
+          --health-cmd pg_isready --health-interval 10s --health-timeout 5s
+          --health-retries 5
+        ports:
+          - 5432:5432
+
     steps:
-    - uses: actions/checkout@v2
-    - name: Use Node.js ${{ matrix.node-version }}
-      uses: actions/setup-node@v1
-      with:
-        node-version: ${{ matrix.node-version }}
-    - run: npm ci
-    - run: npm run depcheck
-    - run: npm run lint
-    - run: npm run build --if-present
-    - run: npm test
+      - uses: actions/checkout@v2
+      - name: Use NodeJS v${{ matrix.node-version }}
+        uses: actions/setup-node@v1
+        with:
+          node-version: ${{ matrix.node-version }}
+      - name: Install Dependencies
+        run: npm ci
+      - name: Dependency Check
+        run: npm run depcheck
+      - name: Build
+        run: npm run build
+      - name: ESlint
+        run: npm run lint
+      - name: Seed Database
+        run: npx ts-node src/db/seed.ts
+        env:
+          DATABASE_URL: postgres://postgres:postgres@localhost:5432/postgres
+      - name: Unit Tests
+        run: npm run test:unit
+      - name: Integration Tests
+        uses: cypress-io/github-action@v2
+        with:
+          install: false
+          start: npm run test:integration:start
+          wait-on: 'http://localhost:3000'
+        env:
+          DATABASE_URL: postgres://postgres:postgres@localhost:5432/postgres
+          SESSION_SECRET: ${{ secrets.SESSION_SECRET }}
+          GOOGLE_OAUTH_CLIENT_ID: 425704804623-04q55nmf47je6ejqua6b252t5dtptkfr.apps.googleusercontent.com
+          GOOGLE_OAUTH_CLIENT_SECRET: ${{ secrets.GOOGLE_OAUTH_CLIENT_SECRET }}
+          GOOGLE_OAUTH_CALLBACK_URL: http://localhost:3000/auth/google/callback
+          PORT: 3000
+      - name: Code Coverage
+        run: npx nyc report --reporter=text-summary
+      - name: Upload Unit Coverage Reports
+        run:
+          bash <(curl -s https://codecov.io/bash) -s
+          .coverage/unit/coverage-final.json -F unit
+      - name: Upload Integration Coverage Reports
+        run:
+          bash <(curl -s https://codecov.io/bash) -s
+          .coverage/integration/coverage-final.json -F integration

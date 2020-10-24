@@ -141,7 +141,9 @@ type Options = {
   colors?: Array<keyof StateMicroTheme>;
 };
 
-export type ThemeName = keyof typeof themes;
+export type Themes = typeof themes;
+
+export type ThemeName = keyof Themes;
 
 export const themeNames = Object.keys(themes) as Array<ThemeName>;
 
