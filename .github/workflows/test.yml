@@ -57,7 +57,5 @@ jobs:
           GOOGLE_OAUTH_CLIENT_SECRET: ${{ secrets.GOOGLE_OAUTH_CLIENT_SECRET }}
           GOOGLE_OAUTH_CALLBACK_URL: http://localhost:3000/auth/google/callback
           PORT: 3000
-      - name: Code Coverage
-        run: npx nyc report --reporter=text-summary
       - name: Upload Coverage Reports
         run: bash <(curl -s https://codecov.io/bash)
