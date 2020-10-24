@@ -59,3 +59,11 @@ jobs:
           PORT: 3000
       - name: Code Coverage
         run: npx nyc report --reporter=text-summary
+      - name: Upload Unit Coverage Reports
+        run:
+          bash <(curl -s https://codecov.io/bash) -s
+          .coverage/unit/coverage-final.json -F unit
+      - name: Upload Integration Coverage Reports
+        run:
+          bash <(curl -s https://codecov.io/bash) -s
+          .coverage/integration/coverage-final.json -F integration

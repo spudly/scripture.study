@@ -9,7 +9,7 @@
   "main": "index.js",
   "scripts": {
     "build": "npm run build:server && npm run build:client",
-    "build:client": "rm stats.json && rm public/index.client.js && NODE_ENV=production webpack --config=build/webpack.config.js --json > stats.json",
+    "build:client": "rm stats.json; rm public/index.client.js; NODE_ENV=production webpack --config=build/webpack.config.js --json > stats.json",
     "build:server": "rm -rf build && tsc",
     "coverage:clean": "rm -rf .nyc-output && rm -rf .coverage",
     "depcheck": "depcheck --ignores=\",@commitlint/*,@types/*,prettier,pretty-quick,sort-package-json,typescript,@fullhuman/postcss-purgecss,autoprefixer,tailwindcss,postcss-import,webpack-cli,pg,pg-hstore,*-loader\"",
