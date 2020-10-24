@@ -123,7 +123,6 @@
     "include": [
       "src/**/*.{ts,tsx}"
     ],
-    "report-dir": "coverage/integration",
     "reporter": [
       "text",
       "json",
