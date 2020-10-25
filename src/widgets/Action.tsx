@@ -16,7 +16,7 @@ const Action: FC<{
 
   return (
     <div>
-      {isOpen && <Overlay darken onClick={close} />}
+      {isOpen && <Overlay onClick={close} />}
       <div
         className={classnames(
           'relative flex items-center duration-100 rounded-full',
