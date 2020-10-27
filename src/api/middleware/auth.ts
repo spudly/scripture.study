@@ -5,8 +5,12 @@ import {
   GoogleAccessTokenData,
   GoogleUserInfo,
   UserWithRoles,
-} from '../utils/types';
-import {findOrCreateOrUpdateGoogleUser, getUserRolesById} from './api.postgres';
+} from '../../utils/types';
+import {
+  findOrCreateOrUpdateGoogleUser,
+  getUserRolesById,
+} from '../api.postgres';
+import sanitizeAuthRedirectUrl from '../../utils/sanitizeAuthRedirectUrl';
 
 const {
   GOOGLE_OAUTH_CLIENT_ID = '',
@@ -63,6 +67,8 @@ export const fetchUserProfile = async (
 };
 
 export const googleLoginMiddleware: Handler = (req, resp) => {
+  const {authRedirectUrl = req.session!.authRedirectUrl ?? '/'} = req.query;
+  req.session!.authRedirectUrl = sanitizeAuthRedirectUrl(authRedirectUrl);
   resp.redirect(buildGoogleLoginUrl());
 };
 
@@ -76,6 +82,8 @@ export const googleCallbackMiddleware: Handler = async (req, resp) => {
     roles: roles.map((r) => r.name),
   };
 
+  const authRedirectUrl = req.session?.authRedirectUrl ?? '/';
+
   await new Promise((resolve, reject) => {
     req.session!.regenerate((error) => {
       if (error) {
@@ -87,5 +95,22 @@ export const googleCallbackMiddleware: Handler = async (req, resp) => {
   });
 
   req.session!.user = userWithRoles;
-  resp.redirect('/');
+  resp.redirect(authRedirectUrl);
+};
+
+export const logout: Handler = async (req, resp) => {
+  let {authRedirectUrl = req.session!.authRedirectUrl ?? '/'} = req.query;
+  authRedirectUrl = sanitizeAuthRedirectUrl(authRedirectUrl);
+
+  await new Promise((resolve, reject) => {
+    req.session!.regenerate((error) => {
+      if (error) {
+        reject(error);
+        return;
+      }
+      resolve();
+    });
+  });
+
+  resp.redirect(authRedirectUrl);
 };

@@ -12,14 +12,14 @@
     "build:client": "rm stats.json; rm public/index.client.js; NODE_ENV=production webpack --config=build/webpack.config.js --json > stats.json",
     "build:server": "rm -rf build && tsc",
     "depcheck": "depcheck --ignores=\",@commitlint/*,@types/*,prettier,pretty-quick,sort-package-json,typescript,@fullhuman/postcss-purgecss,autoprefixer,tailwindcss,postcss-import,webpack-cli,pg,pg-hstore,*-loader,babel-*\"",
-    "dev": "NODE_ENV=development npm run dev:server | pino-pretty",
-    "dev:server": "ts-node src/index.server.dev.tsx",
     "lint": "eslint . --ext .js,.jsx,.ts,.tsx",
     "start": "NODE_ENV=production node build/index.server.js",
+    "start:dev": "NODE_ENV=development npm run start:dev:server | pino-pretty",
+    "start:dev:server": "ts-node src/index.server.dev.tsx",
     "test": "rm -rf .nyc-output && rm -rf coverage && npm run test:unit && npm run test:integration",
     "test:integration": "start-server-and-test test:integration:start http://localhost:3000 test:integration:run",
     "test:integration:run": "cypress run",
-    "test:integration:start": "NODE_ENV=test nyc npm run dev:server",
+    "test:integration:start": "NODE_ENV=test nyc npm run start:dev:server",
     "test:unit": "jest --coverage"
   },
   "husky": {

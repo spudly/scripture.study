@@ -331,7 +331,7 @@ const ChapterPage: FC = () => {
           )
         }
       />
-      <div className="text-4xl">
+      <div className="text-4xl mb-48">
         <Verses verses={verses} speakers={people ?? []} marks={marks ?? []} />
       </div>
     </Title>

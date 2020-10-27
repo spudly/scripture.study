@@ -2,7 +2,9 @@ import React, {FC} from 'react';
 import classnames from 'classnames';
 
 const X = {
-  2: 'px-2',
+  2: 'pr-2',
+  4: 'pr-4',
+  8: 'pr-8',
 };
 
 const Y = {

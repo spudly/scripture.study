@@ -44,11 +44,16 @@ import {
   GetAllResponseBody,
   MarkRecordPlus,
 } from '../utils/types';
-import {googleCallbackMiddleware, googleLoginMiddleware} from './google-auth';
+import {
+  googleCallbackMiddleware,
+  googleLoginMiddleware,
+  logout,
+} from './middleware/auth';
 import session from 'express-session';
 import SessionStore from './SessionStore';
 import {Model, ModelCtor} from 'sequelize/types';
 import sequelize from 'sequelize';
+import sanitizeAuthRedirectUrl from '../utils/sanitizeAuthRedirectUrl';
 
 const publicDir = path.join(__dirname, '../../public');
 
@@ -60,14 +65,14 @@ const authorize = (role: RoleName | null = null): Handler => (
   if (req.user && (role == null || hasRole(role, req.user))) {
     return next();
   }
-  // req.session!.returnTo = '/';
-  if (!req.url.startsWith('/api')) {
-    resp.redirect('/auth/google');
-    return;
+  if (req.url.startsWith('/api')) {
+    resp.status(401).json({
+      error: 'You must be logged in to access this resource!',
+    });
   }
-  resp.status(401).json({
-    error: 'You must be logged in to access this resource!',
-  });
+  req.session!.authRedirectUrl = sanitizeAuthRedirectUrl(req.url);
+  resp.redirect('/auth/google');
+  return;
 };
 
 const makeGetAllRoute = <RECORD extends {id: ID}>(
@@ -235,6 +240,7 @@ const router = express
   .get('/auth/google', googleLoginMiddleware)
   .get('/auth/google/callback', googleCallbackMiddleware)
   .get('/auth/user', sendCurrentUser)
+  .get('/auth/logout', logout)
   .post('*', authorize('author'))
   .put('*', authorize('author'))
   .delete('*', authorize('author'))

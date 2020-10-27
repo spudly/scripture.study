@@ -20,7 +20,7 @@ import {ImBooks} from 'react-icons/im';
 import {BiBook} from 'react-icons/bi';
 import {FiLogOut} from 'react-icons/fi';
 import Button from '../widgets/Button';
-import {NavLink} from 'react-router-dom';
+import {NavLink, useLocation} from 'react-router-dom';
 import UserContext from '../utils/UserContext';
 import useScripturesRouteMatch from '../utils/useScripturesRouteMatch';
 import scriptureLinkHref from '../utils/scriptureLinkHref';
@@ -206,6 +206,7 @@ const SideNav: FC<{isOpen: boolean; close: () => void}> = ({isOpen, close}) => {
     volumeTitle,
     bookTitle,
   } = useScripturesRouteMatch();
+  const loc = useLocation();
 
   return (
     <div className="fixed z-10">
@@ -266,12 +267,19 @@ const SideNav: FC<{isOpen: boolean; close: () => void}> = ({isOpen, close}) => {
             >
               Settings
             </SideNavLink>
-            <SideNavLink external href="/auth/logout" icon={<FiLogOut />}>
+            <SideNavLink
+              external
+              href={`/auth/logout?authRedirectUrl=${loc.pathname}`}
+              icon={<FiLogOut />}
+            >
               Logout
             </SideNavLink>
           </>
         ) : (
-          <SideNavLink external href="/auth/google">
+          <SideNavLink
+            external
+            href={`/auth/google?authRedirectUrl=${loc.pathname}`}
+          >
             Login
           </SideNavLink>
         )}
