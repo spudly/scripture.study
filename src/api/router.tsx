@@ -7,6 +7,7 @@ import {requestLogger} from '../utils/logger';
 import csurf from 'csurf';
 import helmet from 'helmet';
 import React from 'react';
+import compression from 'compression';
 import {renderToStaticNodeStream} from 'react-dom/server';
 import hasRole from '../utils/hasRole';
 import Page from '../app/Page';
@@ -230,6 +231,7 @@ const makeTableRouter = <RECORD extends {id: ID}>(
 
 const router = express
   .Router()
+  .use(compression())
   .use(helmet())
   .use(cookieParser())
   .use(bodyParser.json())
