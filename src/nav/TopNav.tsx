@@ -6,11 +6,11 @@ import Spacer from '../widgets/Spacer';
 const TopNav: FC<{openSideNav: () => void}> = ({openSideNav}) => {
   return (
     <div className="flex fixed top-0 z-10 bg-gray-900 w-full text-gray-100 p-2 items-center">
-      <Button minimal onClick={openSideNav}>
+      <Button minimal onClick={openSideNav} aria-label="Menu">
         <MdMenu className="inline-block text-2xl" />
       </Button>
       <Spacer x={2} />
-      scripture.study
+      Scripture Study
     </div>
   );
 };

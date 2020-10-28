@@ -1,4 +1,4 @@
-import {MarkRecord} from '../utils/types';
+import {MarkRecord} from '../types';
 import {firstNephi2Verse1, firstNephi2Verse2} from './verses';
 import {nephi1} from './people';
 import {johnDoe} from './users';

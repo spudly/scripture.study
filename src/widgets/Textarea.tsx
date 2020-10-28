@@ -1,5 +1,5 @@
 import React, {FC} from 'react';
-import {Unstyled} from '../utils/types';
+import {Unstyled} from '../types';
 
 const Textarea: FC<Unstyled<'textarea'>> = (props) => (
   <textarea

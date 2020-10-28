@@ -13,7 +13,7 @@ import {
   VolumeRecord,
   VerseRecord,
   MarkRecord,
-} from '../utils/types';
+} from '../types';
 import usePerson from '../api/usePerson';
 import FamilyTree from './FamilyTree';
 import Verse from '../scriptures/Verse';

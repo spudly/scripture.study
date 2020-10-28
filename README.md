@@ -1,4 +1,6 @@
-# [scripture.study](https://scripture.study/)
+# [Scripture.Study](https://scripture.study/)
+
+Collaborative Scripture Study
 
 ## Contributing
 

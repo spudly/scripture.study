@@ -1,5 +1,5 @@
 import React, {FC} from 'react';
-import {Point} from '../utils/types';
+import {Point} from '../types';
 
 const Arrow: FC<{from: Point; to: Point; dashed?: boolean}> = ({
   from,

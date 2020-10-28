@@ -1,7 +1,7 @@
 import {useCallback} from 'react';
 import {useQuery} from 'react-query';
 import fetchJson from '../utils/fetchJson';
-import type {GetAllResponseBody, ID, PersonRecord} from '../utils/types';
+import type {GetAllResponseBody, ID, PersonRecord} from '../types';
 
 const usePerson = (id?: ID | null) => {
   const {

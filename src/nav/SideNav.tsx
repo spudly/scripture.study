@@ -30,7 +30,7 @@ import {
   getAllVolumes,
 } from '../api/api.client';
 import {useQuery} from 'react-query';
-import {BookRecord, VolumeRecord} from '../utils/types';
+import {BookRecord, VolumeRecord} from '../types';
 import useBoolean from '../utils/useBoolean';
 
 const SideNavLink: FC<{
@@ -221,8 +221,8 @@ const SideNav: FC<{isOpen: boolean; close: () => void}> = ({isOpen, close}) => {
         )}
       >
         <div className="flex p-2 items-center justify-between">
-          <span className="text-base">scripture.study</span>
-          <Button minimal>
+          <span className="text-base">Scripture Study</span>
+          <Button minimal aria-label="Close">
             <MdClose onClick={close} />
           </Button>
         </div>

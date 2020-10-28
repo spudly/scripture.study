@@ -1,5 +1,5 @@
 import React, {forwardRef} from 'react';
-import {Unstyled} from '../utils/types';
+import {Unstyled} from '../types';
 
 const AnchorLink = forwardRef<HTMLAnchorElement, Unstyled<'a'>>(
   (props, ref) => {

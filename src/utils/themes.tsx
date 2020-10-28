@@ -1,4 +1,4 @@
-import {MicroTheme, StateMicroTheme} from './types';
+import {MicroTheme, StateMicroTheme} from '../types';
 
 const themes = {
   yellow: {

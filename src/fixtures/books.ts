@@ -1,4 +1,4 @@
-import type {BookRecord} from '../utils/types';
+import type {BookRecord} from '../types';
 import {johnDoe} from './users';
 import {bookOfMormon} from './volumes';
 

@@ -6,7 +6,7 @@ import React, {
   SetStateAction,
   useContext,
 } from 'react';
-import {ID, PersonLinkRecord, Unstyled} from '../utils/types';
+import {ID, PersonLinkRecord, Unstyled} from '../types';
 import {Link} from 'react-router-dom';
 import usePerson from '../api/usePerson';
 import classnames from 'classnames';

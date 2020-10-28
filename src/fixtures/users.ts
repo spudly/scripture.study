@@ -1,4 +1,4 @@
-import type {UserRecord} from '../utils/types';
+import type {UserRecord} from '../types';
 
 export const svc: UserRecord = {
   id: '32c3a63c-9f3d-4d7b-ae82-157068d0ec90',

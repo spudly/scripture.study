@@ -1,7 +1,7 @@
 import React, {FC} from 'react';
-import {ID, MarkRecord, PersonRecord, Unsaved} from '../utils/types';
+import {ID, MarkRecord, PersonRecord, Unsaved} from '../types';
 import {MdRecordVoiceOver} from 'react-icons/md';
-import {VerseSelection} from '../utils/types';
+import {VerseSelection} from '../types';
 import Spinner from '../widgets/Spinner';
 import PersonSelect from '../people/PersonSelect';
 import Action from '../widgets/Action';

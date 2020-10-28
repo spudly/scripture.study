@@ -1,4 +1,4 @@
-import {PersonRecord} from './types';
+import {PersonRecord} from '../types';
 import {serializePerson} from './serializePerson';
 import {compareBy} from '@spudly/pushpop';
 

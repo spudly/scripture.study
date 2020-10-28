@@ -1,5 +1,5 @@
 import React, {FC} from 'react';
-import {Unstyled} from '../utils/types';
+import {Unstyled} from '../types';
 
 const Input: FC<Unstyled<'input'>> = (props) => (
   <input

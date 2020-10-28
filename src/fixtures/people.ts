@@ -1,4 +1,4 @@
-import {PersonRecord} from '../utils/types';
+import {PersonRecord} from '../types';
 import {johnDoe} from './users';
 
 export const nephi1: PersonRecord = {

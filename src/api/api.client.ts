@@ -12,7 +12,7 @@ import {
   ChapterRecord,
   PersonLinkRecord,
   GetAllResponseBody,
-} from '../utils/types';
+} from '../types';
 
 export const bulkMutation = <RECORD>(
   url: string,

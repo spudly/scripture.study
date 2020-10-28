@@ -6,7 +6,7 @@ import React, {
   useRef,
   useState,
 } from 'react';
-import {PersonLinkRecord, PersonRecord} from '../utils/types';
+import {PersonLinkRecord, PersonRecord} from '../types';
 import CircleButton from '../widgets/CircleButton';
 import PersonLinkDialog from './PersonLinkDialog';
 import {MdAdd} from 'react-icons/md';

@@ -10,3 +10,9 @@ ReactDOM.render(
   </BrowserRouter>,
   document.getElementById('root'),
 );
+
+if (process.env.NODE_ENV !== 'development' && 'serviceWorker' in navigator) {
+  window.addEventListener('load', () => {
+    navigator.serviceWorker.register('/index.worker.js');
+  });
+}

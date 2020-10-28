@@ -1,5 +1,5 @@
 import React, {FC} from 'react';
-import {MarkRecord, PersonRecord, SpeakerMarkRecord} from '../utils/types';
+import {MarkRecord, PersonRecord, SpeakerMarkRecord} from '../types';
 import {MdEdit} from 'react-icons/md';
 import PersonSelect from '../people/PersonSelect';
 import Spinner from '../widgets/Spinner';

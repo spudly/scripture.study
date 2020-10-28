@@ -1,4 +1,4 @@
-import {RoleName, UserWithRoles} from './types';
+import {RoleName, UserWithRoles} from '../types';
 
 const hasRole = (role: RoleName, user: UserWithRoles | undefined | null) =>
   user &&

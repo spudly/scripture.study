@@ -1,5 +1,5 @@
 import React, {ReactElement} from 'react';
-import {PersonRecord} from './types';
+import {PersonRecord} from '../types';
 
 export const serializePerson = ({
   name,

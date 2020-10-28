@@ -1,4 +1,4 @@
-import {RoleRecord} from '../utils/types';
+import {RoleRecord} from '../types';
 
 export const admin: RoleRecord = {
   id: '43a34851-263f-49c5-80f9-74a259e68716',

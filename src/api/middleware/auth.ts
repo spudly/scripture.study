@@ -5,7 +5,7 @@ import {
   GoogleAccessTokenData,
   GoogleUserInfo,
   UserWithRoles,
-} from '../../utils/types';
+} from '../../types';
 import {
   findOrCreateOrUpdateGoogleUser,
   getUserRolesById,

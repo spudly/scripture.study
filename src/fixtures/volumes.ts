@@ -1,4 +1,4 @@
-import {VolumeRecord} from '../utils/types';
+import {VolumeRecord} from '../types';
 import {johnDoe} from './users';
 
 export const oldTestament: VolumeRecord = {

@@ -25,7 +25,7 @@ import {
   Unsaved,
   EditableRecord,
   MarkRecordPlus,
-} from '../utils/types';
+} from '../types';
 import {logger} from '../utils/logger';
 
 const {DATABASE_URL} = process.env;

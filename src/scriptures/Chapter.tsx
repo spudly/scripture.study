@@ -14,7 +14,7 @@ import {
   BulkMutationResponseBody,
   Unsaved,
   ID,
-} from '../utils/types';
+} from '../types';
 import Verse from './Verse';
 import createVerseSelections from '../utils/createVerseSelections';
 import isEmptySelection from '../utils/isEmptySelection';

@@ -1,4 +1,4 @@
-import {PersonLinkRecord} from '../utils/types';
+import {PersonLinkRecord} from '../types';
 import {nephi1, lehi1, sariah} from './people';
 import {johnDoe} from './users';
 

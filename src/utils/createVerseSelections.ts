@@ -1,4 +1,4 @@
-import {VerseRecord, VerseSelection} from './types';
+import {VerseRecord, VerseSelection} from '../types';
 import isEmptySelection from './isEmptySelection';
 
 const getVerseId = (el: HTMLElement) => el.dataset.verse;

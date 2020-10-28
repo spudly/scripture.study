@@ -214,7 +214,7 @@
     "sort-package-json": "^1.41.0",
     "start-server-and-test": "^1.11.5",
     "style-loader": "^1.2.0",
-    "tailwindcss": "^1.6.2",
+    "tailwindcss": "^1.9.6",
     "ts-node": "^8.9.0",
     "typescript": "^3.9.7",
     "webpack": "^4.43.0",

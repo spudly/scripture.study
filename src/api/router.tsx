@@ -10,6 +10,7 @@ import React from 'react';
 import {renderToStaticNodeStream} from 'react-dom/server';
 import hasRole from '../utils/hasRole';
 import Page from '../app/Page';
+import manifest from '../manifest';
 import {
   Answer,
   Book,
@@ -43,7 +44,7 @@ import {
   Unsaved,
   GetAllResponseBody,
   MarkRecordPlus,
-} from '../utils/types';
+} from '../types';
 import {
   googleCallbackMiddleware,
   googleLoginMiddleware,
@@ -177,7 +178,7 @@ const sendCurrentUser: Handler = (req, resp, next) => {
 
 const sendHtml: Handler = async (req, resp) => {
   resp.setHeader('Content-Type', 'text/html');
-  resp.write('<!doctpe html>');
+  resp.write('<!doctype html>');
   renderToStaticNodeStream(<Page csrfToken={req.csrfToken()} />).pipe(resp);
 };
 
@@ -237,6 +238,7 @@ const router = express
   .use(provideUserFromSession)
   .use(requestLogger)
   .use(express.static(publicDir, {index: false}))
+  .get('/manifest.json', (req, resp) => resp.json(manifest))
   .get('/auth/google', googleLoginMiddleware)
   .get('/auth/google/callback', googleCallbackMiddleware)
   .get('/auth/user', sendCurrentUser)

@@ -7,7 +7,7 @@ import React, {
   useContext,
 } from 'react';
 import classnames from 'classnames';
-import {MarkRecord, VerseRecord, PersonRecord, ID} from '../utils/types';
+import {MarkRecord, VerseRecord, PersonRecord, ID} from '../types';
 import sortByStartIndex from '../utils/sortByStartIndex';
 import {theme} from '../utils/themes';
 import {isNotNil, unique} from '@spudly/pushpop';

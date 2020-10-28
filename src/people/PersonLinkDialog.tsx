@@ -2,7 +2,7 @@ import {useId} from '@reach/auto-id';
 import React, {FC, useState} from 'react';
 import {useMutation, useQueryCache} from 'react-query';
 import {createPersonLink, updatePersonLink} from '../api/api.client';
-import {ID, PersonLinkRecord, PersonRecord, Unsaved} from '../utils/types';
+import {ID, PersonLinkRecord, PersonRecord, Unsaved} from '../types';
 import Button from '../widgets/Button';
 import Dialog from '../widgets/Dialog';
 import FormGroup from '../widgets/FormGroup';

@@ -28,7 +28,7 @@ const App: FC = () => {
       <ReactQueryCacheProvider queryCache={queryCache}>
         <Title title="scripture.study">
           <Authenticate>
-            <div className="min-h-screen flex flex-col bg-gray-200 pt-20 px-4 sm:px-32">
+            <main className="min-h-screen flex flex-col bg-gray-200 pt-20 px-4 sm:px-32">
               <ErrorBoundary grow>
                 <Switch>
                   <Route path="/user/profile" component={UserProfile} />
@@ -66,7 +66,7 @@ const App: FC = () => {
                   <Route render={() => <Redirect to="/scriptures" />} />
                 </Switch>
               </ErrorBoundary>
-            </div>
+            </main>
             <Nav />
           </Authenticate>
         </Title>

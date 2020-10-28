@@ -5,7 +5,7 @@ import ErrorAlert from '../widgets/ErrorAlert';
 import {MdAdd, MdEdit} from 'react-icons/md';
 import Table from '../widgets/Table';
 import Button from '../widgets/Button';
-import {PersonRecord, Unsaved} from '../utils/types';
+import {PersonRecord, Unsaved} from '../types';
 import comparePeople from '../utils/comparePeople';
 import {useQuery} from 'react-query';
 import {Link} from 'react-router-dom';

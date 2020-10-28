@@ -1,4 +1,4 @@
-import type {ChapterRecord} from '../utils/types';
+import type {ChapterRecord} from '../types';
 import {firstNephi} from './books';
 import {johnDoe} from './users';
 

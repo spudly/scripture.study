@@ -7,7 +7,7 @@ import Input from '../widgets/Input';
 import Textarea from '../widgets/Textarea';
 import Button from '../widgets/Button';
 import FormGroup from '../widgets/FormGroup';
-import {PersonRecord, Unsaved} from '../utils/types';
+import {PersonRecord, Unsaved} from '../types';
 import {useQueryCache} from 'react-query';
 
 const EditPersonDialog: FC<{

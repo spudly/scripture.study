@@ -1,4 +1,4 @@
-import {VerseRecord} from '../utils/types';
+import {VerseRecord} from '../types';
 import {firstNephi2} from './chapters';
 import {johnDoe} from './users';
 

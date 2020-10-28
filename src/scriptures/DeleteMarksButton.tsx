@@ -2,7 +2,7 @@ import React, {FC} from 'react';
 import {MdDelete} from 'react-icons/md';
 import CircleButton from '../widgets/CircleButton';
 import Spinner from '../widgets/Spinner';
-import {ID, MarkRecord} from '../utils/types';
+import {ID, MarkRecord} from '../types';
 
 const DeleteMarksButton: FC<{
   marks: Array<MarkRecord>;

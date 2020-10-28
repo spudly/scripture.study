@@ -1,6 +1,6 @@
 import React, {FC, useState, useEffect} from 'react';
 import UserContext from '../utils/UserContext';
-import {UserWithRoles} from '../utils/types';
+import {UserWithRoles} from '../types';
 
 const Authorize: FC = ({children}) => {
   const [user, setUser] = useState<UserWithRoles | null>(null);
