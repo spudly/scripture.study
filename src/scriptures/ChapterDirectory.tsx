@@ -1,11 +1,11 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 import React, {FC, useCallback} from 'react';
 import Directory, {DirectoryItem} from './Directory';
-import {get, compareBy} from '@spudly/pushpop';
+import {compareBy, get} from '@spudly/pushpop';
 import {
-  getVolumeByTitle,
-  getBookByVolumeIdAndTitle,
   getAllChaptersByBookId,
+  getBookByVolumeIdAndTitle,
+  getVolumeByTitle,
 } from '../api/api.client';
 import {useQuery} from 'react-query';
 import Spinner from '../widgets/Spinner';

@@ -1,7 +1,7 @@
 import React, {FC, useCallback} from 'react';
 import Directory, {DirectoryItem} from './Directory';
-import {get, compareBy} from '@spudly/pushpop';
-import {getVolumeByTitle, getAllBooksByVolumeId} from '../api/api.client';
+import {compareBy, get} from '@spudly/pushpop';
+import {getAllBooksByVolumeId, getVolumeByTitle} from '../api/api.client';
 import {useQuery} from 'react-query';
 import Spinner from '../widgets/Spinner';
 import useScripturesRouteMatch from '../utils/useScripturesRouteMatch';

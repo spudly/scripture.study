@@ -1,4 +1,4 @@
-import {useEffect, useCallback, useRef} from 'react';
+import {useCallback, useEffect, useRef} from 'react';
 
 const useIsMounted = () => {
   const mountedRef = useRef(true);

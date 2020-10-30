@@ -1,5 +1,5 @@
 import {PersonLinkRecord} from '../types';
-import {nephi1, lehi1, sariah} from './people';
+import {lehi1, nephi1, sariah} from './people';
 import {johnDoe} from './users';
 
 export const nephiToLehi: PersonLinkRecord = {

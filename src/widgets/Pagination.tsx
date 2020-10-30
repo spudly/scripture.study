@@ -1,5 +1,5 @@
-import React, {FC, useRef, RefObject, useEffect} from 'react';
-import {useHistory, Link} from 'react-router-dom';
+import React, {FC, RefObject, useEffect, useRef} from 'react';
+import {Link, useHistory} from 'react-router-dom';
 import {MdNavigateBefore, MdNavigateNext} from 'react-icons/md';
 import classnames from 'classnames';
 import useSwipe, {Direction} from '../utils/useOnSwipe';

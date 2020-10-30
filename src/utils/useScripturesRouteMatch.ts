@@ -1,5 +1,5 @@
-import refToTitle from './refToTitle';
 import refToNumber from './refToNumber';
+import refToTitle from './refToTitle';
 import {useRouteMatch} from 'react-router';
 
 const useScripturesRouteMatch = (): {
@@ -19,10 +19,10 @@ const useScripturesRouteMatch = (): {
   } = match ?? {params: {}};
 
   return {
-    match: !!match,
-    volumeTitle: volumeRef ? refToTitle(volumeRef) : undefined,
     bookTitle: bookRef ? refToTitle(bookRef) : undefined,
     chapterNumber: chapterRef ? refToNumber(chapterRef) : undefined,
+    match: Boolean(match),
+    volumeTitle: volumeRef ? refToTitle(volumeRef) : undefined,
   };
 };
 

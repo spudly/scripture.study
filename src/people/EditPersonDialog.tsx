@@ -45,8 +45,8 @@ const EditPersonDialog: FC<{
       }
       queryCache.invalidateQueries('people');
       close();
-    } catch (error) {
-      setError(error);
+    } catch (err) {
+      setError(err);
     }
   };
 

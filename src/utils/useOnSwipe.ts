@@ -1,5 +1,6 @@
-import {useEffect, RefObject} from 'react';
+import {RefObject, useEffect} from 'react';
 
+// eslint-disable-next-line no-shadow -- seems like an eslint bug
 enum Direction {
   UP = 'UP',
   DOWN = 'DOWN',

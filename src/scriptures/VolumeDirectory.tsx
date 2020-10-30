@@ -1,6 +1,6 @@
 import React, {FC} from 'react';
 import Directory, {DirectoryItem} from './Directory';
-import {get, compareBy} from '@spudly/pushpop';
+import {compareBy, get} from '@spudly/pushpop';
 import {getAllVolumes} from '../api/api.client';
 import {useQuery} from 'react-query';
 import Spinner from '../widgets/Spinner';

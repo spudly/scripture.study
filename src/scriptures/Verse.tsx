@@ -1,13 +1,13 @@
 import React, {
+  Dispatch,
   FC,
   ReactNode,
-  Dispatch,
   SetStateAction,
-  useMemo,
   useContext,
+  useMemo,
 } from 'react';
 import classnames from 'classnames';
-import {MarkRecord, VerseRecord, PersonRecord, ID} from '../types';
+import {ID, MarkRecord, PersonRecord, VerseRecord} from '../types';
 import sortByStartIndex from '../utils/sortByStartIndex';
 import {theme} from '../utils/themes';
 import {isNotNil, unique} from '@spudly/pushpop';
@@ -61,7 +61,7 @@ const VerseFragment: FC<{
   speakers,
 }) => {
   const speakerIds = marks.flatMap((m) =>
-    m.type === 'speaker' ? [m.speakerId] : [],
+    (m.type === 'speaker' ? [m.speakerId] : []),
   );
   const user = useContext(UserContext);
   const isAuthor = hasRole('author', user);

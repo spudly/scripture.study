@@ -1,13 +1,13 @@
-import path from 'path';
-import ReactRefreshWebpackPlugin from '@pmmmwh/react-refresh-webpack-plugin';
 import {Configuration, HotModuleReplacementPlugin} from 'webpack';
+// @ts-expect-error: installing types for this will cause @types/webpack to be installed, which is incompatible with webpack5
+import MiniCssExtractPlugin from 'mini-css-extract-plugin';
+import ReactRefreshWebpackPlugin from '@pmmmwh/react-refresh-webpack-plugin';
+import autoprefixer from 'autoprefixer';
+import cssnano from 'cssnano';
+import path from 'path';
 import postCssImport from 'postcss-import';
 // @ts-expect-error: no typedef package available :(
 import tailwindCss from 'tailwindcss';
-import autoprefixer from 'autoprefixer';
-// @ts-expect-error: installing types for this will cause @types/webpack to be installed, which is incompatible with webpack5
-import MiniCssExtractPlugin from 'mini-css-extract-plugin';
-import cssnano from 'cssnano';
 
 const mode: 'production' | 'development' =
   process.env.NODE_ENV === 'production' ? 'production' : 'development';
@@ -52,8 +52,8 @@ const config: Configuration = {
   module: {
     rules: [
       {
-        test: /\.[jt]sx?$/,
-        exclude: /node_modules/,
+        test: /\.[jt]sx?$/u,
+        exclude: /node_modules/u,
         use: [
           {
             loader: 'babel-loader',
@@ -67,7 +67,7 @@ const config: Configuration = {
         ],
       },
       {
-        test: /\.css$/,
+        test: /\.css$/u,
         use: [
           mode === 'development' ? 'style-loader' : MiniCssExtractPlugin.loader,
           {loader: 'css-loader', options: {importLoaders: 1}},

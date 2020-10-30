@@ -1,5 +1,5 @@
 import {johnDoe} from './users';
-import {admin, moderator, author} from './roles';
+import {admin, author, moderator} from './roles';
 
 const johnDoeAdmin = {
   id: '51a78c10-8abb-47a5-ba35-ca2bfb970fc9',

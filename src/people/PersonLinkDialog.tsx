@@ -77,11 +77,11 @@ const PersonLinkDialog: FC<{
           onChange={(e) => {
             const {value} = e.currentTarget;
             setType(
-              (value?.replace(/^reverse:/, '') || null) as
+              (value?.replace(/^reverse:/u, '') || null) as
                 | PersonLinkRecord['type']
                 | null,
             );
-            setReverse(/^reverse:/.test(value));
+            setReverse(/^reverse:/u.test(value));
           }}
         >
           <option></option>

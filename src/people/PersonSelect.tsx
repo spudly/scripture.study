@@ -1,4 +1,4 @@
-import React, {FC, ComponentProps} from 'react';
+import React, {ComponentProps, FC} from 'react';
 import Select from '../widgets/Select';
 import {PersonRecord} from '../types';
 import {serializePerson} from '../utils/serializePerson';

@@ -2,7 +2,7 @@ import express from 'express';
 import {logger} from './utils/logger';
 import router from './api/router';
 
-const PORT = process.env.PORT;
+const {PORT} = process.env;
 
 const app = express().use(router);
 app.set('trust proxy', 1);

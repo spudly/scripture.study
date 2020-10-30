@@ -1,5 +1,5 @@
-import React, {FC, useEffect, useState, useContext, useCallback} from 'react';
-import {useRouteMatch, useLocation} from 'react-router';
+import React, {FC, useCallback, useContext, useEffect, useState} from 'react';
+import {useLocation, useRouteMatch} from 'react-router';
 import Spinner from '../widgets/Spinner';
 import ErrorBoundary from '../widgets/ErrorBoundary';
 import refToTitle from '../utils/refToTitle';
@@ -7,13 +7,13 @@ import refToNumber from '../utils/refToNumber';
 import Spacer from '../widgets/Spacer';
 import Pagination from '../widgets/Pagination';
 import {
-  VerseRecord,
-  MarkRecord,
-  VerseSelection,
-  PersonRecord,
   BulkMutationResponseBody,
-  Unsaved,
   ID,
+  MarkRecord,
+  PersonRecord,
+  Unsaved,
+  VerseRecord,
+  VerseSelection,
 } from '../types';
 import Verse from './Verse';
 import createVerseSelections from '../utils/createVerseSelections';
@@ -27,14 +27,14 @@ import hasRole from '../utils/hasRole';
 import Title from '../widgets/Title';
 import {useMutation, useQuery} from 'react-query';
 import {
-  getVolumeByTitle,
+  bulkMutation,
+  getAdjacentChapters,
+  getAllMarksByChapterId,
+  getAllPeople,
+  getAllVersesByChapterId,
   getBookByVolumeIdAndTitle,
   getChapterByBookIdAndNumber,
-  getAllVersesByChapterId,
-  getAllMarksByChapterId,
-  getAdjacentChapters,
-  getAllPeople,
-  bulkMutation,
+  getVolumeByTitle,
 } from '../api/api.client';
 import queryCache from '../utils/queryCache';
 import scriptureLinkHref from '../utils/scriptureLinkHref';
@@ -61,8 +61,8 @@ const Verses: FC<{
     Error,
     {marks: Array<Unsaved<MarkRecord>>}
   >(
-    ({marks}): Promise<BulkMutationResponseBody<MarkRecord>> =>
-      bulkMutation<MarkRecord>('/api/marks/bulk', {create: marks}),
+    ({marks: marksToCreate}): Promise<BulkMutationResponseBody<MarkRecord>> =>
+      bulkMutation<MarkRecord>('/api/marks/bulk', {create: marksToCreate}),
     {onSuccess: handleSuccess},
   );
 
@@ -95,9 +95,9 @@ const Verses: FC<{
           // setSelections(null);
           return;
         }
-        const selections = createVerseSelections(verses, selection);
-        if (selections) {
-          setSelections(selections);
+        const newSelections = createVerseSelections(verses, selection);
+        if (newSelections) {
+          setSelections(newSelections);
         }
       }
     };
@@ -142,8 +142,8 @@ const Verses: FC<{
                   marks={marks}
                   selectedMarkIds={selectedMarkIds}
                   isUpdating={isUpdatingMarks}
-                  updateMarks={(marks: Array<MarkRecord>) => {
-                    updateMarks({marks});
+                  updateMarks={(newMarks: Array<MarkRecord>) => {
+                    updateMarks({marks: newMarks});
                   }}
                 />
               </div>
@@ -162,8 +162,8 @@ const Verses: FC<{
               <CreateMarkButton
                 isCreating={isCreatingMarks}
                 selections={selections}
-                createMarks={(marks: Array<Unsaved<MarkRecord>>) =>
-                  createMarks({marks})
+                createMarks={(newMarks: Array<Unsaved<MarkRecord>>) =>
+                  createMarks({marks: newMarks})
                 }
                 speakers={speakers}
               />

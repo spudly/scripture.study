@@ -1,8 +1,8 @@
 import React, {
-  FC,
   Children,
-  cloneElement,
+  FC,
   ReactNode,
+  cloneElement,
   isValidElement,
 } from 'react';
 
@@ -23,7 +23,6 @@ const Table: FC<JSX.IntrinsicElements['table']> = ({children}) => (
               throw new Error('Expected table row');
             }
             return cloneElement(sectionChild, {
-              className: 'even:bg-gray-100',
               children: Children.map<ReactNode, ReactNode>(
                 sectionChild.props.children,
                 (rowChild) => {
@@ -42,6 +41,7 @@ const Table: FC<JSX.IntrinsicElements['table']> = ({children}) => (
                   }
                 },
               ),
+              className: 'even:bg-gray-100',
             });
           },
         ),

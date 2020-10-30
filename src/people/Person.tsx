@@ -3,16 +3,16 @@ import {useInfiniteQuery, useQuery} from 'react-query';
 import fetchJson from '../utils/fetchJson';
 import {stringify} from 'querystring';
 import {
+  BookRecord,
   ChapterRecord,
   GetAllResponseBody,
   ID,
+  MarkRecord,
+  MarkRecordPlus,
   PersonLinkRecord,
   PersonRecord,
-  MarkRecordPlus,
-  BookRecord,
-  VolumeRecord,
   VerseRecord,
-  MarkRecord,
+  VolumeRecord,
 } from '../types';
 import usePerson from '../api/usePerson';
 import FamilyTree from './FamilyTree';

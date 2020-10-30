@@ -12,8 +12,8 @@ import {
   MdClose,
   MdKeyboardArrowRight,
   MdPeople,
-  MdSettings,
   MdPerson,
+  MdSettings,
 } from 'react-icons/md';
 import {VscBook} from 'react-icons/vsc';
 import {ImBooks} from 'react-icons/im';
@@ -25,8 +25,8 @@ import UserContext from '../utils/UserContext';
 import useScripturesRouteMatch from '../utils/useScripturesRouteMatch';
 import scriptureLinkHref from '../utils/scriptureLinkHref';
 import {
-  getAllChaptersByBookId,
   getAllBooksByVolumeId,
+  getAllChaptersByBookId,
   getAllVolumes,
 } from '../api/api.client';
 import {useQuery} from 'react-query';

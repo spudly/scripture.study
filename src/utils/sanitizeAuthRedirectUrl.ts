@@ -2,7 +2,7 @@ const sanitizeAuthRedirectUrl = (authRedirectUrl: unknown): string => {
   if (
     typeof authRedirectUrl !== 'string' ||
     !authRedirectUrl.startsWith('/') ||
-    /[^a-z0-9./]/i.test(authRedirectUrl)
+    /[^a-z0-9./]/iu.test(authRedirectUrl)
   ) {
     return '/';
   }

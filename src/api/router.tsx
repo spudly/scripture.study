@@ -19,9 +19,6 @@ import {
   Event,
   List,
   ListItem,
-  makeCreateRecord,
-  makeDeleteRecord,
-  makeUpdateRecord,
   Mark,
   Person,
   PersonLink,
@@ -30,21 +27,24 @@ import {
   Thing,
   Verse,
   Volume,
-  getAllMarksByChapterId,
-  getAdjacentChaptersById,
-  getVersesAndMarksBySpeakerId,
   countVersesBySpeakerId,
+  getAdjacentChaptersById,
+  getAllMarksByChapterId,
+  getVersesAndMarksBySpeakerId,
+  makeCreateRecord,
+  makeDeleteRecord,
+  makeUpdateRecord,
   sql,
 } from './api.postgres';
 import {
-  ID,
   BulkMutationRequestBody,
   BulkMutationResponseBody,
-  RoleName,
-  UserWithRoles,
-  Unsaved,
   GetAllResponseBody,
+  ID,
   MarkRecordPlus,
+  RoleName,
+  Unsaved,
+  UserWithRoles,
 } from '../types';
 import {
   googleCallbackMiddleware,
@@ -74,7 +74,6 @@ const authorize = (role: RoleName | null = null): Handler => (
   }
   req.session!.authRedirectUrl = sanitizeAuthRedirectUrl(req.url);
   resp.redirect('/auth/google');
-  return;
 };
 
 const makeGetAllRoute = <RECORD extends {id: ID}>(
@@ -169,7 +168,7 @@ const makeBulkRoute = <RECORD extends {id: ID}>(
 };
 
 const sendCurrentUser: Handler = (req, resp, next) => {
-  const user = req.user;
+  const {user} = req;
   if (user) {
     resp.json(user);
     return;
@@ -177,7 +176,7 @@ const sendCurrentUser: Handler = (req, resp, next) => {
   resp.json(null);
 };
 
-const sendHtml: Handler = async (req, resp) => {
+const sendHtml: Handler = (req, resp) => {
   resp.setHeader('Content-Type', 'text/html');
   resp.write('<!doctype html>');
   renderToStaticNodeStream(<Page csrfToken={req.csrfToken()} />).pipe(resp);
@@ -204,6 +203,7 @@ const makeTableRouter = <RECORD extends {id: ID}>(
   ModelClass: ModelCtor<Model<RECORD, RECORD>>,
   initRouter?: (router: express.Router) => express.Router | void,
 ) => {
+  // eslint-disable-next-line new-cap
   const router = express.Router();
   initRouter?.(router);
 
@@ -223,7 +223,7 @@ const makeTableRouter = <RECORD extends {id: ID}>(
     resp.json(record);
   });
   router.delete('/:id', async (req, resp, next) => {
-    const id = req.params.id;
+    const {id} = req.params;
     await deleteFn(id);
     resp.json(id);
   });
@@ -231,6 +231,7 @@ const makeTableRouter = <RECORD extends {id: ID}>(
 };
 
 const router = express
+  // eslint-disable-next-line new-cap
   .Router()
   .use(compression())
   .use(helmet())

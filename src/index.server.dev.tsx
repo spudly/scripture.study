@@ -8,7 +8,7 @@ import webpackConfig from './webpack.config';
 import {logger} from './utils/logger';
 import router from './api/router';
 
-const PORT = process.env.PORT;
+const {PORT} = process.env;
 
 const compiler = webpack(webpackConfig);
 

@@ -1,5 +1,5 @@
 import React, {FC, Suspense} from 'react';
-import {Switch, Route, Redirect} from 'react-router';
+import {Redirect, Route, Switch} from 'react-router';
 import ErrorBoundary from '../widgets/ErrorBoundary';
 import Authenticate from '../auth/Authenticate';
 import Title from '../widgets/Title';

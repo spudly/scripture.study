@@ -1,3 +1,3 @@
-const titleToRef = (ref: string) => ref.replace(/ /g, '.');
+const titleToRef = (ref: string) => ref.replace(/ /gu, '.');
 
 export default titleToRef;

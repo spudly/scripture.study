@@ -1,4 +1,4 @@
-import React, {createContext, FC, useContext, useEffect} from 'react';
+import React, {FC, createContext, useContext, useEffect} from 'react';
 
 const TitleContext = createContext('');
 

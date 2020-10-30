@@ -7,8 +7,10 @@ const Spinner: FC<{grow?: boolean}> = ({grow}) => (
       viewBox="0 0 100 100"
       fill="currentColor"
       className={classnames('opacity-25', {
-        'h-4 w-4': !grow,
-        'flex-1 max-w-64': grow,
+        'flex-1': grow,
+        'h-4': !grow,
+        'max-w-64': grow,
+        'w-4': !grow,
       })}
     >
       <path

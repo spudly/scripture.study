@@ -1,17 +1,17 @@
 import fetchJson from '../utils/fetchJson';
 import {
-  VolumeRecord,
   BookRecord,
-  ID,
-  VerseRecord,
-  PersonRecord,
-  MarkRecord,
-  Unsaved,
   BulkMutationRequestBody,
   BulkMutationResponseBody,
   ChapterRecord,
-  PersonLinkRecord,
   GetAllResponseBody,
+  ID,
+  MarkRecord,
+  PersonLinkRecord,
+  PersonRecord,
+  Unsaved,
+  VerseRecord,
+  VolumeRecord,
 } from '../types';
 
 export const bulkMutation = <RECORD>(
@@ -113,18 +113,18 @@ export const createPersonLink = (personLink: Unsaved<PersonLinkRecord>) =>
   });
 
 export const updatePerson = async (person: PersonRecord) =>
-  fetchJson<PersonRecord>(`/api/people/${person.id}`, {
+  await fetchJson<PersonRecord>(`/api/people/${person.id}`, {
     method: 'PUT',
     body: JSON.stringify(person),
   });
 
 export const updatePersonLink = async (personLink: PersonLinkRecord) =>
-  fetchJson<PersonLinkRecord>(`/api/people-links/${personLink.id}`, {
+  await fetchJson<PersonLinkRecord>(`/api/people-links/${personLink.id}`, {
     method: 'PUT',
     body: JSON.stringify(personLink),
   });
 
 export const deletePersonLink = async ({id}: {id: ID}) =>
-  fetchJson<ID>(`/api/people-links/${id}`, {
+  await fetchJson<ID>(`/api/people-links/${id}`, {
     method: 'DELETE',
   });

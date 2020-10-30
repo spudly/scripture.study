@@ -3,28 +3,28 @@ import {v4 as uuid} from 'uuid';
 import {
   AnswerRecord,
   BookRecord,
+  ChapterRecord,
+  EditableRecord,
   EventRecord,
+  GoogleUserInfo,
+  ID,
+  ListItemRecord,
+  ListRecord,
   MarkRecord,
+  MarkRecordPlus,
+  PersonLinkRecord,
   PersonRecord,
   PlaceRecord,
   QuestionRecord,
   RoleRecord,
+  SessionRecord,
   ThingRecord,
+  Unsaved,
   UserRecord,
   UserRoleRecord,
+  UserWithRoles,
   VerseRecord,
   VolumeRecord,
-  ListRecord,
-  ListItemRecord,
-  UserWithRoles,
-  ID,
-  ChapterRecord,
-  GoogleUserInfo,
-  SessionRecord,
-  PersonLinkRecord,
-  Unsaved,
-  EditableRecord,
-  MarkRecordPlus,
 } from '../types';
 import {logger} from '../utils/logger';
 
@@ -49,6 +49,7 @@ const sql = new sequelize.Sequelize(DATABASE_URL!, {
 });
 
 function dateGetter(this: {getDataValue: Function}) {
+  // eslint-disable-next-line no-invalid-this
   return new Date(this.getDataValue('lastUpdatedDate')).getTime();
 }
 
@@ -1403,9 +1404,8 @@ export const createOrUpdateSession = async (
   const model = await Session.findOne({where: {id}});
   if (model) {
     return (await model.update({data, expirationDate})).get();
-  } else {
-    return (await Session.create({id, data, expirationDate})).get();
   }
+  return (await Session.create({id, data, expirationDate})).get();
 };
 
 export const setSessionExpirationDate = async (

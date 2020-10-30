@@ -1,6 +1,6 @@
 import React, {FC} from 'react';
+import {ThemeName, theme} from '../utils/themes';
 import classnames from 'classnames';
-import {theme, ThemeName} from '../utils/themes';
 
 const CircleButton: FC<
   JSX.IntrinsicElements['button'] & {
