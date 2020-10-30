@@ -1,9 +1,11 @@
 import React, {FC} from 'react';
 import Alert from '../widgets/Alert';
+import GoogleAnalytics from '../widgets/GoogleAnalytics';
 
 const Page: FC<{csrfToken: string}> = ({csrfToken}) => (
   <html lang="en">
     <head>
+      <GoogleAnalytics id="G-40EV6Z82QM" />
       <meta charSet="UTF-8" />
       {/* bg-yellow-200: */}
       <meta name="theme-color" content="#fefcbf" />
