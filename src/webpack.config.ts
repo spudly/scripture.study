@@ -1,11 +1,13 @@
 import path from 'path';
 import ReactRefreshWebpackPlugin from '@pmmmwh/react-refresh-webpack-plugin';
 import {Configuration, HotModuleReplacementPlugin} from 'webpack';
-import purgeCss from '@fullhuman/postcss-purgecss';
 import postCssImport from 'postcss-import';
-// @ts-expect-error: need to install types
+// @ts-expect-error: no typedef package available :(
 import tailwindCss from 'tailwindcss';
 import autoprefixer from 'autoprefixer';
+// @ts-expect-error: installing types for this will cause @types/webpack to be installed, which is incompatible with webpack5
+import MiniCssExtractPlugin from 'mini-css-extract-plugin';
+import cssnano from 'cssnano';
 
 const mode: 'production' | 'development' =
   process.env.NODE_ENV === 'production' ? 'production' : 'development';
@@ -17,19 +19,29 @@ const plugins = [];
 if (mode === 'development') {
   plugins.push(new HotModuleReplacementPlugin());
   plugins.push(new ReactRefreshWebpackPlugin());
+} else {
+  plugins.push(
+    new MiniCssExtractPlugin({
+      filename: 'css/[name].css',
+    }),
+  );
 }
 
 const config: Configuration = {
   entry: {
-    'index.client': [
+    index: [
       mode === 'development'
         ? 'webpack-hot-middleware/client?name=index.client'
         : null,
       `./src/index.client.tsx`,
     ].filter(isNotNil),
+    // worker: './src/index.worker.ts',
   },
+  context: path.resolve(__dirname, '..'),
+  devtool: 'source-map',
   output: {
-    filename: '[name].js',
+    filename: 'js/[name].js',
+    chunkFilename: 'js/[name].js',
     publicPath: '/',
     path: path.resolve(__dirname, '../public'),
   },
@@ -57,27 +69,19 @@ const config: Configuration = {
       {
         test: /\.css$/,
         use: [
-          'style-loader',
+          mode === 'development' ? 'style-loader' : MiniCssExtractPlugin.loader,
           {loader: 'css-loader', options: {importLoaders: 1}},
           {
             loader: 'postcss-loader',
             options: {
-              ident: 'postcss',
-              plugins: [
-                postCssImport,
-                tailwindCss,
-                autoprefixer,
-                ...(mode === 'production'
-                  ? [
-                      purgeCss({
-                        content: ['./**/*.tsx', './**/*.html'],
-                        defaultExtractor: (
-                          /** @type {string} */ content: any,
-                        ) => content.match(/[\w-/:]+(?<!:)/g) || [],
-                      }),
-                    ]
-                  : []),
-              ],
+              postcssOptions: {
+                plugins: [
+                  postCssImport,
+                  tailwindCss,
+                  autoprefixer,
+                  ...(mode === 'development' ? [] : [cssnano()]),
+                ],
+              },
             },
           },
         ],

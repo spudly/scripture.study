@@ -189,6 +189,7 @@ const provideUserFromSession: Handler = (req, _resp, next) => {
 };
 
 const sessionMiddleware = session({
+  name: 'sessionId',
   store: new SessionStore(),
   genid: () => uuid(),
   secret: process.env.SESSION_SECRET!,
@@ -302,9 +303,6 @@ const router = express
   .use('/api/volumes', makeTableRouter(Volume))
   .use('/api', (req, resp, next) => {
     resp.status(404).json(`404 Not Found: ${req.url}`);
-  })
-  .get('/manifest.json', (_req, resp) => {
-    resp.status(404).send('');
   })
   .get('*', sendHtml); // TODO: whitelist html urls so that other stuff can respond w/404?
 

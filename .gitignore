@@ -1,7 +1,8 @@
 node_modules
 .vscode
 build
-public/index.client.js
+public/js
+public/css
 stats.json
 *Zone.Identifier
 scripts

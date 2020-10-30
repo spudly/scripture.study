@@ -11,6 +11,7 @@ import {
   getUserRolesById,
 } from '../api.postgres';
 import sanitizeAuthRedirectUrl from '../../utils/sanitizeAuthRedirectUrl';
+import {logger} from '../../utils/logger';
 
 const {
   GOOGLE_OAUTH_CLIENT_ID = '',
@@ -95,11 +96,13 @@ export const googleCallbackMiddleware: Handler = async (req, resp) => {
   });
 
   req.session!.user = userWithRoles;
+  logger.info({user: user.name, sessionId: req.session!.id}, 'Logged In');
   resp.redirect(authRedirectUrl);
 };
 
 export const logout: Handler = async (req, resp) => {
   let {authRedirectUrl = req.session!.authRedirectUrl ?? '/'} = req.query;
+  const user = req.session?.user;
   authRedirectUrl = sanitizeAuthRedirectUrl(authRedirectUrl);
 
   await new Promise((resolve, reject) => {
@@ -111,6 +114,12 @@ export const logout: Handler = async (req, resp) => {
       resolve();
     });
   });
+
+  if (user) {
+    logger.info({user: user.name}, 'Logged Out');
+  } else {
+    logger.info("Wasn't logged in");
+  }
 
   resp.redirect(authRedirectUrl);
 };

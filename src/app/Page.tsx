@@ -14,7 +14,10 @@ const Page: FC<{csrfToken: string}> = ({csrfToken}) => (
       <link rel="icon" href="/favicon.ico" type="image/x-icon" />
       <link rel="manifest" href="/manifest.json" />
       <link rel="apple-touch-icon" href="/icons/loco-192.png" />
-      <script src="/index.client.js" defer />
+      {process.env.NODE_ENV === 'production' && (
+        <link rel="stylesheet" href="/css/index.css" />
+      )}
+      <script src="/js/index.js" defer />
     </head>
     <body>
       <div id="root" />

@@ -1,5 +1,10 @@
 // Defaults: https://github.com/tailwindcss/tailwindcss/blob/master/stubs/defaultConfig.stub.js
 module.exports = {
+  purge: {
+    mode: 'layers',
+    layers: ['components', 'utilities'],
+    content: ['./**/*.tsx', './**/*.html'],
+  },
   theme: {
     extend: {
       spacing: {
@@ -43,7 +48,7 @@ module.exports = {
         ...theme('height'),
       }),
       flex: {
-        '2': '2 2 0%',
+        2: '2 2 0%',
       },
       fontFamily: {
         sans: [

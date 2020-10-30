@@ -11,8 +11,12 @@ ReactDOM.render(
   document.getElementById('root'),
 );
 
-if (process.env.NODE_ENV !== 'development' && 'serviceWorker' in navigator) {
+if ('serviceWorker' in navigator) {
   window.addEventListener('load', () => {
-    navigator.serviceWorker.register('/index.worker.js');
+    navigator.serviceWorker.register(
+      /* webpackChunkName: "worker" */
+      // @ts-expect-error
+      new URL('./index.worker', import.meta.url),
+    );
   });
 }
