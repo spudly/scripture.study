@@ -13,7 +13,14 @@ const {PORT} = process.env;
 const compiler = webpack(webpackConfig);
 
 const app = express()
-  .use(webpackDevMiddleware(compiler, {publicPath: '/'}))
+  .use(
+    webpackDevMiddleware(compiler, {
+      headers: {
+        'Service-Worker-Allowed': '/',
+      },
+      publicPath: '/',
+    }),
+  )
   .use(webpackHotMiddleware(compiler))
   .use(router);
 

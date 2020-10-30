@@ -3,7 +3,7 @@ import express, {Handler} from 'express';
 import {v4 as uuid} from 'uuid';
 import bodyParser from 'body-parser';
 import cookieParser from 'cookie-parser';
-import {requestLogger} from '../utils/logger';
+import {logger, requestLogger} from '../utils/logger';
 import csurf from 'csurf';
 import helmet from 'helmet';
 import React from 'react';
@@ -241,7 +241,17 @@ const router = express
   .use(sessionMiddleware)
   .use(provideUserFromSession)
   .use(requestLogger)
-  .use(express.static(publicDir, {index: false}))
+  .use(
+    express.static(publicDir, {
+      index: false,
+      setHeaders: (resp, filePath, stat) => {
+        const relPath = path.relative(publicDir, filePath);
+        if (relPath === 'js/worker.js') {
+          resp.set('Service-Worker-Allowed', '/');
+        }
+      },
+    }),
+  )
   .get('/manifest.json', (req, resp) => resp.json(manifest))
   .get('/auth/google', googleLoginMiddleware)
   .get('/auth/google/callback', googleCallbackMiddleware)
@@ -305,6 +315,6 @@ const router = express
   .use('/api', (req, resp, next) => {
     resp.status(404).json(`404 Not Found: ${req.url}`);
   })
-  .get('*', sendHtml); // TODO: whitelist html urls so that other stuff can respond w/404?
+  .get('*', sendHtml);
 
 export default router;

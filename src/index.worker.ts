@@ -9,6 +9,8 @@ const CACHE_ALLOW_API_URLS = [
   '/api/verses',
 ];
 
+const getPath = (url: string) => new URL(url).pathname;
+
 // eslint-disable-next-line no-restricted-globals
 const worker = (self as any) as ServiceWorker;
 
@@ -17,19 +19,55 @@ const initCache = async () => {
   await cache.addAll(CACHE_PREFETCH_URLS);
 };
 
-const isCacheable = (request: Request, response: Response) =>
+const isFileRequest = (request: Request) =>
   request.method === 'GET' &&
-  !request.url.startsWith('/auth') &&
-  (!request.url.startsWith('/api/') ||
-    CACHE_ALLOW_API_URLS.some((pattern) => request.url.startsWith(pattern))) &&
+  /[.](?:json|xml|js|css|ico|png|map|svg|txt)$/iu.test(getPath(request.url));
+
+const isRootHtmlRequest = (request: Request) =>
+  request.method === 'GET' &&
+  !/^[/](?:auth|api)[/]/u.test(getPath(request.url)) &&
+  !isFileRequest(request);
+
+const isCacheable = (request: Request, response: Response) =>
+  (isRootHtmlRequest(request) ||
+    isFileRequest(request) ||
+    CACHE_ALLOW_API_URLS.some((pattern) =>
+      getPath(request.url).startsWith(pattern),
+    )) &&
   response.ok &&
   response.type === 'basic';
 
-const handleRequest = async (request: Request) => {
+// eslint-disable-next-line max-statements
+const getCachedResponse = async (
+  request: Request,
+): Promise<Response | null> => {
+  if (isRootHtmlRequest(request)) {
+    const cachedHtmlResponse = await caches.match('/');
+    if (cachedHtmlResponse) {
+      console.log('[SW] cache substitution', {
+        original: request.url,
+        replacement: '/',
+      });
+      return cachedHtmlResponse;
+    }
+  }
+
   const cachedResponse = await caches.match(request);
   if (cachedResponse) {
     return cachedResponse;
   }
+
+  return null;
+};
+
+// eslint-disable-next-line max-statements
+const handleRequest = async (request: Request): Promise<Response> => {
+  const cached = await getCachedResponse(request);
+  if (cached) {
+    console.log('[SW] cache hit', {url: request.url});
+    return cached;
+  }
+  console.log('[SW] cache miss', {url: request.url});
 
   const response = await fetch(request);
   if (!isCacheable(request, response)) {
@@ -43,19 +81,19 @@ const handleRequest = async (request: Request) => {
 };
 
 worker.addEventListener('install', (event) => {
+  console.log('[SW] activating');
   // @ts-expect-error: missing type defs
   worker.skipWaiting();
   (event as ExtendableEvent).waitUntil(initCache());
 });
 
-worker.addEventListener('fetch', (event) =>
+worker.addEventListener('fetch', (event) => {
   (event as FetchEvent).respondWith(
     handleRequest((event as FetchEvent).request),
-  ),
-);
+  );
+});
 
 worker.addEventListener('activate', (event) => {
-  // @ts-expect-error: no type degs
+  // @ts-expect-error: no type defs
   (event as ExtendableEvent).waitUntil(worker.clients.claim());
-  console.log('service worker activated!');
 });

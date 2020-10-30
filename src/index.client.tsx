@@ -12,11 +12,13 @@ ReactDOM.render(
 );
 
 if ('serviceWorker' in navigator) {
-  window.addEventListener('load', () => {
-    navigator.serviceWorker.register(
+  window.addEventListener('load', async () => {
+    const worker = await navigator.serviceWorker.register(
       /* webpackChunkName: "worker" */
       // @ts-expect-error
       new URL('./index.worker', import.meta.url),
+      {scope: '/'},
     );
+    console.log('[SW] registered', {scope: worker.scope});
   });
 }
