@@ -255,7 +255,7 @@ const router = express
           'default-src': ["'self'"],
           'font-src': ["'self'"],
           'frame-ancestors': [],
-          'img-src': ["'self'"],
+          'img-src': ["'self'", 'www.googletagmanager.com'],
           'object-src': ["'none'"],
           'script-src': [
             "'self'",
