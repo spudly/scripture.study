@@ -1,6 +1,7 @@
 import type {ExtendableEvent, FetchEvent} from './types';
+import version from './version';
 
-const CACHE_NAME = 'scripture-study-v1';
+const CACHE_KEY = `scripture-study-v${version}`;
 const CACHE_PREFETCH_URLS = ['/', '/js/index.js', '/api/volumes'];
 const CACHE_ALLOW_API_URLS = [
   '/api/volumes',
@@ -15,7 +16,7 @@ const parse = (url: string) => new URL(url);
 const worker = (self as any) as ServiceWorker;
 
 const initCache = async () => {
-  const cache = await caches.open(CACHE_NAME);
+  const cache = await caches.open(CACHE_KEY);
   await cache.addAll(CACHE_PREFETCH_URLS);
 };
 
@@ -90,10 +91,23 @@ const handleRequest = async (request: Request): Promise<Response> => {
     return response;
   }
 
-  const cache = await caches.open(CACHE_NAME);
+  const cache = await caches.open(CACHE_KEY);
   cache.put(request, response.clone());
 
   return response;
+};
+
+const activate = async () => {
+  const keys = await caches.keys();
+  await Promise.all(
+    keys.map(async (key) => {
+      if (key !== CACHE_KEY) {
+        await caches.delete(key);
+      }
+    }),
+  );
+  // @ts-expect-error: no type defs
+  await worker.clients.claim();
 };
 
 worker.addEventListener('install', (event) => {
@@ -111,6 +125,5 @@ worker.addEventListener('fetch', (event) => {
 });
 
 worker.addEventListener('activate', (event) => {
-  // @ts-expect-error: no type defs
-  (event as ExtendableEvent).waitUntil(worker.clients.claim());
+  (event as ExtendableEvent).waitUntil(activate());
 });

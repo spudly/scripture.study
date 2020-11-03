@@ -1,6 +1,7 @@
 import React, {FC} from 'react';
 import Alert from '../widgets/Alert';
 import Analytics from '../widgets/Analytics';
+import Ads from '../widgets/Ads';
 
 const Page: FC<{csrfToken: string; nonce: string}> = ({csrfToken, nonce}) => (
   <html lang="en">
@@ -23,6 +24,7 @@ const Page: FC<{csrfToken: string; nonce: string}> = ({csrfToken, nonce}) => (
         <link rel="stylesheet" href="/css/index.css" />
       )}
       <script nonce={nonce} src="/js/index.js" defer />
+      <Ads />
     </head>
     <body>
       <div id="root" />

@@ -251,15 +251,30 @@ const router = express
         directives: {
           'base-uri': ["'none'"],
           'block-all-mixed-content': [],
-          'connect-src': ["'self'", 'www.google-analytics.com'],
+          'connect-src': [
+            "'self'",
+            'www.google-analytics.com',
+            'www.googletagmanager.com',
+            '*.googlesyndication.com',
+          ],
           'default-src': ["'self'"],
           'font-src': ["'self'"],
           'frame-ancestors': [],
-          'img-src': ["'self'", 'www.googletagmanager.com'],
+          'frame-src': [
+            "'self'",
+            'googleads.g.doubleclick.net',
+            '*.googlesyndication.com',
+          ],
+          'img-src': [
+            "'self'",
+            'www.googletagmanager.com',
+            '*.googlesyndication.com',
+          ],
           'object-src': ["'none'"],
           'script-src': [
             "'self'",
             'www.googletagmanager.com',
+            '*.googlesyndication.com',
             // @ts-expect-error: resp typed as ServerResponse instead of express response, so doesn't have locals
             (_req, resp) => `'nonce-${resp.locals.nonce}'`,
           ],
