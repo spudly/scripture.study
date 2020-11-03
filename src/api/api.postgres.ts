@@ -1,24 +1,17 @@
 import sequelize, {Model, ModelCtor, Op} from 'sequelize';
 import {v4 as uuid} from 'uuid';
 import {
-  AnswerRecord,
   BookRecord,
   ChapterRecord,
   EditableRecord,
-  EventRecord,
   GoogleUserInfo,
   ID,
-  ListItemRecord,
-  ListRecord,
   MarkRecord,
   MarkRecordPlus,
   PersonLinkRecord,
   PersonRecord,
-  PlaceRecord,
-  QuestionRecord,
   RoleRecord,
   SessionRecord,
-  ThingRecord,
   Unsaved,
   UserRecord,
   UserRoleRecord,
@@ -498,255 +491,6 @@ const PersonLink = sql.define<Model<PersonLinkRecord, PersonLinkRecord>>(
   {tableName: 'people_links'},
 );
 
-const Place = sql.define<Model<PlaceRecord, PlaceRecord>>(
-  'places',
-  {
-    id: {
-      type: sequelize.UUID,
-      allowNull: false,
-      primaryKey: true,
-    },
-    name: {
-      type: sequelize.TEXT,
-      allowNull: false,
-      unique: 'places_uniq_name',
-    },
-    position: {
-      type: sequelize.TEXT,
-      allowNull: true,
-    },
-    lastUpdatedDate: {
-      get: dateGetter,
-      type: sequelize.DATE,
-      allowNull: false,
-    },
-    lastUpdatedBy: {
-      type: sequelize.UUID,
-      allowNull: false,
-      references: {
-        model: User,
-        key: 'id',
-      },
-    },
-    approvedDate: {
-      get: dateGetter,
-      type: sequelize.DATE,
-      allowNull: false,
-    },
-    approvedBy: {
-      type: sequelize.UUID,
-      allowNull: false,
-      references: {
-        model: User,
-        key: 'id',
-      },
-    },
-  },
-  {
-    tableName: 'places',
-  },
-);
-
-const List = sql.define<Model<ListRecord, ListRecord>>(
-  'lists',
-  {
-    id: {
-      type: sequelize.UUID,
-      allowNull: false,
-      primaryKey: true,
-    },
-    name: {
-      type: sequelize.TEXT,
-      allowNull: false,
-      unique: 'places_uniq_name',
-    },
-    description: {
-      type: sequelize.TEXT,
-      allowNull: true,
-      unique: 'places_uniq_name',
-    },
-    lastUpdatedDate: {
-      get: dateGetter,
-      type: sequelize.DATE,
-      allowNull: false,
-    },
-    lastUpdatedBy: {
-      type: sequelize.UUID,
-      allowNull: false,
-      references: {
-        model: User,
-        key: 'id',
-      },
-    },
-    approvedDate: {
-      get: dateGetter,
-      type: sequelize.DATE,
-      allowNull: false,
-    },
-    approvedBy: {
-      type: sequelize.UUID,
-      allowNull: false,
-      references: {
-        model: User,
-        key: 'id',
-      },
-    },
-  },
-  {
-    tableName: 'places',
-  },
-);
-
-const ListItem = sql.define<Model<ListItemRecord, ListItemRecord>>(
-  'list_items',
-  {
-    id: {
-      type: sequelize.UUID,
-      allowNull: false,
-      primaryKey: true,
-    },
-    listId: {
-      type: sequelize.UUID,
-      allowNull: false,
-      references: {
-        model: List,
-        key: 'id',
-      },
-    },
-    text: {
-      type: sequelize.TEXT,
-      allowNull: false,
-    },
-    lastUpdatedDate: {
-      get: dateGetter,
-      type: sequelize.DATE,
-      allowNull: false,
-    },
-    lastUpdatedBy: {
-      type: sequelize.UUID,
-      allowNull: false,
-      references: {
-        model: User,
-        key: 'id',
-      },
-    },
-    approvedDate: {
-      get: dateGetter,
-      type: sequelize.DATE,
-      allowNull: false,
-    },
-    approvedBy: {
-      type: sequelize.UUID,
-      allowNull: false,
-      references: {
-        model: User,
-        key: 'id',
-      },
-    },
-  },
-  {
-    tableName: 'places',
-  },
-);
-
-const Thing = sql.define<Model<ThingRecord, ThingRecord>>(
-  'things',
-  {
-    id: {
-      type: sequelize.UUID,
-      allowNull: false,
-      primaryKey: true,
-    },
-    name: {
-      type: sequelize.TEXT,
-      allowNull: false,
-      unique: 'things_uniq_name',
-    },
-    description: {
-      type: sequelize.TEXT,
-      allowNull: true,
-    },
-    lastUpdatedDate: {
-      get: dateGetter,
-      type: sequelize.DATE,
-      allowNull: false,
-    },
-    lastUpdatedBy: {
-      type: sequelize.UUID,
-      allowNull: false,
-      references: {
-        model: User,
-        key: 'id',
-      },
-    },
-    approvedDate: {
-      get: dateGetter,
-      type: sequelize.DATE,
-      allowNull: false,
-    },
-    approvedBy: {
-      type: sequelize.UUID,
-      allowNull: false,
-      references: {
-        model: User,
-        key: 'id',
-      },
-    },
-  },
-  {
-    tableName: 'things',
-  },
-);
-
-const Event = sql.define<Model<EventRecord, EventRecord>>(
-  'events',
-  {
-    id: {
-      type: sequelize.UUID,
-      allowNull: false,
-      primaryKey: true,
-    },
-    name: {
-      type: sequelize.TEXT,
-      allowNull: false,
-      unique: 'events_uniq_name',
-    },
-    description: {
-      type: sequelize.TEXT,
-      allowNull: true,
-    },
-    lastUpdatedDate: {
-      get: dateGetter,
-      type: sequelize.DATE,
-      allowNull: false,
-    },
-    lastUpdatedBy: {
-      type: sequelize.UUID,
-      allowNull: false,
-      references: {
-        model: User,
-        key: 'id',
-      },
-    },
-    approvedDate: {
-      get: dateGetter,
-      type: sequelize.DATE,
-      allowNull: false,
-    },
-    approvedBy: {
-      type: sequelize.UUID,
-      allowNull: false,
-      references: {
-        model: User,
-        key: 'id',
-      },
-    },
-  },
-  {
-    tableName: 'events',
-  },
-);
-
 const Mark = sql.define<Model<MarkRecord, MarkRecord>>(
   'marks',
   {
@@ -787,30 +531,6 @@ const Mark = sql.define<Model<MarkRecord, MarkRecord>>(
         key: 'id',
       },
     },
-    placeId: {
-      type: sequelize.UUID,
-      allowNull: true,
-      references: {
-        model: Place,
-        key: 'id',
-      },
-    },
-    thingId: {
-      type: sequelize.UUID,
-      allowNull: true,
-      references: {
-        model: Thing,
-        key: 'id',
-      },
-    },
-    eventId: {
-      type: sequelize.UUID,
-      allowNull: true,
-      references: {
-        model: Event,
-        key: 'id',
-      },
-    },
     lastUpdatedBy: {
       type: sequelize.UUID,
       allowNull: false,
@@ -840,139 +560,6 @@ const Mark = sql.define<Model<MarkRecord, MarkRecord>>(
   },
   {
     tableName: 'marks',
-  },
-);
-
-const Question = sql.define<Model<QuestionRecord, QuestionRecord>>(
-  'questions',
-  {
-    id: {
-      type: sequelize.UUID,
-      allowNull: false,
-      primaryKey: true,
-    },
-    text: {
-      type: sequelize.TEXT,
-      allowNull: false,
-    },
-    verseId: {
-      type: sequelize.UUID,
-      allowNull: true,
-      references: {
-        model: Verse,
-        key: 'id',
-      },
-    },
-    personId: {
-      type: sequelize.UUID,
-      allowNull: true,
-      references: {
-        model: Person,
-        key: 'id',
-      },
-    },
-    placeId: {
-      type: sequelize.UUID,
-      allowNull: true,
-      references: {
-        model: Place,
-        key: 'id',
-      },
-    },
-    thingId: {
-      type: sequelize.UUID,
-      allowNull: true,
-      references: {
-        model: Thing,
-        key: 'id',
-      },
-    },
-    eventId: {
-      type: sequelize.UUID,
-      allowNull: true,
-    },
-    lastUpdatedDate: {
-      get: dateGetter,
-      type: sequelize.DATE,
-      allowNull: false,
-    },
-    lastUpdatedBy: {
-      type: sequelize.UUID,
-      allowNull: false,
-      references: {
-        model: User,
-        key: 'id',
-      },
-    },
-    approvedDate: {
-      get: dateGetter,
-      type: sequelize.DATE,
-      allowNull: false,
-    },
-    approvedBy: {
-      type: sequelize.UUID,
-      allowNull: false,
-      references: {
-        model: User,
-        key: 'id',
-      },
-    },
-  },
-  {
-    tableName: 'questions',
-    schema: 'public',
-  },
-);
-
-const Answer = sql.define<Model<AnswerRecord, AnswerRecord>>(
-  'answers',
-  {
-    id: {
-      type: sequelize.UUID,
-      allowNull: false,
-      primaryKey: true,
-    },
-    questionId: {
-      type: sequelize.UUID,
-      allowNull: false,
-      references: {
-        model: Question,
-        key: 'id',
-      },
-    },
-    text: {
-      type: sequelize.TEXT,
-      allowNull: false,
-    },
-    lastUpdatedDate: {
-      get: dateGetter,
-      type: sequelize.DATE,
-      allowNull: false,
-    },
-    lastUpdatedBy: {
-      type: sequelize.UUID,
-      allowNull: false,
-      references: {
-        model: User,
-        key: 'id',
-      },
-    },
-    approvedDate: {
-      get: dateGetter,
-      type: sequelize.DATE,
-      allowNull: false,
-    },
-    approvedBy: {
-      type: sequelize.UUID,
-      allowNull: false,
-      references: {
-        model: User,
-        key: 'id',
-      },
-    },
-  },
-  {
-    tableName: 'answers',
   },
 );
 
@@ -1135,7 +722,7 @@ const findOrCreateOrUpdateGoogleUser = async (
       givenName: givenName ?? user.get('name'),
       familyName: familyName ?? user.get('familyName'),
       name: name ?? user.get('name'),
-      email: email ?? user.get('email'), // TODO: when we add more providers, we'll need to handle dupe emails somehow
+      email: email ?? user.get('email'),
       photo: photo ?? user.get('photo'),
     });
     return user.get();
@@ -1352,14 +939,7 @@ export {
   Chapter,
   Verse,
   Person,
-  Place,
-  List,
-  ListItem,
-  Thing,
-  Event,
   Mark,
-  Question,
-  Answer,
   Session,
   PersonLink,
   findOrCreateOrUpdateGoogleUser,

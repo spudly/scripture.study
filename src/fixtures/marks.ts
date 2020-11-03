@@ -13,9 +13,6 @@ export const mark1: MarkRecord = {
   verseId: firstNephi2Verse1.id,
   speakerId: nephi1.id,
   personId: null,
-  placeId: null,
-  thingId: null,
-  eventId: null,
   lastUpdatedBy: johnDoe.id,
   approvedBy: johnDoe.id,
 };
@@ -30,9 +27,6 @@ export const mark2: MarkRecord = {
   verseId: firstNephi2Verse2.id,
   speakerId: nephi1.id,
   personId: null,
-  placeId: null,
-  thingId: null,
-  eventId: null,
   lastUpdatedBy: johnDoe.id,
   approvedBy: johnDoe.id,
 };

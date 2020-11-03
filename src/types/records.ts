@@ -72,9 +72,6 @@ export type SpeakerMarkRecord = {
   verseId: ID;
   speakerId: ID;
   personId: null;
-  placeId: null;
-  thingId: null;
-  eventId: null;
 } & EditableRecord;
 
 export type MentionMarkRecord = {

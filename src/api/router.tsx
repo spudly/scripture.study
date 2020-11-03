@@ -29,18 +29,11 @@ import {
 import {requestLogger} from '../utils/logger';
 import sanitizeAuthRedirectUrl from '../utils/sanitizeAuthRedirectUrl';
 import {
-  Answer,
   Book,
   Chapter,
-  Event,
-  List,
-  ListItem,
   Mark,
   Person,
   PersonLink,
-  Place,
-  Question,
-  Thing,
   Verse,
   Volume,
   countVersesBySpeakerId,
@@ -319,7 +312,6 @@ const router = express
   .post('*', authorize('author'))
   .put('*', authorize('author'))
   .delete('*', authorize('author'))
-  .use('/api/answers', makeTableRouter(Answer))
   .use('/api/books', makeTableRouter(Book))
   .use(
     '/api/chapters',
@@ -329,9 +321,6 @@ const router = express
       }),
     ),
   )
-  .use('/api/events', makeTableRouter(Event))
-  .use('/api/list-items', makeTableRouter(ListItem))
-  .use('/api/lists', makeTableRouter(List))
   .use(
     '/api/marks',
     makeTableRouter(Mark, (r) =>
@@ -342,9 +331,6 @@ const router = express
   )
   .use('/api/people-links', makeTableRouter(PersonLink))
   .use('/api/people', makeTableRouter(Person))
-  .use('/api/places', makeTableRouter(Place))
-  .use('/api/questions', makeTableRouter(Question))
-  .use('/api/things', makeTableRouter(Thing))
   .use(
     '/api/verses',
     makeTableRouter(Verse, (r) =>
@@ -355,7 +341,6 @@ const router = express
           countVersesBySpeakerId(speakerId),
           getVersesAndMarksBySpeakerId(
             speakerId,
-            // TODO: adding limit/offset here makes the query take 20s. figure out why
             limit ? Number(limit) : undefined,
             offset ? Number(offset) : undefined,
           ),

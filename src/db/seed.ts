@@ -1,18 +1,11 @@
 import {
-  Answer,
   Book,
   Chapter,
-  Event,
-  List,
-  ListItem,
   Mark,
   Person,
   PersonLink,
-  Place,
-  Question,
   Role,
   Session,
-  Thing,
   User,
   UserRole,
   Verse,
@@ -54,22 +47,8 @@ const seed = async () => {
   await Person.sync({force: true});
   await Person.bulkCreate(people);
 
-  await Place.sync({force: true});
-
-  await List.sync({force: true});
-
-  await ListItem.sync({force: true});
-
-  await Thing.sync({force: true});
-
-  await Event.sync({force: true});
-
   await Mark.sync({force: true});
   await Mark.bulkCreate(marks);
-
-  await Question.sync({force: true});
-
-  await Answer.sync({force: true});
 
   await Session.sync({force: true});
 
