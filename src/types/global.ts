@@ -12,4 +12,21 @@ declare global {
   interface CSSStyleDeclaration {
     overscrollBehaviorX: string;
   }
+
+  interface WorkerLocation {
+    hash: string;
+    host: string;
+    hostname: string;
+    href: string;
+    readonly origin: string;
+    pathname: string;
+    port: string;
+    protocol: string;
+    search: string;
+    toString(): string;
+  }
+
+  interface ServiceWorker {
+    location: WorkerLocation;
+  }
 }

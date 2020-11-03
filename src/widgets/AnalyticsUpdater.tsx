@@ -7,6 +7,9 @@ const GoogleAnalyticsUpdater: FC = () => {
 
   useEffect(() => {
     const callback: LocationListener = (location) => {
+      if (!window.ga) {
+        return;
+      }
       ga('set', 'page', location.pathname);
       ga('send', 'pageview');
     };

@@ -1,7 +1,7 @@
 import type {ExtendableEvent, FetchEvent} from './types';
 
 const CACHE_NAME = 'scripture-study-v1';
-const CACHE_PREFETCH_URLS = ['/', '/index.client.js', '/api/volumes'];
+const CACHE_PREFETCH_URLS = ['/', '/js/index.js', '/api/volumes'];
 const CACHE_ALLOW_API_URLS = [
   '/api/volumes',
   '/api/books',
@@ -9,7 +9,7 @@ const CACHE_ALLOW_API_URLS = [
   '/api/verses',
 ];
 
-const getPath = (url: string) => new URL(url).pathname;
+const parse = (url: string) => new URL(url);
 
 // eslint-disable-next-line no-restricted-globals
 const worker = (self as any) as ServiceWorker;
@@ -21,21 +21,32 @@ const initCache = async () => {
 
 const isFileRequest = (request: Request) =>
   request.method === 'GET' &&
-  /[.](?:json|xml|js|css|ico|png|map|svg|txt)$/iu.test(getPath(request.url));
+  /[.](?:json|xml|js|css|ico|png|map|svg|txt)$/iu.test(
+    parse(request.url).pathname,
+  );
 
 const isRootHtmlRequest = (request: Request) =>
   request.method === 'GET' &&
-  !/^[/](?:auth|api)[/]/u.test(getPath(request.url)) &&
+  !/^[/](?:auth|api)[/]/u.test(parse(request.url).pathname) &&
   !isFileRequest(request);
 
-const isCacheable = (request: Request, response: Response) =>
+const isSameOrigin = (request: Request) =>
+  worker.location.origin === parse(request.url).origin;
+
+const isHotUpdate = (request: Request) =>
+  /hot-update/u.test(request.url) || /__webpack_hmr/u.test(request.url);
+
+const isRequestCacheable = (request: Request) =>
+  isSameOrigin(request) &&
+  !isHotUpdate(request) &&
   (isRootHtmlRequest(request) ||
     isFileRequest(request) ||
     CACHE_ALLOW_API_URLS.some((pattern) =>
-      getPath(request.url).startsWith(pattern),
-    )) &&
-  response.ok &&
-  response.type === 'basic';
+      parse(request.url).pathname.startsWith(pattern),
+    ));
+
+const isResponseCacheable = (response: Response) =>
+  response.ok && response.type === 'basic';
 
 // eslint-disable-next-line max-statements
 const getCachedResponse = async (
@@ -63,17 +74,19 @@ const getCachedResponse = async (
 
 // eslint-disable-next-line max-statements
 const handleRequest = async (request: Request): Promise<Response> => {
-  const cached = await getCachedResponse(request);
-  if (cached) {
-    // eslint-disable-next-line no-console
-    console.log('[SW] cache hit', {url: request.url});
-    return cached;
+  if (isRequestCacheable(request)) {
+    const cached = await getCachedResponse(request);
+    if (cached) {
+      // eslint-disable-next-line no-console
+      console.log('[SW] cache hit', {url: request.url});
+      return cached;
+    }
   }
   // eslint-disable-next-line no-console
   console.log('[SW] cache miss', {url: request.url});
 
   const response = await fetch(request);
-  if (!isCacheable(request, response)) {
+  if (!isRequestCacheable(request) || !isResponseCacheable(response)) {
     return response;
   }
 
