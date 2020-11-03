@@ -23,10 +23,10 @@ const ProgressSpinner: FC<{progress: number; grow?: boolean}> = ({
       <svg
         viewBox={`0 0 ${size} ${size}`}
         className={classnames('w-20', {
+          'flex-1 max-w-64': grow,
+          'h-4 w-4': !grow,
           'opacity-0': !isVisible,
           'opacity-25': isVisible,
-          'h-4 w-4': !grow,
-          'flex-1 max-w-64': grow,
         })}
         style={{transform: 'rotate(-90deg)'}}
       >

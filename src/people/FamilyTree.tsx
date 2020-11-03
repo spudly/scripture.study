@@ -6,17 +6,17 @@ import React, {
   useRef,
   useState,
 } from 'react';
+import {MdAdd} from 'react-icons/md';
 import {PersonLinkRecord, PersonRecord} from '../types';
 import CircleButton from '../widgets/CircleButton';
-import PersonLinkDialog from './PersonLinkDialog';
-import {MdAdd} from 'react-icons/md';
-import FamilyTreePerson from './FamilyTreePerson';
-import Arrow from './Arrow';
 import uniqBy from '../utils/uniqBy';
-import useResizeObserver from './useResizeObserver';
 import centerBy from '../utils/centerBy';
 import hasRole from '../utils/hasRole';
 import UserContext from '../utils/UserContext';
+import PersonLinkDialog from './PersonLinkDialog';
+import FamilyTreePerson from './FamilyTreePerson';
+import Arrow from './Arrow';
+import useResizeObserver from './useResizeObserver';
 
 const FamilyTree: FC<{
   self: PersonRecord;
@@ -140,6 +140,7 @@ const FamilyTree: FC<{
           ))}
         </div>
         {arrows.map((arrow, i) => (
+          // eslint-disable-next-line react/no-array-index-key
           <Arrow key={i} {...arrow} />
         ))}
         {hasRole('author', user) && (

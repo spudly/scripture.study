@@ -20,7 +20,7 @@ const useSwipe = (
   {threshold = 150, restraint = 100, allowedTime = 300}: Options = {},
 ) => {
   useEffect(() => {
-    let start = {x: 0, y: 0, time: 0};
+    let start = {time: 0, x: 0, y: 0};
 
     const el = elRef.current;
     if (!el) {
@@ -28,15 +28,15 @@ const useSwipe = (
     }
     const handleTouchStart = (e: TouchEvent) => {
       // e.preventDefault(); // breaks click events
-      const touch = e.changedTouches[0];
-      start = {x: touch.pageX, y: touch.pageY, time: Date.now()};
+      const [touch] = e.changedTouches;
+      start = {time: Date.now(), x: touch.pageX, y: touch.pageY};
     };
 
     // const handleTouchMove = (e: TouchEvent) => e.preventDefault(); // prevents scrolling. do we really want this?
 
     const handleTouchEnd = (e: TouchEvent) => {
       // e.preventDefault(); // what default am I preventing? is this needed?
-      const touch = e.changedTouches[0];
+      const [touch] = e.changedTouches;
       const dist = {x: touch.pageX - start.x, y: touch.pageY - start.y};
       const elapsed = Date.now() - start.time;
       let direction: Direction | null = null;

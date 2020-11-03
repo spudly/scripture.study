@@ -1,9 +1,9 @@
 import React, {ComponentProps, FC} from 'react';
+import {useQuery} from 'react-query';
 import Select from '../widgets/Select';
 import {PersonRecord} from '../types';
 import {serializePerson} from '../utils/serializePerson';
 import comparePeople from '../utils/comparePeople';
-import {useQuery} from 'react-query';
 import {getAllPeople} from '../api/api.client';
 import ErrorAlert from '../widgets/ErrorAlert';
 import Spinner from '../widgets/Spinner';
@@ -44,7 +44,7 @@ const PersonSelect: FC<ComponentProps<typeof Select>> = ({
         onChange?.(e);
       }}
     >
-      <option />
+      <option aria-label="None" />
       <optgroup label="Recent">{recentPeople.map(renderPersonOption)}</optgroup>
       {people.sort(comparePeople).map(renderPersonOption)}
     </Select>

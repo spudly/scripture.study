@@ -1,14 +1,17 @@
 import React, {FC} from 'react';
 import Alert from '../widgets/Alert';
-import GoogleAnalytics from '../widgets/GoogleAnalytics';
+import Analytics from '../widgets/Analytics';
 
-const Page: FC<{csrfToken: string}> = ({csrfToken}) => (
+const Page: FC<{csrfToken: string; nonce: string}> = ({csrfToken, nonce}) => (
   <html lang="en">
     <head>
-      <GoogleAnalytics id="G-40EV6Z82QM" />
+      <Analytics id="G-40EV6Z82QM" nonce={nonce} />
       <meta charSet="UTF-8" />
-      {/* bg-yellow-200: */}
-      <meta name="theme-color" content="#fefcbf" />
+      <meta
+        name="theme-color"
+        // bg-yellow-200:
+        content="#fefcbf"
+      />
       <meta name="viewport" content="width=device-width, initial-scale=1" />
       <meta name="CSRF-Token" content={csrfToken} />
       <meta name="description" content="Collaborative Scripture Study" />
@@ -19,7 +22,7 @@ const Page: FC<{csrfToken: string}> = ({csrfToken}) => (
       {process.env.NODE_ENV === 'production' && (
         <link rel="stylesheet" href="/css/index.css" />
       )}
-      <script src="/js/index.js" defer />
+      <script nonce={nonce} src="/js/index.js" defer />
     </head>
     <body>
       <div id="root" />

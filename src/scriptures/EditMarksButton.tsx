@@ -1,6 +1,6 @@
 import React, {FC} from 'react';
-import {MarkRecord, PersonRecord, SpeakerMarkRecord} from '../types';
 import {MdEdit} from 'react-icons/md';
+import {MarkRecord, PersonRecord, SpeakerMarkRecord} from '../types';
 import PersonSelect from '../people/PersonSelect';
 import Spinner from '../widgets/Spinner';
 import Action from '../widgets/Action';

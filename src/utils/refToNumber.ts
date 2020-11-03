@@ -1,4 +1,4 @@
-export const refToNumber = (ref: string): number => {
+const refToNumber = (ref: string): number => {
   if (!ref.match(/^\d+$/u)) {
     throw new Error('Invalid Number Ref');
   }

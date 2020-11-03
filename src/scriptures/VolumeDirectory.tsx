@@ -1,10 +1,11 @@
 import React, {FC} from 'react';
-import Directory, {DirectoryItem} from './Directory';
 import {compareBy, get} from '@spudly/pushpop';
-import {getAllVolumes} from '../api/api.client';
 import {useQuery} from 'react-query';
+import {getAllVolumes} from '../api/api.client';
 import Spinner from '../widgets/Spinner';
 import scriptureLinkHref from '../utils/scriptureLinkHref';
+import Directory from './Directory';
+import DirectoryItem from './DirectoryItem';
 
 const compareOrder = compareBy(get('order'));
 

@@ -23,27 +23,21 @@ const DropdownButton: FC<Props> = ({
   const open = useCallback(() => setIsOpen(true), []);
   const close = useCallback(() => setIsOpen(false), []);
   return (
-    <>
-      <div className="inline-block relative">
-        {renderButton({open, close, isOpen})}
-        {isOpen && <Overlay onClick={close} />}
-        {isOpen && (
-          <div
-            className={classnames('absolute min-w-full', {
-              'left-0': placement === 'left',
-              'right-0': placement === 'right',
-              hidden: !isOpen,
-            })}
-          >
-            {renderMenu({
-              isOpen,
-              open,
-              close,
-            })}
-          </div>
-        )}
-      </div>
-    </>
+    <div className="inline-block relative">
+      {renderButton({close, isOpen, open})}
+      {isOpen && <Overlay onClick={close} />}
+      {isOpen && (
+        <div
+          className={classnames('absolute min-w-full', {
+            hidden: !isOpen,
+            'left-0': placement === 'left',
+            'right-0': placement === 'right',
+          })}
+        >
+          {renderMenu({close, isOpen, open})}
+        </div>
+      )}
+    </div>
   );
 };
 

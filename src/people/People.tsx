@@ -1,20 +1,20 @@
 import React, {FC, useContext, useState} from 'react';
+import {MdAdd, MdEdit} from 'react-icons/md';
+import {useQuery} from 'react-query';
+import {Link} from 'react-router-dom';
 import {getAllPeople} from '../api/api.client';
 import Spinner from '../widgets/Spinner';
 import ErrorAlert from '../widgets/ErrorAlert';
-import {MdAdd, MdEdit} from 'react-icons/md';
 import Table from '../widgets/Table';
 import Button from '../widgets/Button';
 import {PersonRecord, Unsaved} from '../types';
 import comparePeople from '../utils/comparePeople';
-import {useQuery} from 'react-query';
-import {Link} from 'react-router-dom';
 import AnchorLink from '../widgets/AnchorLink';
-import EditPersonDialog from './EditPersonDialog';
 import CircleButton from '../widgets/CircleButton';
 import hasRole from '../utils/hasRole';
 import UserContext from '../utils/UserContext';
 import {serializePersonJsx} from '../utils/serializePerson';
+import EditPersonDialog from './EditPersonDialog';
 
 const People: FC = () => {
   const user = useContext(UserContext);
@@ -42,9 +42,9 @@ const People: FC = () => {
             themeId="blue"
             onClick={() =>
               setEditPerson({
+                description: null,
                 name: null,
                 order: null,
-                description: null,
               })
             }
           >

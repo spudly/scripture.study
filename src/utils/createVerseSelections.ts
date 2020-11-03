@@ -71,7 +71,7 @@ const createVerseSelections = (
     return null;
   }
   const selectedVerses = getSelectedVerses(verses, startQuote, endQuote);
-  const firstVerse = selectedVerses[0];
+  const [firstVerse] = selectedVerses;
   const lastVerse = selectedVerses[selectedVerses.length - 1];
   if (!firstVerse || !lastVerse) {
     return null;
@@ -95,9 +95,9 @@ const createVerseSelections = (
       const isFirst = index === 0;
       const isLast = index === selectedVerses.length - 1;
       return {
-        verseId: v.id,
-        startIndex: isFirst ? firstVerseOffset : null,
         endIndex: isLast ? lastVerseOffset : null,
+        startIndex: isFirst ? firstVerseOffset : null,
+        verseId: v.id,
       };
     },
   );

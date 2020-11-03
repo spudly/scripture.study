@@ -1,16 +1,17 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 import React, {FC, useCallback} from 'react';
-import Directory, {DirectoryItem} from './Directory';
 import {compareBy, get} from '@spudly/pushpop';
+import {useQuery} from 'react-query';
 import {
   getAllChaptersByBookId,
   getBookByVolumeIdAndTitle,
   getVolumeByTitle,
 } from '../api/api.client';
-import {useQuery} from 'react-query';
 import Spinner from '../widgets/Spinner';
 import useScripturesRouteMatch from '../utils/useScripturesRouteMatch';
 import scriptureLinkHref from '../utils/scriptureLinkHref';
+import Directory from './Directory';
+import DirectoryItem from './DirectoryItem';
 
 const compareNumber = compareBy(get('number'));
 

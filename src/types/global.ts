@@ -8,4 +8,8 @@ declare global {
       user: UserWithRoles;
     }
   }
+
+  interface CSSStyleDeclaration {
+    overscrollBehaviorX: string;
+  }
 }

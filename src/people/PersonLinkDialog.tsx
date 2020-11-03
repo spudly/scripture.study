@@ -25,13 +25,13 @@ const createOrUpdatePersonLink = async ({
   const values: Unsaved<PersonLinkRecord> = reverse
     ? {
         fromPersonId: otherPersonId,
-        type,
         toPersonId: self.id,
+        type,
       }
     : {
         fromPersonId: self.id,
-        type,
         toPersonId: otherPersonId,
+        type,
       };
   if (link) {
     await updatePersonLink({
@@ -84,7 +84,7 @@ const PersonLinkDialog: FC<{
             setReverse(/^reverse:/u.test(value));
           }}
         >
-          <option></option>
+          <option aria-label="None" />
           <option value="spouseOf">Spouse</option>
           <option value="childOf">Parent</option>
           <option value="reverse:childOf">Child</option>
@@ -92,6 +92,7 @@ const PersonLinkDialog: FC<{
           <option value="reverse:descendantOf">Descendent</option>
         </Select>
       </FormGroup>
+      {/* eslint-disable-next-line jsx-a11y/label-has-associated-control */}
       <FormGroup label="Other Person" labelFor={otherPersonFieldId}>
         <PersonSelect
           id={otherPersonFieldId}
@@ -103,11 +104,11 @@ const PersonLinkDialog: FC<{
         disabled={!type || !otherPersonId}
         onClick={() =>
           save({
-            self,
             link,
-            type: type!,
             otherPersonId: otherPersonId!,
             reverse,
+            self,
+            type: type!,
           })
         }
       >

@@ -1,3 +1,4 @@
+/* eslint-disable camelcase */
 import {WebAppManifest} from './types';
 
 const manifest: WebAppManifest = {

@@ -1,7 +1,6 @@
 import React, {FC} from 'react';
-import {ID, MarkRecord, PersonRecord, Unsaved} from '../types';
 import {MdRecordVoiceOver} from 'react-icons/md';
-import {VerseSelection} from '../types';
+import {ID, MarkRecord, PersonRecord, Unsaved, VerseSelection} from '../types';
 import Spinner from '../widgets/Spinner';
 import PersonSelect from '../people/PersonSelect';
 import Action from '../widgets/Action';
@@ -12,14 +11,14 @@ const buildSpeakerMarks = (
 ): Array<Unsaved<MarkRecord>> =>
   selections.map((selection) => ({
     ...selection,
-    type: 'speaker',
+    eventId: null,
     isActive: true,
     lastUpdated: Date.now(),
-    speakerId,
     personId: null,
     placeId: null,
+    speakerId,
     thingId: null,
-    eventId: null,
+    type: 'speaker',
   }));
 
 const CreateMarkButton: FC<{

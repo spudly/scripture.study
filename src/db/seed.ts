@@ -79,5 +79,6 @@ const seed = async () => {
 
 seed().catch((error) => {
   process.exitCode = 1;
+  // eslint-disable-next-line no-console
   console.error(error);
 });

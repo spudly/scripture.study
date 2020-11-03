@@ -1,14 +1,14 @@
 import React, {FC, useState} from 'react';
+import {useId} from '@reach/auto-id';
+import {useQueryCache} from 'react-query';
 import {createPerson, updatePerson} from '../api/api.client';
 import ErrorAlert from '../widgets/ErrorAlert';
-import {useId} from '@reach/auto-id';
 import Dialog from '../widgets/Dialog';
 import Input from '../widgets/Input';
 import Textarea from '../widgets/Textarea';
 import Button from '../widgets/Button';
 import FormGroup from '../widgets/FormGroup';
 import {PersonRecord, Unsaved} from '../types';
-import {useQueryCache} from 'react-query';
 
 const EditPersonDialog: FC<{
   person: PersonRecord | Unsaved<PersonRecord>;
@@ -32,15 +32,15 @@ const EditPersonDialog: FC<{
       if (person.id) {
         await updatePerson({
           ...(person as PersonRecord),
+          description,
           name: name || null,
           order: order || null,
-          description,
         });
       } else {
         await createPerson({
+          description,
           name: name || null,
           order: order || null,
-          description,
         });
       }
       queryCache.invalidateQueries('people');

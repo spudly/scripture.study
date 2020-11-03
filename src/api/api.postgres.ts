@@ -988,71 +988,6 @@ Verse.belongsTo(Chapter);
 Verse.hasMany(Mark);
 Mark.belongsTo(Verse);
 
-export const getVersesAndMarksBySpeakerId = async (
-  speakerId: ID,
-  limit?: number,
-  offset?: number,
-): Promise<Array<MarkRecordPlus>> => {
-  const marks = await Mark.findAll({
-    include: [
-      {
-        model: Verse,
-        include: [
-          {
-            model: Chapter,
-            include: [
-              {
-                model: Book,
-                include: [
-                  {
-                    model: Volume,
-                  },
-                ],
-              },
-            ],
-          },
-        ],
-      },
-    ],
-    where: {speakerId},
-    order: [
-      [Verse, Chapter, Book, Volume, 'order', 'ASC'],
-      [Verse, Chapter, Book, 'order', 'ASC'],
-      [Verse, Chapter, 'number', 'ASC'],
-      [Verse, 'number', 'ASC'],
-    ],
-    limit,
-    offset,
-  });
-  return marks.map((v) => v.get() as any);
-};
-
-export const countVersesBySpeakerId = async (
-  speakerId: ID,
-): Promise<number> => {
-  return await Verse.count({
-    include: [
-      {
-        model: Mark,
-        required: true,
-        where: {
-          speakerId,
-        },
-      },
-    ],
-  });
-};
-
-export const getVolumeByTitle = async (
-  title: string,
-): Promise<VolumeRecord> => {
-  const volume = await Volume.findOne({where: {title}});
-  if (!volume) {
-    throw new Error(`Missing Volume (title: ${title})`);
-  }
-  return volume.get();
-};
-
 const getChapterById = async (id: ID): Promise<ChapterRecord> => {
   const chapter = await Chapter.findOne({where: {id}});
   if (!chapter) {
@@ -1065,17 +1000,6 @@ const getBookById = async (id: ID): Promise<BookRecord> => {
   const book = await Book.findOne({where: {id}});
   if (!book) {
     throw new Error(`Missing Book: (id: ${id})`);
-  }
-  return book.get();
-};
-
-export const getBookByVolumeAndTitle = async (
-  volumeId: ID,
-  title: string,
-): Promise<BookRecord> => {
-  const book = await Book.findOne({where: {volumeId, title}});
-  if (!book) {
-    throw new Error('Not Found');
   }
   return book.get();
 };
@@ -1193,15 +1117,6 @@ const getVolumeById = async (id: ID): Promise<VolumeRecord> => {
   return volume.get();
 };
 
-export const getAllMarksByChapterId = async (
-  chapterId: ID,
-): Promise<Array<MarkRecord>> => {
-  const verses = await getAllVersesByChapterId('__IGNORED__', chapterId);
-  const verseIds = verses.map((v) => v.id);
-  const marks = await Mark.findAll({where: {verseId: {[Op.in]: verseIds}}});
-  return marks.map((m) => m.get());
-};
-
 const findOrCreateOrUpdateGoogleUser = async (
   profile: GoogleUserInfo,
 ): Promise<UserRecord> => {
@@ -1300,6 +1215,91 @@ const makeDeleteRecord = (ModelClass: ModelCtor<Model<any, any>>) => async (
 const getAllRoles = async (): Promise<Array<RoleRecord>> => {
   const roles = await Role.findAll();
   return roles.map((r) => r.get());
+};
+
+export const getVersesAndMarksBySpeakerId = async (
+  speakerId: ID,
+  limit?: number,
+  offset?: number,
+): Promise<Array<MarkRecordPlus>> => {
+  const marks = await Mark.findAll({
+    include: [
+      {
+        model: Verse,
+        include: [
+          {
+            model: Chapter,
+            include: [
+              {
+                model: Book,
+                include: [
+                  {
+                    model: Volume,
+                  },
+                ],
+              },
+            ],
+          },
+        ],
+      },
+    ],
+    where: {speakerId},
+    order: [
+      [Verse, Chapter, Book, Volume, 'order', 'ASC'],
+      [Verse, Chapter, Book, 'order', 'ASC'],
+      [Verse, Chapter, 'number', 'ASC'],
+      [Verse, 'number', 'ASC'],
+    ],
+    limit,
+    offset,
+  });
+  return marks.map((v) => v.get() as any);
+};
+
+export const countVersesBySpeakerId = async (
+  speakerId: ID,
+): Promise<number> => {
+  return await Verse.count({
+    include: [
+      {
+        model: Mark,
+        required: true,
+        where: {
+          speakerId,
+        },
+      },
+    ],
+  });
+};
+
+export const getVolumeByTitle = async (
+  title: string,
+): Promise<VolumeRecord> => {
+  const volume = await Volume.findOne({where: {title}});
+  if (!volume) {
+    throw new Error(`Missing Volume (title: ${title})`);
+  }
+  return volume.get();
+};
+
+export const getBookByVolumeAndTitle = async (
+  volumeId: ID,
+  title: string,
+): Promise<BookRecord> => {
+  const book = await Book.findOne({where: {volumeId, title}});
+  if (!book) {
+    throw new Error('Not Found');
+  }
+  return book.get();
+};
+
+export const getAllMarksByChapterId = async (
+  chapterId: ID,
+): Promise<Array<MarkRecord>> => {
+  const verses = await getAllVersesByChapterId('__IGNORED__', chapterId);
+  const verseIds = verses.map((v) => v.id);
+  const marks = await Mark.findAll({where: {verseId: {[Op.in]: verseIds}}});
+  return marks.map((m) => m.get());
 };
 
 export const getUserRolesById = async (

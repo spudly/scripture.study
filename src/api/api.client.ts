@@ -19,8 +19,8 @@ export const bulkMutation = <RECORD>(
   payload: BulkMutationRequestBody<RECORD>,
 ): Promise<BulkMutationResponseBody<RECORD>> =>
   fetchJson<BulkMutationResponseBody<RECORD>>(url, {
-    method: 'POST',
     body: JSON.stringify(payload),
+    method: 'POST',
   });
 
 export const getAllVolumes = () =>
@@ -102,26 +102,26 @@ export const getAllMarksByChapterId = (chapterId: ID) =>
 
 export const createPerson = (person: Unsaved<PersonRecord>) =>
   fetchJson<PersonRecord>('/api/people', {
-    method: 'POST',
     body: JSON.stringify(person),
+    method: 'POST',
   });
 
 export const createPersonLink = (personLink: Unsaved<PersonLinkRecord>) =>
   fetchJson<PersonLinkRecord>('/api/people-links', {
-    method: 'POST',
     body: JSON.stringify(personLink),
+    method: 'POST',
   });
 
 export const updatePerson = async (person: PersonRecord) =>
   await fetchJson<PersonRecord>(`/api/people/${person.id}`, {
-    method: 'PUT',
     body: JSON.stringify(person),
+    method: 'PUT',
   });
 
 export const updatePersonLink = async (personLink: PersonLinkRecord) =>
   await fetchJson<PersonLinkRecord>(`/api/people-links/${personLink.id}`, {
-    method: 'PUT',
     body: JSON.stringify(personLink),
+    method: 'PUT',
   });
 
 export const deletePersonLink = async ({id}: {id: ID}) =>

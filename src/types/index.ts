@@ -1,4 +1,5 @@
 import {ID} from './records';
+import './global';
 
 export type Point = {x: number; y: number};
 
@@ -9,7 +10,6 @@ export type VerseSelection = {
 };
 
 export * from './api';
-export * from './global';
 export * from './google';
 export * from './records';
 export * from './styling';

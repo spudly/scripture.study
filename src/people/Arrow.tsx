@@ -20,10 +20,10 @@ const Arrow: FC<{from: Point; to: Point; dashed?: boolean}> = ({
     <svg
       className="absolute pointer-events-none text-gray-500"
       style={{
-        top,
-        left,
-        width,
         height,
+        left,
+        top,
+        width,
       }}
       viewBox={`0 0 ${width} ${height}`}
     >

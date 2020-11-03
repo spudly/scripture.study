@@ -1,17 +1,33 @@
 import path from 'path';
+import crypto from 'crypto';
 import express, {Handler} from 'express';
 import {v4 as uuid} from 'uuid';
 import bodyParser from 'body-parser';
 import cookieParser from 'cookie-parser';
-import {logger, requestLogger} from '../utils/logger';
 import csurf from 'csurf';
 import helmet from 'helmet';
 import React from 'react';
 import compression from 'compression';
 import {renderToStaticNodeStream} from 'react-dom/server';
+import session from 'express-session';
+// eslint-disable-next-line import/no-unresolved -- resolves to index.d.ts
+import {Model, ModelCtor} from 'sequelize/types';
+import sequelize from 'sequelize';
 import hasRole from '../utils/hasRole';
 import Page from '../app/Page';
 import manifest from '../manifest';
+import {
+  BulkMutationRequestBody,
+  BulkMutationResponseBody,
+  GetAllResponseBody,
+  ID,
+  MarkRecordPlus,
+  RoleName,
+  Unsaved,
+  UserWithRoles,
+} from '../types';
+import {requestLogger} from '../utils/logger';
+import sanitizeAuthRedirectUrl from '../utils/sanitizeAuthRedirectUrl';
 import {
   Answer,
   Book,
@@ -37,25 +53,11 @@ import {
   sql,
 } from './api.postgres';
 import {
-  BulkMutationRequestBody,
-  BulkMutationResponseBody,
-  GetAllResponseBody,
-  ID,
-  MarkRecordPlus,
-  RoleName,
-  Unsaved,
-  UserWithRoles,
-} from '../types';
-import {
   googleCallbackMiddleware,
   googleLoginMiddleware,
   logout,
 } from './middleware/auth';
-import session from 'express-session';
 import SessionStore from './SessionStore';
-import {Model, ModelCtor} from 'sequelize/types';
-import sequelize from 'sequelize';
-import sanitizeAuthRedirectUrl from '../utils/sanitizeAuthRedirectUrl';
 
 const publicDir = path.join(__dirname, '../../public');
 
@@ -65,7 +67,8 @@ const authorize = (role: RoleName | null = null): Handler => (
   next,
 ) => {
   if (req.user && (role == null || hasRole(role, req.user))) {
-    return next();
+    next();
+    return;
   }
   if (req.url.startsWith('/api')) {
     resp.status(401).json({
@@ -82,19 +85,19 @@ const makeGetAllRoute = <RECORD extends {id: ID}>(
   try {
     const {limit, offset, sortBy, sortOrder, ...where} = req.query;
     const models = await ModelClass.findAll({
-      where: where as Partial<RECORD>,
       limit: limit ? Number(limit) : undefined,
       offset: offset ? Number(offset) : undefined,
       order: sortBy
         ? [[sortBy as string, sortOrder === 'DESC' ? 'DESC' : 'ASC']]
         : [],
+      where: where as Partial<RECORD>,
     });
     const count = await ModelClass.count({where: where as Partial<RECORD>});
     const body: GetAllResponseBody<RECORD> = {
       count,
+      items: models.map((m) => m.get()),
       limit: limit ? Number(limit) : null,
       offset: offset ? Number(offset) : 0,
-      items: models.map((m) => m.get()),
     };
     resp.json(body);
   } catch (error) {
@@ -179,7 +182,9 @@ const sendCurrentUser: Handler = (req, resp, next) => {
 const sendHtml: Handler = (req, resp) => {
   resp.setHeader('Content-Type', 'text/html');
   resp.write('<!doctype html>');
-  renderToStaticNodeStream(<Page csrfToken={req.csrfToken()} />).pipe(resp);
+  renderToStaticNodeStream(
+    <Page csrfToken={req.csrfToken()} nonce={resp.locals.nonce} />,
+  ).pipe(resp);
 };
 
 const provideUserFromSession: Handler = (req, _resp, next) => {
@@ -188,15 +193,15 @@ const provideUserFromSession: Handler = (req, _resp, next) => {
 };
 
 const sessionMiddleware = session({
-  name: 'sessionId',
-  store: new SessionStore(),
-  genid: () => uuid(),
-  secret: process.env.SESSION_SECRET!,
   cookie: {
     secure: process.env.NODE_ENV !== 'development',
   },
+  genid: () => uuid(),
+  name: 'sessionId',
   resave: false,
   saveUninitialized: true,
+  secret: process.env.SESSION_SECRET!,
+  store: new SessionStore(),
 });
 
 const makeTableRouter = <RECORD extends {id: ID}>(
@@ -230,11 +235,50 @@ const makeTableRouter = <RECORD extends {id: ID}>(
   return router;
 };
 
+const createNonce: Handler = (req, resp, next) => {
+  resp.locals.nonce = crypto.randomBytes(16).toString('hex');
+  next();
+};
+
 const router = express
   // eslint-disable-next-line new-cap
   .Router()
   .use(compression())
-  .use(helmet())
+  .use(createNonce)
+  .use(
+    helmet({
+      contentSecurityPolicy: {
+        directives: {
+          'base-uri': ["'none'"],
+          'block-all-mixed-content': [],
+          'connect-src': ["'self'", 'www.google-analytics.com'],
+          'default-src': ["'self'"],
+          'font-src': ["'self'"],
+          'frame-ancestors': [],
+          'img-src': ["'self'"],
+          'object-src': ["'none'"],
+          'script-src': [
+            "'self'",
+            'www.googletagmanager.com',
+            // @ts-expect-error: resp typed as ServerResponse instead of express response, so doesn't have locals
+            (_req, resp) => `'nonce-${resp.locals.nonce}'`,
+          ],
+          'script-src-attr': ["'none'"],
+          'style-src': [
+            "'self'",
+            ...(process.env.NODE_ENV === 'development'
+              ? ["'unsafe-inline'"]
+              : []),
+          ],
+          'upgrade-insecure-requests': [],
+        },
+
+        // script-src: https://www.google-analytics.com https://ssl.google-analytics.com
+        // img-src: https://www.google-analytics.com
+        // connect-src: https://www.google-analytics.com
+      },
+    }),
+  )
   .use(cookieParser())
   .use(bodyParser.json())
   .use(csurf({cookie: true}))
@@ -303,9 +347,9 @@ const router = express
         ]);
         const body: GetAllResponseBody<MarkRecordPlus> = {
           count,
+          items,
           limit: limit ? Number(limit) : null,
           offset: offset ? Number(offset) : 0,
-          items,
         };
         resp.json(body);
       }),

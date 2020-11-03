@@ -1,4 +1,5 @@
 import {Store} from 'express-session';
+import {logger} from '../utils/logger';
 import {
   countSessions,
   createOrUpdateSession,
@@ -9,7 +10,6 @@ import {
   getSession,
   setSessionExpirationDate,
 } from './api.postgres';
-import {logger} from '../utils/logger';
 
 type SessionMap = {[sessionId: string]: Express.SessionData};
 
@@ -24,6 +24,7 @@ class SessionStore extends Store {
     setInterval(() => this.prune(), PRUNE_INTERVAL);
   }
 
+  // eslint-disable-next-line class-methods-use-this
   async prune() {
     const numPruned = await deleteExpiredSessions();
     logger.info(

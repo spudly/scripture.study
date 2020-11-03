@@ -1,6 +1,6 @@
 import React, {FC} from 'react';
-import {Unstyled} from '../types';
 import classnames from 'classnames';
+import {Unstyled} from '../types';
 
 const Button: FC<Unstyled<'button'> & {minimal?: boolean}> = ({
   minimal,
@@ -8,6 +8,7 @@ const Button: FC<Unstyled<'button'> & {minimal?: boolean}> = ({
 }) => (
   <button
     {...buttonProps}
+    type="button"
     className={classnames(
       'text-gray-100 p-2 rounded duration-50 transform inline-flex',
       {

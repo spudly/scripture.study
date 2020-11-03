@@ -1,5 +1,6 @@
-import {Handler} from 'express';
+/* eslint-disable camelcase */
 import qs from 'querystring';
+import {Handler} from 'express';
 import fetch from 'node-fetch';
 import {
   GoogleAccessTokenData,
@@ -21,26 +22,26 @@ const {
 
 const buildGoogleLoginUrl = () =>
   `https://accounts.google.com/o/oauth2/v2/auth?${qs.stringify({
-    client_id: GOOGLE_OAUTH_CLIENT_ID,
-    redirect_uri: GOOGLE_OAUTH_CALLBACK_URL,
-    scope: ['profile', 'email'].join(' '),
-    response_type: 'code',
     access_type: 'offline',
+    client_id: GOOGLE_OAUTH_CLIENT_ID,
     prompt: 'consent',
+    redirect_uri: GOOGLE_OAUTH_CALLBACK_URL,
+    response_type: 'code',
+    scope: ['profile', 'email'].join(' '),
   })}`;
 
 const fetchAccessTokenData = async (
   code: string,
 ): Promise<GoogleAccessTokenData> => {
   const response = await fetch('https://oauth2.googleapis.com/token', {
-    method: 'POST',
     body: JSON.stringify({
       client_id: GOOGLE_OAUTH_CLIENT_ID,
       client_secret: GOOGLE_OAUTH_CLIENT_SECRET,
-      redirect_uri: GOOGLE_OAUTH_CALLBACK_URL,
-      grant_type: 'authorization_code',
       code,
+      grant_type: 'authorization_code',
+      redirect_uri: GOOGLE_OAUTH_CALLBACK_URL,
     }),
+    method: 'POST',
   });
   if (!response.ok) {
     throw new Error(`Token Verification Failed: ${response.status}`);
@@ -96,7 +97,7 @@ export const googleCallbackMiddleware: Handler = async (req, resp) => {
   });
 
   req.session!.user = userWithRoles;
-  logger.info({user: user.name, sessionId: req.session!.id}, 'Logged In');
+  logger.info({sessionId: req.session!.id, user: user.name}, 'Logged In');
   resp.redirect(authRedirectUrl);
 };
 

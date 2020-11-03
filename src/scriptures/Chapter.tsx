@@ -1,33 +1,14 @@
-import React, {FC, useCallback, useContext, useEffect, useState} from 'react';
-import {useLocation, useRouteMatch} from 'react-router';
+import React, {FC, useCallback} from 'react';
+import {useRouteMatch} from 'react-router';
+import {useQuery} from 'react-query';
 import Spinner from '../widgets/Spinner';
-import ErrorBoundary from '../widgets/ErrorBoundary';
 import refToTitle from '../utils/refToTitle';
 import refToNumber from '../utils/refToNumber';
 import Spacer from '../widgets/Spacer';
 import Pagination from '../widgets/Pagination';
-import {
-  BulkMutationResponseBody,
-  ID,
-  MarkRecord,
-  PersonRecord,
-  Unsaved,
-  VerseRecord,
-  VerseSelection,
-} from '../types';
-import Verse from './Verse';
-import createVerseSelections from '../utils/createVerseSelections';
-import isEmptySelection from '../utils/isEmptySelection';
-import EditMarksButton from './EditMarksButton';
-import DeleteMarksButton from './DeleteMarksButton';
-import CreateMarkButton from './CreateMarkButton';
 import ErrorAlert from '../widgets/ErrorAlert';
-import UserContext from '../utils/UserContext';
-import hasRole from '../utils/hasRole';
 import Title from '../widgets/Title';
-import {useMutation, useQuery} from 'react-query';
 import {
-  bulkMutation,
   getAdjacentChapters,
   getAllMarksByChapterId,
   getAllPeople,
@@ -36,161 +17,12 @@ import {
   getChapterByBookIdAndNumber,
   getVolumeByTitle,
 } from '../api/api.client';
-import queryCache from '../utils/queryCache';
 import scriptureLinkHref from '../utils/scriptureLinkHref';
 import Heading from '../widgets/Heading';
+import useRestoreScrollPosition from '../utils/useRestoreScrollPosition';
+import Verses from './Verses';
 
-const Verses: FC<{
-  verses: Array<VerseRecord>;
-  marks: Array<MarkRecord>;
-  speakers: Array<PersonRecord>;
-}> = ({verses, speakers, marks}) => {
-  const user = useContext(UserContext);
-  const [selections, setSelections] = useState<Array<VerseSelection>>([]);
-  const [selectedMarkIds, setSelectedMarkIds] = useState<string[]>([]);
-
-  const handleSuccess = () => {
-    setSelections([]);
-    setSelectedMarkIds([]);
-    window.getSelection()?.empty();
-    queryCache.invalidateQueries('marks');
-  };
-
-  const [createMarks, {isLoading: isCreatingMarks}] = useMutation<
-    BulkMutationResponseBody<MarkRecord>,
-    Error,
-    {marks: Array<Unsaved<MarkRecord>>}
-  >(
-    ({marks: marksToCreate}): Promise<BulkMutationResponseBody<MarkRecord>> =>
-      bulkMutation<MarkRecord>('/api/marks/bulk', {create: marksToCreate}),
-    {onSuccess: handleSuccess},
-  );
-
-  const [updateMarks, {isLoading: isUpdatingMarks}] = useMutation<
-    BulkMutationResponseBody<MarkRecord>,
-    Error,
-    {
-      marks: Array<MarkRecord>;
-    }
-  >(
-    ({marks: newMarks}) =>
-      bulkMutation<MarkRecord>('/api/marks/bulk', {update: newMarks}),
-    {onSuccess: handleSuccess},
-  );
-
-  const [deleteMarks, {isLoading: isDeletingMarks}] = useMutation<
-    BulkMutationResponseBody<MarkRecord>,
-    Error,
-    {ids: Array<ID>}
-  >(
-    ({ids}) => bulkMutation<MarkRecord>('/api/marks/bulk', {delete: ids}),
-    {onSuccess: handleSuccess},
-  );
-
-  useEffect(() => {
-    const handleSelectionChange = () => {
-      const selection = window.getSelection();
-      if (selection) {
-        if (isEmptySelection(selection)) {
-          // setSelections(null);
-          return;
-        }
-        const newSelections = createVerseSelections(verses, selection);
-        if (newSelections) {
-          setSelections(newSelections);
-        }
-      }
-    };
-    document.addEventListener('selectionchange', handleSelectionChange);
-    return () =>
-      document.removeEventListener('selectionchange', handleSelectionChange);
-  }, [verses]);
-
-  return (
-    <ErrorBoundary grow>
-      <div
-        className="flex-grow flex flex-col overflow-auto min-h-screen justify-center relative"
-        onClick={(e) => {
-          const selection = window.getSelection();
-          if (selection?.type !== 'Range') {
-            window.getSelection()?.removeAllRanges();
-            setSelections([]);
-          }
-          setSelectedMarkIds([]);
-        }}
-      >
-        {verses
-          .sort((a, b) => a.number - b.number)
-          .map((verse) => (
-            <Verse
-              key={verse.id}
-              id={verse.id}
-              number={verse.number}
-              text={verse.text}
-              selectMarks={setSelectedMarkIds}
-              marks={marks}
-              selectedMarkIds={selectedMarkIds}
-              speakers={speakers}
-            />
-          ))}
-        <div className="fixed bottom-0 right-0 pr-4 pb-4 text-right">
-          {selectedMarkIds.length !== 0 && hasRole('author', user) && (
-            <>
-              <div>
-                <EditMarksButton
-                  speakers={speakers}
-                  marks={marks}
-                  selectedMarkIds={selectedMarkIds}
-                  isUpdating={isUpdatingMarks}
-                  updateMarks={(newMarks: Array<MarkRecord>) => {
-                    updateMarks({marks: newMarks});
-                  }}
-                />
-              </div>
-              <div>
-                <DeleteMarksButton
-                  marks={marks}
-                  selectedMarkIds={selectedMarkIds}
-                  isDeleting={isDeletingMarks}
-                  deleteMarks={(ids: Array<ID>) => deleteMarks({ids})}
-                />
-              </div>
-            </>
-          )}
-          {selections.length !== 0 && hasRole('author', user) && (
-            <div>
-              <CreateMarkButton
-                isCreating={isCreatingMarks}
-                selections={selections}
-                createMarks={(newMarks: Array<Unsaved<MarkRecord>>) =>
-                  createMarks({marks: newMarks})
-                }
-                speakers={speakers}
-              />
-            </div>
-          )}
-        </div>
-      </div>
-    </ErrorBoundary>
-  );
-};
-
-// TODO: move this to an exported module
-const SCROLL_POSITION_BY_PATH: {[key: string]: [number, number]} = {};
-const useRestoreScrollPosition = () => {
-  const {pathname} = useLocation();
-
-  useEffect(() => {
-    const [x, y] = SCROLL_POSITION_BY_PATH[pathname] ?? [0, 0];
-    window.scrollTo(x, y);
-
-    return () => {
-      SCROLL_POSITION_BY_PATH[pathname] = [window.scrollX, window.scrollY];
-    };
-  }, [pathname]);
-};
-
-const ChapterPage: FC = () => {
+const Chapter: FC = () => {
   useRestoreScrollPosition();
   const match = useRouteMatch<{
     volumeRef: string;
@@ -249,7 +81,7 @@ const ChapterPage: FC = () => {
   );
 
   const {
-    data: {prev, next} = {prev: null, next: null},
+    data: {prev, next} = {next: null, prev: null},
     isLoading: isAdjacentLoading,
     error: adjacentError,
   } = useQuery(
@@ -264,9 +96,7 @@ const ChapterPage: FC = () => {
     error: peopleError,
   } = useQuery('people', getAllPeople);
 
-  useEffect(() => {
-    // TODO: use queryCache.prefetchQuery to fetch the data for the prev and next chapters
-  }, []);
+  // TODO: use queryCache.prefetchQuery to fetch the data for the prev and next chapters
 
   if (
     isVolumeLoading ||
@@ -338,4 +168,4 @@ const ChapterPage: FC = () => {
   );
 };
 
-export default ChapterPage;
+export default Chapter;

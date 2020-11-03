@@ -1,6 +1,6 @@
+import {useRouteMatch} from 'react-router';
 import refToNumber from './refToNumber';
 import refToTitle from './refToTitle';
-import {useRouteMatch} from 'react-router';
 
 const useScripturesRouteMatch = (): {
   match: boolean;

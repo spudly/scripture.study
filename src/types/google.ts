@@ -1,3 +1,5 @@
+/* eslint-disable camelcase */
+
 export type GoogleAccessTokenData = {
   access_token: string;
   expires_in: number;

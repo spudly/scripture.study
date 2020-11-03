@@ -44,6 +44,7 @@ const getCachedResponse = async (
   if (isRootHtmlRequest(request)) {
     const cachedHtmlResponse = await caches.match('/');
     if (cachedHtmlResponse) {
+      // eslint-disable-next-line no-console
       console.log('[SW] cache substitution', {
         original: request.url,
         replacement: '/',
@@ -64,9 +65,11 @@ const getCachedResponse = async (
 const handleRequest = async (request: Request): Promise<Response> => {
   const cached = await getCachedResponse(request);
   if (cached) {
+    // eslint-disable-next-line no-console
     console.log('[SW] cache hit', {url: request.url});
     return cached;
   }
+  // eslint-disable-next-line no-console
   console.log('[SW] cache miss', {url: request.url});
 
   const response = await fetch(request);
@@ -81,6 +84,7 @@ const handleRequest = async (request: Request): Promise<Response> => {
 };
 
 worker.addEventListener('install', (event) => {
+  // eslint-disable-next-line no-console
   console.log('[SW] activating');
   // @ts-expect-error: missing type defs
   worker.skipWaiting();

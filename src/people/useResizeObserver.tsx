@@ -19,6 +19,8 @@ const useResizeObserver = (ref: RefObject<HTMLElement>) => {
       resizeObserver.observe(el);
       return () => resizeObserver.unobserve(el);
     }
+
+    return undefined;
   }, [ref]);
 
   return size;
