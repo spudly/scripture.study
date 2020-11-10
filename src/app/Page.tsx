@@ -24,7 +24,7 @@ const Page: FC<{csrfToken: string; nonce: string}> = ({csrfToken, nonce}) => (
         <link rel="stylesheet" href="/css/index.css" />
       )}
       <script nonce={nonce} src="/js/index.js" defer />
-      <Ads />
+      {process.env.NODE_ENV !== 'development' && <Ads />}
     </head>
     <body>
       <div id="root" />

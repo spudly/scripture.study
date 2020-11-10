@@ -15,13 +15,11 @@ ReactDOM.render(
 
 if ('serviceWorker' in navigator) {
   window.addEventListener('load', async () => {
-    const worker = await navigator.serviceWorker.register(
+    await navigator.serviceWorker.register(
       /* webpackChunkName: "worker" */
       // @ts-expect-error
       new URL('./index.worker', import.meta.url),
       {scope: '/'},
     );
-    // eslint-disable-next-line no-console
-    console.log('[SW] registered', {scope: worker.scope});
   });
 }

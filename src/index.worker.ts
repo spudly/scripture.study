@@ -2,7 +2,6 @@ import {isNotNil} from '@spudly/pushpop';
 import type {ExtendableEvent, FetchEvent} from './types';
 import {version} from './meta';
 
-const DEBUG = false;
 const CACHE_KEY = `scripture-study-v${version}`;
 const CACHE_PREFETCH_URLS = [
   '/',
@@ -17,13 +16,6 @@ const CACHE_ALLOW_API_URLS = [
 ];
 
 const parse = (url: string) => new URL(url);
-
-const log = (...args: Array<any>): void => {
-  if (DEBUG) {
-    // eslint-disable-next-line no-console
-    console.log(...args);
-  }
-};
 
 // eslint-disable-next-line no-restricted-globals
 const worker = (self as any) as ServiceWorker;
@@ -73,10 +65,6 @@ const getCachedResponse = async (
   if (isRootHtmlRequest(request)) {
     const cachedHtmlResponse = await caches.match('/');
     if (cachedHtmlResponse) {
-      log('[SW] cache substitution', {
-        original: request.url,
-        replacement: '/',
-      });
       return cachedHtmlResponse;
     }
   }
@@ -89,17 +77,18 @@ const getCachedResponse = async (
   return null;
 };
 
-// eslint-disable-next-line max-statements
-const handleRequest = async (request: Request): Promise<Response> => {
-  if (isRequestCacheable(request)) {
-    const cached = await getCachedResponse(request);
-    if (cached) {
-      log('[SW] cache hit', {url: request.url});
-      return cached;
-    }
+const fetchFromCache = async (request: Request): Promise<Response> => {
+  if (!isRequestCacheable(request)) {
+    throw new Error(`[SW] not cacheable: ${request.url}`);
   }
-  log('[SW] cache miss', {url: request.url});
+  const response = await getCachedResponse(request);
+  if (!response) {
+    throw new Error(`[SW] cache miss: ${request.url}`);
+  }
+  return response;
+};
 
+const fetchFromNetwork = async (request: Request): Promise<Response> => {
   const response = await fetch(request);
   if (!isRequestCacheable(request) || !isResponseCacheable(response)) {
     return response;
@@ -111,32 +100,39 @@ const handleRequest = async (request: Request): Promise<Response> => {
   return response;
 };
 
-const activate = async () => {
-  const keys = await caches.keys();
-  await Promise.all(
-    keys.map(async key => {
-      if (key !== CACHE_KEY) {
-        await caches.delete(key);
-      }
-    }),
-  );
-  // @ts-expect-error: no type defs
-  await worker.clients.claim();
-};
-
-worker.addEventListener('install', event => {
-  log('[SW] activating');
-  // @ts-expect-error: missing type defs
-  worker.skipWaiting();
-  (event as ExtendableEvent).waitUntil(initCache());
+worker.addEventListener('install', (event: ExtendableEvent) => {
+  event.waitUntil(initCache().then(() => worker.skipWaiting()));
 });
 
-worker.addEventListener('fetch', event => {
-  (event as FetchEvent).respondWith(
-    handleRequest((event as FetchEvent).request),
+worker.addEventListener('fetch', (e: FetchEvent) => {
+  const event = e as FetchEvent;
+  const networkPromise = fetchFromNetwork(event.request);
+  event.respondWith(
+    fetchFromCache(event.request)
+      .catch(() => networkPromise)
+      .catch(err => {
+        // eslint-disable-next-line no-console
+        console.error(`[SW] Failed to fetch ${event.request.url}`, err);
+        throw err;
+      }),
   );
+  event.waitUntil(networkPromise);
 });
 
-worker.addEventListener('activate', event => {
-  (event as ExtendableEvent).waitUntil(activate());
+worker.addEventListener('activate', (event: ExtendableEvent) => {
+  (event as ExtendableEvent).waitUntil(
+    caches
+      .keys()
+      .then(keys =>
+        Promise.all(
+          keys.map(key => {
+            if (key !== CACHE_KEY) {
+              return caches.delete(key);
+            }
+            return undefined;
+          }),
+        ),
+      )
+      .then(() => worker.clients.claim()),
+  );
 });
