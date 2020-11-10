@@ -24,6 +24,7 @@ const app = express()
   .use(webpackHotMiddleware(compiler))
   .use(router);
 
+logger.info({NODE_ENV: process.env.NODE_ENV}, 'starting dev server');
 logger.info({port: PORT}, 'trying to listen');
 app.listen(PORT, () => {
   logger.info({url: `http://localhost:${PORT}`}, 'Listening');

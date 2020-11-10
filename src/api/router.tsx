@@ -231,60 +231,64 @@ const createNonce: Handler = (req, resp, next) => {
   next();
 };
 
+const noopHandler: Handler = (req, resp, next) => next();
+
 const router = express
   // eslint-disable-next-line new-cap
   .Router()
   .use(compression())
   .use(createNonce)
   .use(
-    helmet({
-      contentSecurityPolicy: {
-        directives: {
-          'base-uri': ["'none'"],
-          'block-all-mixed-content': [],
-          'connect-src': [
-            "'self'",
-            'www.google-analytics.com',
-            'www.googletagmanager.com',
-            '*.googlesyndication.com',
-            '*.googleadservices.com',
-            'adservice.google.com',
-            'www.googletagservices.com',
-          ],
-          'default-src': ["'self'"],
-          'font-src': ["'self'"],
-          'frame-ancestors': [],
-          'frame-src': [
-            "'self'",
-            'googleads.g.doubleclick.net',
-            '*.googlesyndication.com',
-          ],
-          'img-src': [
-            "'self'",
-            'www.googletagmanager.com',
-            '*.googlesyndication.com',
-          ],
-          'object-src': ["'none'"],
-          'script-src': [
-            "'self'",
-            'www.googletagmanager.com',
-            '*.googlesyndication.com',
-            // @ts-expect-error: resp typed as ServerResponse instead of express response, so doesn't have locals
-            (_req, resp) => `'nonce-${resp.locals.nonce}'`,
-          ],
-          'script-src-attr': ["'none'"],
-          'style-src': [
-            "'self'",
-            "'unsafe-inline'", // needed for google adsense & style-loader (in dev mode only)
-          ],
-          'upgrade-insecure-requests': [],
-        },
+    process.env.NODE_ENV === 'test'
+      ? noopHandler
+      : helmet({
+          contentSecurityPolicy: {
+            directives: {
+              'base-uri': ["'none'"],
+              'block-all-mixed-content': [],
+              'connect-src': [
+                "'self'",
+                'www.google-analytics.com',
+                'www.googletagmanager.com',
+                '*.googlesyndication.com',
+                '*.googleadservices.com',
+                'adservice.google.com',
+                'www.googletagservices.com',
+              ],
+              'default-src': ["'self'"],
+              'font-src': ["'self'"],
+              'frame-ancestors': [],
+              'frame-src': [
+                "'self'",
+                'googleads.g.doubleclick.net',
+                '*.googlesyndication.com',
+              ],
+              'img-src': [
+                "'self'",
+                'www.googletagmanager.com',
+                '*.googlesyndication.com',
+              ],
+              'object-src': ["'none'"],
+              'script-src': [
+                "'self'",
+                'www.googletagmanager.com',
+                '*.googlesyndication.com',
+                // @ts-expect-error: resp typed as ServerResponse instead of express response, so doesn't have locals
+                (_req, resp) => `'nonce-${resp.locals.nonce}'`,
+              ],
+              'script-src-attr': ["'none'"],
+              'style-src': [
+                "'self'",
+                "'unsafe-inline'", // needed for google adsense & style-loader (in dev mode only)
+              ],
+              'upgrade-insecure-requests': [],
+            },
 
-        // script-src: https://www.google-analytics.com https://ssl.google-analytics.com
-        // img-src: https://www.google-analytics.com
-        // connect-src: https://www.google-analytics.com
-      },
-    }),
+            // script-src: https://www.google-analytics.com https://ssl.google-analytics.com
+            // img-src: https://www.google-analytics.com
+            // connect-src: https://www.google-analytics.com
+          },
+        }),
   )
   .use(cookieParser())
   .use(bodyParser.json())

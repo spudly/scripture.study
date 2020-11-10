@@ -1,7 +1,7 @@
 import {getParser} from 'bowser';
 import React, {FC, useEffect, useState} from 'react';
+import {Redirect} from 'react-router';
 import {browsers} from '../meta';
-import Alert from './Alert';
 
 const BrowserAlert: FC = () => {
   const [isSupported, setIsSupported] = useState(true);
@@ -14,7 +14,10 @@ const BrowserAlert: FC = () => {
           ...opts,
           [name]: `>=${browsers[name as keyof typeof browsers]}`,
         }),
-        {},
+        {
+          // for running cypress tests:
+          electron: '>= 85',
+        },
       ),
     );
     if (!isSatisfied) {
@@ -22,7 +25,7 @@ const BrowserAlert: FC = () => {
     }
   }, []);
 
-  return isSupported ? null : <Alert>oiutdated browser</Alert>;
+  return isSupported ? null : <Redirect to="/support/browsers" />;
 };
 
 export default BrowserAlert;
