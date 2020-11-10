@@ -7,6 +7,9 @@ module.exports = {
   },
   theme: {
     extend: {
+      borderRadius: {
+        '6xl': '3rem',
+      },
       flex: {
         2: '2 2 0%',
       },
@@ -49,21 +52,35 @@ module.exports = {
         'rel-xl': '1.25em',
         'rel-xs': '0.75em',
       },
-      inset: (theme) => ({
+      inset: (theme, {negative}) => ({
+        auto: 'auto',
         ...theme('spacing'),
-        '-64': '-16rem',
-        '-128': '-32rem',
+        ...negative(theme('spacing')),
+        '1/2': '50%',
+        '1/3': '33.333333%',
+        '2/3': '66.666667%',
+        '1/4': '25%',
+        '2/4': '50%',
+        '3/4': '75%',
+        full: '100%',
+        '-1/2': '-50%',
+        '-1/3': '-33.333333%',
+        '-2/3': '-66.666667%',
+        '-1/4': '-25%',
+        '-2/4': '-50%',
+        '-3/4': '-75%',
+        '-full': '-100%',
       }),
-      maxHeight: (theme) => ({
+      maxHeight: theme => ({
         ...theme('height'),
       }),
-      maxWidth: (theme) => ({
+      maxWidth: theme => ({
         ...theme('width'),
       }),
-      minHeight: (theme) => ({
+      minHeight: theme => ({
         ...theme('height'),
       }),
-      minWidth: (theme) => ({
+      minWidth: theme => ({
         ...theme('width'),
       }),
       spacing: {

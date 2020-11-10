@@ -1,4 +1,4 @@
-import React, {FC, useContext, useEffect, useState} from 'react';
+import React, {FC, useContext, useEffect, useMemo, useState} from 'react';
 import {useMutation} from 'react-query';
 import ErrorBoundary from '../widgets/ErrorBoundary';
 import {
@@ -9,6 +9,7 @@ import {
   Unsaved,
   VerseRecord,
   VerseSelection,
+  Layers,
 } from '../types';
 import createVerseSelections from '../utils/createVerseSelections';
 import isEmptySelection from '../utils/isEmptySelection';
@@ -17,6 +18,7 @@ import hasRole from '../utils/hasRole';
 import {bulkMutation} from '../api/api.client';
 import queryCache from '../utils/queryCache';
 import CreateMarkButton from './CreateMarkButton';
+import LayersButton from './LayersButton';
 import DeleteMarksButton from './DeleteMarksButton';
 import EditMarksButton from './EditMarksButton';
 import Verse from './Verse';
@@ -29,6 +31,7 @@ const Verses: FC<{
   const user = useContext(UserContext);
   const [selections, setSelections] = useState<Array<VerseSelection>>([]);
   const [selectedMarkIds, setSelectedMarkIds] = useState<string[]>([]);
+  const [layers, setLayers] = useState<Layers>({speaker: true, mention: true});
 
   const handleSuccess = () => {
     setSelections([]);
@@ -87,11 +90,22 @@ const Verses: FC<{
       document.removeEventListener('selectionchange', handleSelectionChange);
   }, [verses]);
 
+  const filteredMarks = useMemo(
+    () =>
+      marks.filter(m => {
+        if (layers.speaker && m.type === 'speaker') {
+          return true;
+        }
+        return false;
+      }),
+    [layers.speaker, marks],
+  );
+
   return (
     <ErrorBoundary grow>
       <div
         className="flex-grow flex flex-col overflow-auto min-h-screen justify-center relative"
-        onClick={(e) => {
+        onClick={() => {
           const selection = window.getSelection();
           if (selection?.type !== 'Range') {
             window.getSelection()?.removeAllRanges();
@@ -102,25 +116,30 @@ const Verses: FC<{
       >
         {verses
           .sort((a, b) => a.number - b.number)
-          .map((verse) => (
+          .map(verse => (
             <Verse
               key={verse.id}
               id={verse.id}
               number={verse.number}
               text={verse.text}
               selectMarks={setSelectedMarkIds}
-              marks={marks}
+              marks={filteredMarks}
               selectedMarkIds={selectedMarkIds}
               speakers={speakers}
             />
           ))}
-        <div className="fixed bottom-0 right-0 pr-4 pb-4 text-right">
+        <div className="fixed top-20 right-8 text-right">
+          <div>
+            <LayersButton layers={layers} onChange={setLayers} />
+          </div>
+        </div>
+        <div className="fixed bottom-4 right-8 text-right space-y-2">
           {selectedMarkIds.length !== 0 && hasRole('author', user) && (
             <>
               <div>
                 <EditMarksButton
                   speakers={speakers}
-                  marks={marks}
+                  marks={filteredMarks}
                   selectedMarkIds={selectedMarkIds}
                   isUpdating={isUpdatingMarks}
                   updateMarks={(newMarks: Array<MarkRecord>) => {
@@ -130,7 +149,7 @@ const Verses: FC<{
               </div>
               <div>
                 <DeleteMarksButton
-                  marks={marks}
+                  marks={filteredMarks}
                   selectedMarkIds={selectedMarkIds}
                   isDeleting={isDeletingMarks}
                   deleteMarks={(ids: Array<ID>) => deleteMarks({ids})}

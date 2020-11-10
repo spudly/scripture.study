@@ -60,12 +60,12 @@ const People: FC = () => {
             </tr>
           </thead>
           <tbody>
-            {people.sort(comparePeople).map((person) => (
+            {people.sort(comparePeople).map(person => (
               <tr key={person.id}>
                 <td>
                   <Link to={`/people/${person.id}`} component={AnchorLink}>
                     {person.name ? (
-                      serializePersonJsx(person, false)
+                      serializePersonJsx(person, {includeDescription: false})
                     ) : (
                       <em>Unnamed</em>
                     )}

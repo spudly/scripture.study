@@ -41,7 +41,7 @@ const FamilyTreePerson = forwardRef<
           title={person ? serializePerson(person) : undefined}
           ref={ref}
         >
-          {person && serializePersonJsx(person, false)}
+          {person && serializePersonJsx(person, {includeDescription: false})}
         </div>
       </Link>
       {link && person && hasRole('author', user) && (

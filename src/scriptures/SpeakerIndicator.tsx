@@ -8,7 +8,7 @@ const SpeakerIndicator: FC<{
   speakerId: ID;
   speakers: Array<PersonRecord>;
 }> = ({speakers, speakerId}) => {
-  const speaker = speakers.find((s) => s.id === speakerId);
+  const speaker = speakers.find(s => s.id === speakerId);
   if (!speaker) {
     return null;
   }
@@ -23,7 +23,7 @@ const SpeakerIndicator: FC<{
         <MdRecordVoiceOver />
       </div>
       <div className="text-rel-3xs text-center truncate uppercase leading-none min-w-0 pt-1">
-        {serializePersonJsx(speaker)}
+        {serializePersonJsx(speaker, {includeDescription: 'as-needed'})}
       </div>
     </Link>
   );

@@ -129,14 +129,18 @@ const Chapter: FC = () => {
 
   return (
     <Title title={`${volume.longTitle} | ${book.title} ${chapter.number}`}>
-      {chapter.number === 1 && <Heading center>{book.longTitle}</Heading>}
-      <Heading center level={2}>
+      {chapter.number === 1 && (
+        <Heading center as={2}>
+          {book.longTitle}
+        </Heading>
+      )}
+      <Heading center level={2} as={3}>
         {chapter.number === 1 ? 'Chapter' : book.title} {chapter.number}
       </Heading>
 
       <Spacer y={8} />
 
-      <p className="text-4xl italic font-serif">
+      <p className="text-2xl italic font-serif">
         Lorem ipsum dolor sit amet, consectetur adipiscing elit. Mauris luctus
         suscipit congue. Quisque accumsan posuere elementum. Morbi nec sapien
         convallis, condimentum diam non, aliquet tellus.
@@ -161,7 +165,7 @@ const Chapter: FC = () => {
           )
         }
       />
-      <div className="text-4xl mb-48">
+      <div className="text-2xl mb-48">
         <Verses verses={verses} speakers={people ?? []} marks={marks ?? []} />
       </div>
     </Title>

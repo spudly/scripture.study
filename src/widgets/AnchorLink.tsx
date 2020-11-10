@@ -3,8 +3,10 @@ import {Unstyled} from '../types';
 
 const AnchorLink = forwardRef<HTMLAnchorElement, Unstyled<'a'>>(
   (props, ref) => {
-    // eslint-disable-next-line jsx-a11y/anchor-has-content
-    return <a ref={ref} {...props} className="text-blue-500 hover:underline" />;
+    return (
+      // eslint-disable-next-line jsx-a11y/anchor-has-content
+      <a ref={ref} {...props} className="text-blue-700 hover:underline" />
+    );
   },
 );
 

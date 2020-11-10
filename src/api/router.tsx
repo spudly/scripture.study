@@ -88,7 +88,7 @@ const makeGetAllRoute = <RECORD extends {id: ID}>(
     const count = await ModelClass.count({where: where as Partial<RECORD>});
     const body: GetAllResponseBody<RECORD> = {
       count,
-      items: models.map((m) => m.get()),
+      items: models.map(m => m.get()),
       limit: limit ? Number(limit) : null,
       offset: offset ? Number(offset) : 0,
     };
@@ -141,18 +141,16 @@ const makeBulkRoute = <RECORD extends {id: ID}>(
     await sql.transaction(async (t: sequelize.Transaction) => {
       if (actions.create) {
         result.created = await Promise.all(
-          actions.create.map((r) => createFn(r, req.user!, t)),
+          actions.create.map(r => createFn(r, req.user!, t)),
         );
       }
       if (actions.update) {
         result.updated = await Promise.all(
-          actions.update.map((r) => updateFn(r, req.user!, t)),
+          actions.update.map(r => updateFn(r, req.user!, t)),
         );
       }
       if (actions.delete) {
-        await Promise.all(
-          actions.delete.map((id) => deleteFn(id, req.user!, t)),
-        );
+        await Promise.all(actions.delete.map(id => deleteFn(id, req.user!, t)));
         result.deleted = actions.delete;
       }
     });
@@ -249,6 +247,9 @@ const router = express
             'www.google-analytics.com',
             'www.googletagmanager.com',
             '*.googlesyndication.com',
+            '*.googleadservices.com',
+            'adservice.google.com',
+            'www.googletagservices.com',
           ],
           'default-src': ["'self'"],
           'font-src': ["'self'"],
@@ -274,9 +275,7 @@ const router = express
           'script-src-attr': ["'none'"],
           'style-src': [
             "'self'",
-            ...(process.env.NODE_ENV === 'development'
-              ? ["'unsafe-inline'"]
-              : []),
+            "'unsafe-inline'", // needed for google adsense & style-loader (in dev mode only)
           ],
           'upgrade-insecure-requests': [],
         },
@@ -315,7 +314,7 @@ const router = express
   .use('/api/books', makeTableRouter(Book))
   .use(
     '/api/chapters',
-    makeTableRouter(Chapter, (r) =>
+    makeTableRouter(Chapter, r =>
       r.get('/:chapterId/adjacent', async (req, resp, next) => {
         resp.json(await getAdjacentChaptersById(req.params.chapterId));
       }),
@@ -323,7 +322,7 @@ const router = express
   )
   .use(
     '/api/marks',
-    makeTableRouter(Mark, (r) =>
+    makeTableRouter(Mark, r =>
       r.get('/byChapterId/:chapterId', async (req, resp, next) => {
         resp.json(await getAllMarksByChapterId(req.params.chapterId));
       }),
@@ -333,7 +332,7 @@ const router = express
   .use('/api/people', makeTableRouter(Person))
   .use(
     '/api/verses',
-    makeTableRouter(Verse, (r) =>
+    makeTableRouter(Verse, r =>
       r.get('/bySpeakerId/:speakerId', async (req, resp, next) => {
         const {speakerId} = req.params;
         const {limit, offset} = req.query;

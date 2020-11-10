@@ -1,7 +1,7 @@
 import React, {FC} from 'react';
-import Alert from '../widgets/Alert';
 import Analytics from '../widgets/Analytics';
 import Ads from '../widgets/Ads';
+import Alert from '../widgets/Alert';
 
 const Page: FC<{csrfToken: string; nonce: string}> = ({csrfToken, nonce}) => (
   <html lang="en">
@@ -30,9 +30,8 @@ const Page: FC<{csrfToken: string; nonce: string}> = ({csrfToken, nonce}) => (
       <div id="root" />
       <noscript>
         <Alert>
-          I'm sorry, but Scripture Study doesn't work properly without
-          JavaScript enabled. Please enable JavaScript in your web browser and
-          try again."
+          Sorry, but this website doesn't work properly without JavaScript
+          enabled. Please enable JavaScript in your web browser and try again.
         </Alert>
       </noscript>
     </body>

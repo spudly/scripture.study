@@ -5,7 +5,6 @@ public/js
 public/css
 stats.json
 *Zone.Identifier
-scripts
 tmp
 temp
 *.dump
@@ -14,4 +13,4 @@ cypress/screenshots
 cypress/videos
 .nyc_output
 coverage
-src/version.tsx
+src/meta.ts

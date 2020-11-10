@@ -15,8 +15,9 @@ type SessionMap = {[sessionId: string]: Express.SessionData};
 
 const MINUTE = 1000 * 60;
 const HOUR = MINUTE * 60;
+const DAY = 24 * HOUR;
 const PRUNE_INTERVAL = 5 * MINUTE;
-const SESSION_DURATION = 3 * HOUR;
+const SESSION_DURATION = 7 * DAY;
 
 class SessionStore extends Store {
   constructor() {

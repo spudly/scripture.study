@@ -11,12 +11,12 @@ const Heading: FC<{level?: Level; center?: boolean; as?: Level}> = ({
 }) => {
   const props = {
     className: classnames('font-serif uppercase', {
-      'text-2xl': as === 3,
-      'text-4xl': as === 2,
       'text-6xl': as === 1,
+      'text-4xl': as === 2,
+      'text-2xl': as === 3,
+      'text-xl': as === 4,
       'text-base': as === 5 || as === 6,
       'text-center': center,
-      'text-xl': as === 4,
     }),
   };
   switch (level) {

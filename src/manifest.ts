@@ -6,7 +6,7 @@ const manifest: WebAppManifest = {
   categories: ['books'],
   description: 'Collaborative Scripture Study',
   dir: 'ltr',
-  display: 'standalone',
+  display: 'fullscreen',
   icons: [
     {
       src: '/icons/logo-192.png',

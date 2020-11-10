@@ -9,6 +9,11 @@ export type VerseSelection = {
   endIndex: number | null;
 };
 
+export type Layers = {
+  speaker: boolean;
+  mention: boolean;
+};
+
 export * from './api';
 export * from './google';
 export * from './records';
