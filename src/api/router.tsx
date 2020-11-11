@@ -250,19 +250,11 @@ const router = express
                 "'self'",
                 'www.google-analytics.com',
                 'www.googletagmanager.com',
-                '*.googlesyndication.com',
-                '*.googleadservices.com',
-                'adservice.google.com',
-                'www.googletagservices.com',
               ],
               'default-src': ["'self'"],
               'font-src': ["'self'"],
               'frame-ancestors': [],
-              'frame-src': [
-                "'self'",
-                'googleads.g.doubleclick.net',
-                '*.googlesyndication.com',
-              ],
+              'frame-src': ["'self'"],
               'img-src': [
                 "'self'",
                 'www.googletagmanager.com',
@@ -279,7 +271,10 @@ const router = express
               'script-src-attr': ["'none'"],
               'style-src': [
                 "'self'",
-                "'unsafe-inline'", // needed for google adsense & style-loader (in dev mode only)
+                ...(process.env.NODE_ENV !== 'production'
+                  ? // needed for style-loader in dev mode:
+                    ["'unsafe-inline'"]
+                  : []),
               ],
               'upgrade-insecure-requests': [],
             },

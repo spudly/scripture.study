@@ -1,6 +1,5 @@
 import React, {FC} from 'react';
 import Analytics from '../widgets/Analytics';
-import Ads from '../widgets/Ads';
 import Alert from '../widgets/Alert';
 
 const PROD = process.env.NODE_ENV === 'production';
@@ -24,7 +23,6 @@ const Page: FC<{csrfToken: string; nonce: string}> = ({csrfToken, nonce}) => (
       <link rel="apple-touch-icon" href="/icons/loco-192.png" />
       {PROD && <link rel="stylesheet" href="/css/index.css" />}
       <script nonce={nonce} src="/js/index.js" defer />
-      {PROD && <Ads />}
     </head>
     <body>
       <div id="root" />
