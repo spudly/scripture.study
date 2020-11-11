@@ -1,6 +1,7 @@
-import React, {FC, useCallback} from 'react';
+import React, {FC, useCallback, useEffect} from 'react';
 import {useRouteMatch} from 'react-router';
-import {useQuery} from 'react-query';
+import {QueryCache, useQuery, useQueryCache} from 'react-query';
+import {isNotNil} from '@spudly/pushpop';
 import Spinner from '../widgets/Spinner';
 import refToTitle from '../utils/refToTitle';
 import refToNumber from '../utils/refToNumber';
@@ -20,9 +21,52 @@ import {
 import scriptureLinkHref from '../utils/scriptureLinkHref';
 import Heading from '../widgets/Heading';
 import useRestoreScrollPosition from '../utils/useRestoreScrollPosition';
+import {BookRecord, ChapterRecord, VolumeRecord} from '../types';
 import Verses from './Verses';
 
+type PrevNext = {
+  volume: VolumeRecord;
+  book: BookRecord;
+  chapter: ChapterRecord;
+};
+
+const prefetchAdjacent = async (
+  queryCache: QueryCache,
+  prev: PrevNext | null,
+  next: PrevNext | null,
+): Promise<void> => {
+  await Promise.all(
+    [prev, next]
+      .filter(isNotNil)
+      .flatMap<Promise<any>>(({volume, book, chapter}) => [
+        queryCache.prefetchQuery(
+          ['volumes', volume.title],
+          (key, title: string) => getVolumeByTitle(title),
+        ),
+        queryCache.prefetchQuery(
+          ['books', volume.id, book.title],
+          (key, volumeId: string, title: string) =>
+            getBookByVolumeIdAndTitle(volumeId, title),
+        ),
+        queryCache.prefetchQuery(
+          ['chapters', book.id, chapter.number],
+          (key, bookId: string, number: number) =>
+            getChapterByBookIdAndNumber(bookId, number),
+        ),
+        queryCache.prefetchQuery(
+          ['verses', chapter.id],
+          (key, chapterId: string) => getAllVersesByChapterId(chapterId),
+        ),
+        queryCache.prefetchQuery(
+          ['marks', chapter?.id],
+          (key, chapterId: string) => getAllMarksByChapterId(chapterId),
+        ),
+      ]),
+  );
+};
+
 const Chapter: FC = () => {
+  const queryCache = useQueryCache();
   useRestoreScrollPosition();
   const match = useRouteMatch<{
     volumeRef: string;
@@ -96,7 +140,9 @@ const Chapter: FC = () => {
     error: peopleError,
   } = useQuery('people', getAllPeople);
 
-  // TODO: use queryCache.prefetchQuery to fetch the data for the prev and next chapters
+  useEffect(() => {
+    prefetchAdjacent(queryCache, prev, next);
+  }, [queryCache, prev, next]);
 
   if (
     isVolumeLoading ||

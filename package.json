@@ -82,7 +82,11 @@
     "trailingComma": "all"
   },
   "eslintConfig": {
-    "extends": "@spudly"
+    "extends": "@spudly",
+    "rules": {
+      "no-confusing-arrow": "off",
+      "jsx-a11y/no-noninteractive-element-to-interactive-role": "off"
+    }
   },
   "eslintIgnore": [
     "node_modules",

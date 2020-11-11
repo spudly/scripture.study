@@ -6,9 +6,9 @@ import React, {
   useContext,
 } from 'react';
 import classnames from 'classnames';
+import {diff, unique} from '@spudly/pushpop';
 import {MarkRecord, PersonRecord} from '../types';
 import {theme} from '../utils/themes';
-import ErrorBoundary from '../widgets/ErrorBoundary';
 import UserContext from '../utils/UserContext';
 import hasRole from '../utils/hasRole';
 import SpeakerIndicator from './SpeakerIndicator';
@@ -30,66 +30,88 @@ const VerseFragment: FC<{
   speakerIds: allSpeakerIds,
   speakers,
 }) => {
-  const speakerIds = marks.flatMap((m) =>
-    (m.type === 'speaker' ? [m.speakerId] : []),
+  const speakerIds = marks.flatMap(m =>
+    m.type === 'speaker' ? [m.speakerId] : [],
   );
   const user = useContext(UserContext);
+
+  if (!marks.length) {
+    return <>{children}</>;
+  }
+
   const isAuthor = hasRole('author', user);
   const lastSpeakerId = speakerIds[speakerIds.length - 1];
   const lastMark = marks[marks.length - 1];
-  const classes = classnames(
-    lastSpeakerId &&
-      theme(allSpeakerIds.indexOf(lastSpeakerId), {
-        colors: ['bgColor', 'textColor'],
-        states:
-          isVerseNumber || !isAuthor || !selectMarks
-            ? ['default']
-            : selectedMarkIds?.includes(lastMark.id)
-            ? ['activated']
-            : undefined,
-      }),
-    'py-rel-2',
-    {'cursor-pointer': isAuthor && marks.length !== 0 && selectMarks},
-  );
-  const mark = marks.length ? (
-    <mark className={classes}>
-      <ErrorBoundary grow>
-        {speakerIds.map((id) => (
-          <SpeakerIndicator key={id} speakerId={id} speakers={speakers} />
-        ))}
-      </ErrorBoundary>
+
+  const toggleCurrentMarks = () => {
+    const currentMarkIds = marks.map(m => m.id);
+    selectMarks?.(markIds =>
+      markIds.includes(currentMarkIds[0])
+        ? [...diff(markIds, currentMarkIds)]
+        : unique([...markIds, ...currentMarkIds]),
+    );
+  };
+
+  const isSelectable = isAuthor && selectMarks;
+
+  return (
+    <mark
+      role="button"
+      className={classnames(
+        lastSpeakerId &&
+          theme(allSpeakerIds.indexOf(lastSpeakerId), {
+            colors: ['bgColor', 'textColor'],
+            states:
+              isVerseNumber || !isSelectable
+                ? ['default']
+                : selectedMarkIds?.includes(lastMark.id)
+                ? ['activated']
+                : undefined,
+          }),
+        'py-rel-2',
+        {
+          'cursor-pointer': isSelectable,
+          'focus:outline-none': isSelectable,
+          'focus:shadow-outline': isSelectable,
+        },
+      )}
+      onClick={
+        isSelectable
+          ? e => {
+              e.stopPropagation();
+              const markId = marks[marks.length - 1].id;
+              if (e.ctrlKey) {
+                selectMarks?.(markIds => [...(markIds ?? []), markId]);
+              } else {
+                selectMarks?.([markId]);
+              }
+            }
+          : undefined
+      }
+      onKeyDown={
+        isSelectable
+          ? e => {
+              switch (e.key) {
+                case 'Escape':
+                  e.preventDefault();
+                  selectMarks?.([]);
+                // eslint-disable-next-line no-fallthrough
+                case ' ':
+                case 'Spacebar': // older browsers according to MDN
+                case 'Space Bar': // older browsers according to MDN
+                  e.preventDefault();
+                  toggleCurrentMarks();
+              }
+            }
+          : undefined
+      }
+      tabIndex={isSelectable ? 0 : undefined}
+    >
+      {speakerIds.map(id => (
+        <SpeakerIndicator key={id} speakerId={id} speakers={speakers} />
+      ))}
       {children}
     </mark>
-  ) : null;
-  return mark ? (
-    isAuthor && selectMarks ? (
-      <>
-        {/* eslint-disable-next-line jsx-a11y/anchor-is-valid */}
-        <a
-          // TODO: for now, we'll support selecting a single mark. eventually it'd be nice to prompt the user to choose which mark they want to select.
-          onClick={
-            selectMarks
-              ? (e) => {
-                  e.stopPropagation();
-                  const markId = marks[marks.length - 1].id;
-                  if (e.ctrlKey) {
-                    selectMarks((markIds) => [...(markIds ?? []), markId]);
-                  } else {
-                    selectMarks([markId]);
-                  }
-                }
-              : undefined
-          }
-        >
-          {mark}
-        </a>
-      </>
-    ) : (
-      mark
-    )
-  ) : (
-    // eslint-disable-next-line react/jsx-no-useless-fragment
-    <>{children}</>
   );
 };
 

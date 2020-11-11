@@ -3,10 +3,12 @@ import Analytics from '../widgets/Analytics';
 import Ads from '../widgets/Ads';
 import Alert from '../widgets/Alert';
 
+const PROD = process.env.NODE_ENV === 'production';
+
 const Page: FC<{csrfToken: string; nonce: string}> = ({csrfToken, nonce}) => (
   <html lang="en">
     <head>
-      <Analytics id="G-40EV6Z82QM" nonce={nonce} />
+      {PROD && <Analytics id="G-40EV6Z82QM" nonce={nonce} />}
       <meta charSet="UTF-8" />
       <meta
         name="theme-color"
@@ -20,11 +22,9 @@ const Page: FC<{csrfToken: string; nonce: string}> = ({csrfToken, nonce}) => (
       <link rel="icon" href="/favicon.ico" type="image/x-icon" />
       <link rel="manifest" href="/manifest.json" />
       <link rel="apple-touch-icon" href="/icons/loco-192.png" />
-      {process.env.NODE_ENV === 'production' && (
-        <link rel="stylesheet" href="/css/index.css" />
-      )}
+      {PROD && <link rel="stylesheet" href="/css/index.css" />}
       <script nonce={nonce} src="/js/index.js" defer />
-      {process.env.NODE_ENV === 'production' && <Ads />}
+      {PROD && <Ads />}
     </head>
     <body>
       <div id="root" />
