@@ -2,7 +2,7 @@ import {VerseRecord} from '../types';
 import {firstNephi2} from './chapters';
 import {johnDoe} from './users';
 
-export const firstNephi2Verse1: VerseRecord = {
+export const firstNephi1Verse1: VerseRecord = {
   lastUpdatedDate: 1602028800000,
   approvedDate: 1602028800000,
   id: '107a7671-5ee2-4764-a049-d85ff95f7862',
@@ -14,7 +14,7 @@ export const firstNephi2Verse1: VerseRecord = {
   approvedBy: johnDoe.id,
 };
 
-export const firstNephi2Verse2: VerseRecord = {
+export const firstNephi1Verse2: VerseRecord = {
   lastUpdatedDate: 1602028800000,
   approvedDate: 1602028800000,
   id: 'f688bd68-ceda-41bf-bf58-8a6e66a8b941',
@@ -26,4 +26,4 @@ export const firstNephi2Verse2: VerseRecord = {
   approvedBy: johnDoe.id,
 };
 
-export default [firstNephi2Verse1, firstNephi2Verse2];
+export default [firstNephi1Verse1, firstNephi1Verse2];

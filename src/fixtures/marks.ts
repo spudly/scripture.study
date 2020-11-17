@@ -1,5 +1,5 @@
 import {MarkRecord} from '../types';
-import {firstNephi2Verse1, firstNephi2Verse2} from './verses';
+import {firstNephi1Verse1, firstNephi1Verse2} from './verses';
 import {nephi1} from './people';
 import {johnDoe} from './users';
 
@@ -10,7 +10,7 @@ export const mark1: MarkRecord = {
   type: 'speaker',
   startIndex: null,
   endIndex: null,
-  verseId: firstNephi2Verse1.id,
+  verseId: firstNephi1Verse1.id,
   speakerId: nephi1.id,
   personId: null,
   lastUpdatedBy: johnDoe.id,
@@ -24,7 +24,7 @@ export const mark2: MarkRecord = {
   type: 'speaker',
   startIndex: null,
   endIndex: null,
-  verseId: firstNephi2Verse2.id,
+  verseId: firstNephi1Verse2.id,
   speakerId: nephi1.id,
   personId: null,
   lastUpdatedBy: johnDoe.id,

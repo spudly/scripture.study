@@ -1,13 +1,9 @@
+import {firstNephi1Verse1, firstNephi1Verse2} from '../../src/fixtures/verses';
+
 describe('Chapter', () => {
   it('renders each verse', () => {
-    cy.visit('/scriptures/Old.Testament/Genesis/1');
-    cy.findByRole('main')
-      .findByText('IN the beginning God created the heaven and the earth.')
-      .should('exist');
-    cy.findByRole('main')
-      .findByText(
-        'And the earth was without form, and void; and darkness was upon the face of the deep. And the Spirit of God moved upon the face of the waters.',
-      )
-      .should('exist');
+    cy.visit('/scriptures/Book.of.Mormon/1.Nephi/1');
+    cy.findByRole('main').findByText(firstNephi1Verse1.text).should('exist');
+    cy.findByRole('main').findByText(firstNephi1Verse2.text).should('exist');
   });
 });
