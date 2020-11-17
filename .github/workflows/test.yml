@@ -39,7 +39,7 @@ jobs:
       - name: ESlint
         run: npm run lint
       - name: Seed Database
-        run: npx ts-node src/db/seed.ts
+        run: npx ts-node scripts/seed.ts
         env:
           DATABASE_URL: postgres://postgres:postgres@localhost:5432/postgres
       - name: Tests

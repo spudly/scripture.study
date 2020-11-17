@@ -1,3 +1,4 @@
+import '../src/utils/globals';
 import {
   Book,
   Chapter,
@@ -10,17 +11,17 @@ import {
   UserRole,
   Verse,
   Volume,
-} from '../api/api.postgres';
-import users from '../fixtures/users';
-import roles from '../fixtures/roles';
-import userRoles from '../fixtures/userRoles';
-import volumes from '../fixtures/volumes';
-import books from '../fixtures/books';
-import chapters from '../fixtures/chapters';
-import verses from '../fixtures/verses';
-import people from '../fixtures/people';
-import marks from '../fixtures/marks';
-import peopleLinks from '../fixtures/peopleLinks';
+} from '../src/api/api.postgres';
+import users from '../src/fixtures/users';
+import roles from '../src/fixtures/roles';
+import userRoles from '../src/fixtures/userRoles';
+import volumes from '../src/fixtures/volumes';
+import books from '../src/fixtures/books';
+import chapters from '../src/fixtures/chapters';
+import verses from '../src/fixtures/verses';
+import people from '../src/fixtures/people';
+import marks from '../src/fixtures/marks';
+import peopleLinks from '../src/fixtures/peopleLinks';
 
 const seed = async () => {
   await User.sync({force: true});
@@ -56,7 +57,7 @@ const seed = async () => {
   await PersonLink.bulkCreate(peopleLinks);
 };
 
-seed().catch((error) => {
+seed().catch(error => {
   process.exitCode = 1;
   // eslint-disable-next-line no-console
   console.error(error);

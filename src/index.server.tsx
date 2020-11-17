@@ -1,7 +1,7 @@
+import './utils/globals';
 import express from 'express';
 import {logger} from './utils/logger';
 import router from './api/router';
-import './utils/globals';
 
 const {PORT} = process.env;
 
