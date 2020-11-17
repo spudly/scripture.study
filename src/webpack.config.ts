@@ -1,5 +1,5 @@
 import path from 'path';
-import {Configuration, HotModuleReplacementPlugin} from 'webpack';
+import {Configuration, DefinePlugin, HotModuleReplacementPlugin} from 'webpack';
 // @ts-expect-error: installing types for this will cause @types/webpack to be installed, which is incompatible with webpack5
 import MiniCssExtractPlugin from 'mini-css-extract-plugin';
 import ReactRefreshWebpackPlugin from '@pmmmwh/react-refresh-webpack-plugin';
@@ -8,37 +8,21 @@ import cssnano from 'cssnano';
 import postCssImport from 'postcss-import';
 // @ts-expect-error: no typedef package available :(
 import tailwindCss from 'tailwindcss';
-
-const mode: 'production' | 'development' =
-  process.env.NODE_ENV === 'production' ? 'production' : 'development';
+import './utils/globals';
 
 const isNotNil = <T>(val: T | null | undefined): val is NonNullable<T> =>
   val != null;
-
-const plugins = [];
-if (mode === 'development') {
-  plugins.push(new HotModuleReplacementPlugin());
-  plugins.push(new ReactRefreshWebpackPlugin());
-} else {
-  plugins.push(
-    new MiniCssExtractPlugin({
-      filename: 'css/[name].css',
-    }),
-  );
-}
 
 const config: Configuration = {
   context: path.resolve(__dirname, '..'),
   devtool: 'source-map',
   entry: {
     index: [
-      mode === 'development'
-        ? 'webpack-hot-middleware/client?name=index.client'
-        : null,
+      !IS_PROD ? 'webpack-hot-middleware/client?name=index.client' : null,
       `./src/index.client.tsx`,
-    ].filter(isNotNil), // worker: './src/index.worker.ts',
+    ].filter(isNotNil),
   },
-  mode,
+  mode: !IS_PROD ? 'production' : 'development',
   module: {
     rules: [
       {
@@ -47,19 +31,18 @@ const config: Configuration = {
         use: [
           {
             loader: 'babel-loader',
-            options:
-              process.env.NODE_ENV === 'test'
-                ? {
-                    plugins: ['istanbul'],
-                  }
-                : undefined,
+            options: IS_TEST
+              ? {
+                  plugins: ['istanbul'],
+                }
+              : undefined,
           },
         ],
       },
       {
         test: /\.css$/u,
         use: [
-          mode === 'development' ? 'style-loader' : MiniCssExtractPlugin.loader,
+          !IS_PROD ? 'style-loader' : MiniCssExtractPlugin.loader,
           {
             loader: 'css-loader',
             options: {
@@ -74,7 +57,7 @@ const config: Configuration = {
                   postCssImport,
                   tailwindCss,
                   autoprefixer,
-                  ...(mode === 'development' ? [] : [cssnano()]),
+                  ...(IS_PROD ? [cssnano()] : []),
                 ],
               },
             },
@@ -89,7 +72,20 @@ const config: Configuration = {
     path: path.resolve(__dirname, '../public'),
     publicPath: '/',
   },
-  plugins,
+  plugins: [
+    ...(IS_PROD
+      ? [
+          new MiniCssExtractPlugin({
+            filename: 'css/[name].css',
+          }),
+        ]
+      : [new HotModuleReplacementPlugin(), new ReactRefreshWebpackPlugin()]),
+    new DefinePlugin({
+      IS_DEV,
+      IS_PROD,
+      IS_TEST,
+    }),
+  ],
   resolve: {
     extensions: ['.tsx', '.ts', '.js'],
   },

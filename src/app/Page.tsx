@@ -2,12 +2,10 @@ import React, {FC} from 'react';
 import Analytics from '../widgets/Analytics';
 import Alert from '../widgets/Alert';
 
-const PROD = process.env.NODE_ENV === 'production';
-
 const Page: FC<{csrfToken: string; nonce: string}> = ({csrfToken, nonce}) => (
   <html lang="en">
     <head>
-      {PROD && <Analytics id="G-40EV6Z82QM" nonce={nonce} />}
+      {IS_PROD && <Analytics id="G-40EV6Z82QM" nonce={nonce} />}
       <meta charSet="UTF-8" />
       <meta
         name="theme-color"
@@ -21,7 +19,7 @@ const Page: FC<{csrfToken: string; nonce: string}> = ({csrfToken, nonce}) => (
       <link rel="icon" href="/favicon.ico" type="image/x-icon" />
       <link rel="manifest" href="/manifest.json" />
       <link rel="apple-touch-icon" href="/icons/loco-192.png" />
-      {PROD && <link rel="stylesheet" href="/css/index.css" />}
+      {IS_PROD && <link rel="stylesheet" href="/css/index.css" />}
       <script nonce={nonce} src="/js/index.js" defer />
     </head>
     <body>

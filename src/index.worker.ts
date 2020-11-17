@@ -1,13 +1,10 @@
-import {isNotNil} from '@spudly/pushpop';
 import type {ExtendableEvent, FetchEvent} from './types';
 import {version} from './meta';
 
 const CACHE_KEY = `scripture-study-v${version}`;
-const CACHE_PREFETCH_URLS = [
-  '/',
-  process.env.NODE_ENV !== 'development' ? '/js/index.js' : null,
-  '/api/volumes',
-].filter(isNotNil);
+const CACHE_PREFETCH_URLS = IS_PROD
+  ? ['/', '/js/index.js', '/api/volumes']
+  : [];
 const CACHE_ALLOW_API_URLS = [
   '/api/volumes',
   '/api/books',
@@ -31,11 +28,21 @@ const isStaticFileRequest = (request: Request) =>
     parse(request.url).pathname,
   );
 
-const isRootHtmlRequest = (request: Request) =>
-  request.method === 'GET' &&
-  !/^[/](?:auth|api)[/]/u.test(parse(request.url).pathname) &&
-  !isStaticFileRequest(request) &&
-  !isJsRequest(request);
+const isDocRequest = (request: Request) => {
+  const path = parse(request.url).pathname;
+  if (request.method !== 'GET') {
+    return false;
+  }
+  if (path === '/') {
+    return true;
+  }
+  return (
+    !path.startsWith('/auth/') &&
+    !path.startsWith('/api/') &&
+    !isStaticFileRequest(request) &&
+    !isJsRequest(request)
+  );
+};
 
 const isSameOrigin = (request: Request) =>
   worker.location.origin === parse(request.url).origin;
@@ -45,15 +52,37 @@ const isHotUpdate = (request: Request) =>
 
 const isJsRequest = (request: Request) => /[.]js$/u.test(request.url);
 
-const isRequestCacheable = (request: Request) =>
-  isSameOrigin(request) &&
-  !isHotUpdate(request) &&
-  (isRootHtmlRequest(request) ||
-    (isJsRequest(request) && process.env.NODE_ENV !== 'development') ||
-    isStaticFileRequest(request) ||
+const isCypressPath = (request: Request) =>
+  parse(request.url).pathname.startsWith('/__');
+
+const isRequestCacheable = (request: Request) => {
+  if (!isSameOrigin(request)) {
+    return false;
+  }
+  if (isHotUpdate(request)) {
+    return false;
+  }
+  if (isCypressPath(request)) {
+    return false;
+  }
+  if (isDocRequest(request) && !IS_PROD) {
+    return false;
+  }
+  if (isJsRequest(request) && !IS_PROD) {
+    return false;
+  }
+  if (isStaticFileRequest(request)) {
+    return true;
+  }
+  if (
     CACHE_ALLOW_API_URLS.some(pattern =>
       parse(request.url).pathname.startsWith(pattern),
-    ));
+    )
+  ) {
+    return true;
+  }
+  return false;
+};
 
 const isResponseCacheable = (response: Response) =>
   response.ok && response.type === 'basic';
@@ -62,7 +91,7 @@ const isResponseCacheable = (response: Response) =>
 const getCachedResponse = async (
   request: Request,
 ): Promise<Response | null> => {
-  if (isRootHtmlRequest(request)) {
+  if (isDocRequest(request)) {
     const cachedHtmlResponse = await caches.match('/');
     if (cachedHtmlResponse) {
       return cachedHtmlResponse;

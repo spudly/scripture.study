@@ -118,13 +118,7 @@ const People = React.lazy(
 const App: FC = () => {
   return (
     <ReactQueryCacheProvider queryCache={queryCache}>
-      <Title
-        title={`scripture.study${
-          process.env.NODE_ENV !== 'production'
-            ? ` - ${process.env.NODE_ENV!.toUpperCase()}`
-            : ''
-        }`}
-      >
+      <Title title="scripture.study">
         <Authenticate>
           <div className="min-h-screen flex flex-col bg-gray-200 pt-20">
             <BrowserAlert />

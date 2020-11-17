@@ -185,7 +185,7 @@ const provideUserFromSession: Handler = (req, _resp, next) => {
 
 const sessionMiddleware = session({
   cookie: {
-    secure: process.env.NODE_ENV !== 'development',
+    secure: IS_PROD,
   },
   genid: () => uuid(),
   name: 'sessionId',
@@ -239,7 +239,7 @@ const router = express
   .use(compression())
   .use(createNonce)
   .use(
-    process.env.NODE_ENV === 'test'
+    IS_TEST
       ? noopHandler
       : helmet({
           contentSecurityPolicy: {
@@ -271,7 +271,7 @@ const router = express
               'script-src-attr': ["'none'"],
               'style-src': [
                 "'self'",
-                ...(process.env.NODE_ENV !== 'production'
+                ...(!IS_PROD
                   ? // needed for style-loader in dev mode:
                     ["'unsafe-inline'"]
                   : []),

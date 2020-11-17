@@ -25,7 +25,7 @@ const {DATABASE_URL} = process.env;
 
 const sql = new sequelize.Sequelize(DATABASE_URL!, {
   dialect: 'postgres',
-  ssl: process.env.NODE_ENV === 'production',
+  ssl: IS_PROD,
   define: {
     timestamps: false, // disable automatic createdAt & updatedAt columns
     freezeTableName: true, // disable automatic pluralization of table names
@@ -36,7 +36,7 @@ const sql = new sequelize.Sequelize(DATABASE_URL!, {
     max: 5,
     idle: 10000,
   },
-  logging: (msg) => {
+  logging: msg => {
     logger.info(msg);
   },
 });
@@ -625,7 +625,7 @@ const getAllVersesByChapterId = async (
     where: {chapterId},
     order: [['number', 'ASC']],
   });
-  return verses.map((v) => v.get());
+  return verses.map(v => v.get());
 };
 
 const findBookByOrder = async (order: number): Promise<BookRecord | null> => {
@@ -801,7 +801,7 @@ const makeDeleteRecord = (ModelClass: ModelCtor<Model<any, any>>) => async (
 
 const getAllRoles = async (): Promise<Array<RoleRecord>> => {
   const roles = await Role.findAll();
-  return roles.map((r) => r.get());
+  return roles.map(r => r.get());
 };
 
 export const getVersesAndMarksBySpeakerId = async (
@@ -840,7 +840,7 @@ export const getVersesAndMarksBySpeakerId = async (
     limit,
     offset,
   });
-  return marks.map((v) => v.get() as any);
+  return marks.map(v => v.get() as any);
 };
 
 export const countVersesBySpeakerId = async (
@@ -884,9 +884,9 @@ export const getAllMarksByChapterId = async (
   chapterId: ID,
 ): Promise<Array<MarkRecord>> => {
   const verses = await getAllVersesByChapterId('__IGNORED__', chapterId);
-  const verseIds = verses.map((v) => v.id);
+  const verseIds = verses.map(v => v.id);
   const marks = await Mark.findAll({where: {verseId: {[Op.in]: verseIds}}});
-  return marks.map((m) => m.get());
+  return marks.map(m => m.get());
 };
 
 export const getUserRolesById = async (
@@ -894,11 +894,11 @@ export const getUserRolesById = async (
 ): Promise<Array<RoleRecord>> => {
   const userRoles = await UserRole.findAll({where: {userId}});
   const roleIds = userRoles.map(
-    (ur) => ur.get('roleId') as UserRoleRecord['roleId'],
+    ur => ur.get('roleId') as UserRoleRecord['roleId'],
   );
   const roles = await Role.findAll({where: {id: {[Op.in]: roleIds}}});
-  const roleRecords = roles.map((r) => r.get());
-  if (roleRecords.find((r) => r.name === 'admin')) {
+  const roleRecords = roles.map(r => r.get());
+  if (roleRecords.find(r => r.name === 'admin')) {
     return getAllRoles();
   }
   return roleRecords;
@@ -955,7 +955,7 @@ export const deleteExpiredSessions = async (): Promise<number> => {
 };
 
 export const getAllSessions = async (): Promise<Array<SessionRecord>> => {
-  return (await Session.findAll({where: {}})).map((m) => m.get());
+  return (await Session.findAll({where: {}})).map(m => m.get());
 };
 
 export const deleteSession = async (id: ID): Promise<void> => {

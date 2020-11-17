@@ -18,10 +18,11 @@
     "start": "NODE_ENV=production node build/index.server.js",
     "start:dev": "NODE_ENV=development npm run start:dev:server | pino-pretty",
     "start:dev:server": "npm run codegen && ts-node src/index.server.dev.tsx",
+    "start:test": "NODE_ENV=test nyc npm run start:dev:server",
     "test": "rm -rf .nyc-output && rm -rf coverage && npm run test:unit && npm run test:integration",
-    "test:integration": "start-server-and-test test:integration:start http://localhost:3000 test:integration:run",
+    "test:integration": "start-server-and-test start:test http://localhost:3000 test:integration:run",
+    "test:integration:open": "cypress open",
     "test:integration:run": "cypress run",
-    "test:integration:start": "NODE_ENV=test nyc npm run start:dev:server",
     "test:unit": "jest --coverage --forceExit"
   },
   "husky": {
@@ -105,7 +106,6 @@
     ]
   },
   "nyc": {
-    "all": true,
     "cache": false,
     "exclude": [
       "**/*.test.*",

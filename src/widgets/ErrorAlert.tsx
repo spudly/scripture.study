@@ -12,7 +12,7 @@ const ErrorAlert: FC<Props> = ({error, grow}) => (
       size="auto"
       className={grow ? 'flex-1 max-w-64' : 'h-4 w-4'}
     />
-    {process.env.NODE_ENV === 'development' && (
+    {!IS_PROD && (
       <pre className="text-left text-base w-full overflow-x-auto">
         {typeof error === 'string'
           ? error

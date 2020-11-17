@@ -21,9 +21,9 @@ const VolumeDirectory: FC = () => {
 
   return (
     <Directory>
-      {volumes.sort(compareOrder).map((volume) => (
+      {volumes.sort(compareOrder).map(volume => (
         <DirectoryItem key={volume.id} href={scriptureLinkHref(volume.title)}>
-          {volume.longTitle}
+          {volume.title}
         </DirectoryItem>
       ))}
     </Directory>

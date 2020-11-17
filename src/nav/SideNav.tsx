@@ -33,6 +33,7 @@ const SideNav: FC<{isOpen: boolean; close: () => void}> = ({isOpen, close}) => {
             'left-0': isOpen,
           },
         )}
+        data-test-id="side-nav"
       >
         <div className="flex p-2 items-center justify-between">
           <span className="text-base">Scripture Study</span>
