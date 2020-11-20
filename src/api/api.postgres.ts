@@ -652,7 +652,7 @@ const getLastChapterByBookId = async (bookId: ID): Promise<ChapterRecord> => {
   });
 
   if (!lastChapter) {
-    throw new Error('not found');
+    throw new Error(`Unable to find last chapter for book (ID: ${bookId})`);
   }
 
   return lastChapter.get();

@@ -1,5 +1,5 @@
 import {VerseRecord} from '../types';
-import {firstNephi2} from './chapters';
+import {firstNephi1} from './chapters';
 import {johnDoe} from './users';
 
 export const firstNephi1Verse1: VerseRecord = {
@@ -9,7 +9,7 @@ export const firstNephi1Verse1: VerseRecord = {
   number: 1,
   text:
     'I, Nephi, having been born of goodly parents, therefore I was taught somewhat in all the learning of my father; and having seen many afflictions in the course of my days, nevertheless, having been highly favored of the Lord in all my days; yea, having had a great knowledge of the goodness and the mysteries of God, therefore I make a record of my proceedings in my days.',
-  chapterId: firstNephi2.id,
+  chapterId: firstNephi1.id,
   lastUpdatedBy: johnDoe.id,
   approvedBy: johnDoe.id,
 };
@@ -21,7 +21,7 @@ export const firstNephi1Verse2: VerseRecord = {
   number: 2,
   text:
     'Yea, I make a record in the language of my father, which consists of the learning of the Jews and the language of the Egyptians.',
-  chapterId: firstNephi2.id,
+  chapterId: firstNephi1.id,
   lastUpdatedBy: johnDoe.id,
   approvedBy: johnDoe.id,
 };

@@ -15,6 +15,7 @@
     "codegen:meta": "ts-node scripts/meta.ts | prettier --stdin-filepath src/meta.ts > src/meta.ts",
     "depcheck": "depcheck --ignores=\",@commitlint/*,@types/*,prettier,pretty-quick,sort-package-json,typescript,autoprefixer,tailwindcss,postcss-import,webpack-cli,pg,pg-hstore,*-loader,babel-*\"",
     "lint": "eslint . --ext .js,.jsx,.ts,.tsx",
+    "seed": "ts-node scripts/seed.ts | pino-pretty",
     "start": "NODE_ENV=production node build/index.server.js",
     "start:dev": "NODE_ENV=development npm run start:dev:server | pino-pretty",
     "start:dev:server": "npm run codegen && ts-node src/index.server.dev.tsx",

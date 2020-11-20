@@ -1,6 +1,20 @@
 import type {BookRecord} from '../types';
 import {johnDoe} from './users';
-import {bookOfMormon} from './volumes';
+import {bookOfMormon, newTestament} from './volumes';
+
+export const revelation: BookRecord = {
+  abbr: 'Rev.',
+  approvedBy: johnDoe.id,
+  approvedDate: 1601942400000,
+  id: 'dda98deb-4c6f-4b59-bc10-1aa9503e7a61',
+  lastUpdatedBy: johnDoe.id,
+  lastUpdatedDate: 1601942400000,
+  longTitle: 'The Revelation of St John the Divine',
+  order: 66,
+  subtitle: '',
+  title: 'Revelation',
+  volumeId: newTestament.id,
+};
 
 export const firstNephi: BookRecord = {
   lastUpdatedDate: 1601942400000,
@@ -30,4 +44,4 @@ export const secondNephi: BookRecord = {
   approvedBy: johnDoe.id,
 };
 
-export default [firstNephi, secondNephi];
+export default [firstNephi, secondNephi, revelation];
