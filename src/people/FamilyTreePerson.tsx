@@ -8,7 +8,7 @@ import usePerson from '../api/usePerson';
 import {serializePerson, serializePersonJsx} from '../utils/serializePerson';
 import UserContext from '../utils/UserContext';
 import hasRole from '../utils/hasRole';
-import queryCache from '../utils/queryCache';
+import queryClient from '../utils/queryClient';
 import {deletePersonLink} from '../api/api.client';
 import IconButton from '../widgets/IconButton';
 
@@ -24,9 +24,9 @@ const FamilyTreePerson = forwardRef<
   const user = useContext(UserContext);
   const [person] = usePerson(id);
 
-  const [deleteLink] = useMutation(deletePersonLink, {
+  const {mutate: deleteLink} = useMutation(deletePersonLink, {
     onSuccess: () => {
-      void queryCache.invalidateQueries('people_links');
+      void queryClient.invalidateQueries('people_links');
     },
   });
 

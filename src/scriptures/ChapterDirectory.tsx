@@ -1,5 +1,5 @@
 /* eslint-disable react-hooks/exhaustive-deps */
-import React, {FC, useCallback} from 'react';
+import React, {FC} from 'react';
 import {compareBy, get} from '@spudly/pushpop';
 import {useQuery} from 'react-query';
 import {
@@ -20,25 +20,18 @@ const BookDirectory: FC = () => {
   if (!volumeTitle || !bookTitle) {
     throw new Error('Missing volume or book title');
   }
-  const {data: volume} = useQuery(
-    ['volumes', volumeTitle],
-    useCallback((key, title) => getVolumeByTitle(title), []),
+  const {data: volume} = useQuery(['volumes', volumeTitle], () =>
+    getVolumeByTitle(volumeTitle),
   );
   const {data: book} = useQuery(
     ['books', volume?.id, bookTitle],
-    useCallback(
-      (key, volumeId, title) => getBookByVolumeIdAndTitle(volumeId, title),
-      [volume, bookTitle],
-    ),
-    {enabled: volume && bookTitle},
+    () => getBookByVolumeIdAndTitle(volume!.id, bookTitle),
+    {enabled: volume != null},
   );
   const {data: {items: chapters = undefined} = {}} = useQuery(
     ['chapters', book?.id],
-    useCallback((key, bookId) => getAllChaptersByBookId(bookId), [
-      volume,
-      book,
-    ]),
-    {enabled: volume && book},
+    () => getAllChaptersByBookId(book!.id),
+    {enabled: volume != null && book != null},
   );
 
   if (!volume || !book || !chapters) {
@@ -47,7 +40,7 @@ const BookDirectory: FC = () => {
 
   return (
     <Directory>
-      {chapters.sort(compareNumber).map((chapter) => (
+      {chapters.sort(compareNumber).map(chapter => (
         <DirectoryItem
           key={chapter.id}
           href={scriptureLinkHref(volume.title, book.title, chapter.number)}

@@ -1,11 +1,11 @@
 import React, {FC} from 'react';
 import {Unstyled} from '../types';
 
-const Select: FC<Unstyled<'select'>> = (props) => (
+const Select: FC<Unstyled<'select'>> = props => (
   <div className="relative">
     <select
       {...props}
-      className="block appearance-none w-full bg-white border border-gray-400 hover:border-gray-500 px-4 py-2 pr-8 rounded shadow leading-tight focus:outline-none focus:shadow-outline"
+      className="block appearance-none w-full bg-white border border-gray-400 hover:border-gray-500 px-4 py-2 pr-8 rounded shadow leading-tight focus:outline-none focus:ring"
     />
     <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 text-gray-700">
       <svg className="fill-current h-4 w-4" viewBox="0 0 20 20">

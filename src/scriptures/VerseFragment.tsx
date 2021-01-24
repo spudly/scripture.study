@@ -72,7 +72,7 @@ const VerseFragment: FC<{
         {
           'cursor-pointer': isSelectable,
           'focus:outline-none': isSelectable,
-          'focus:shadow-outline': isSelectable,
+          'focus:ring': isSelectable,
         },
       )}
       onClick={

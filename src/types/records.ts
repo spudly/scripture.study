@@ -1,3 +1,5 @@
+import type {SessionData} from 'express-session';
+
 export type ID = string;
 
 export type RoleName = 'admin' | 'moderator' | 'author';
@@ -24,7 +26,7 @@ export type UserRecord = {
 
 export type SessionRecord = {
   id: ID;
-  data: Express.SessionData;
+  data: SessionData;
   expirationDate: number;
 };
 

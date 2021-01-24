@@ -16,7 +16,7 @@ import isEmptySelection from '../utils/isEmptySelection';
 import UserContext from '../utils/UserContext';
 import hasRole from '../utils/hasRole';
 import {bulkMutation} from '../api/api.client';
-import queryCache from '../utils/queryCache';
+import queryClient from '../utils/queryClient';
 import CreateMarkButton from './CreateMarkButton';
 import LayersButton from './LayersButton';
 import DeleteMarksButton from './DeleteMarksButton';
@@ -37,10 +37,10 @@ const Verses: FC<{
     setSelections([]);
     setSelectedMarkIds([]);
     window.getSelection()?.empty();
-    queryCache.invalidateQueries('marks');
+    queryClient.invalidateQueries('marks');
   };
 
-  const [createMarks, {isLoading: isCreatingMarks}] = useMutation<
+  const {mutate: createMarks, isLoading: isCreatingMarks} = useMutation<
     BulkMutationResponseBody<MarkRecord>,
     Error,
     {marks: Array<Unsaved<MarkRecord>>}
@@ -50,7 +50,7 @@ const Verses: FC<{
     {onSuccess: handleSuccess},
   );
 
-  const [updateMarks, {isLoading: isUpdatingMarks}] = useMutation<
+  const {mutate: updateMarks, isLoading: isUpdatingMarks} = useMutation<
     BulkMutationResponseBody<MarkRecord>,
     Error,
     {
@@ -62,7 +62,7 @@ const Verses: FC<{
     {onSuccess: handleSuccess},
   );
 
-  const [deleteMarks, {isLoading: isDeletingMarks}] = useMutation<
+  const {mutate: deleteMarks, isLoading: isDeletingMarks} = useMutation<
     BulkMutationResponseBody<MarkRecord>,
     Error,
     {ids: Array<ID>}

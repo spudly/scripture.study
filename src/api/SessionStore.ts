@@ -1,4 +1,6 @@
 import {Store} from 'express-session';
+// eslint-disable-next-line no-duplicate-imports -- type import
+import type {SessionData} from 'express-session';
 import {logger} from '../utils/logger';
 import {
   countSessions,
@@ -11,7 +13,7 @@ import {
   setSessionExpirationDate,
 } from './api.postgres';
 
-type SessionMap = {[sessionId: string]: Express.SessionData};
+type SessionMap = {[sessionId: string]: SessionData};
 
 const MINUTE = 1000 * 60;
 const HOUR = MINUTE * 60;
@@ -99,11 +101,9 @@ class SessionStore extends Store {
    * Used to get the count of all sessions in the store. The callback should
    * be called as callback(error, len).
    */
-  length = async (
-    callback: (error?: Error, length?: number | null) => void,
-  ) => {
+  length = async (callback: (error: any, length: number) => void) => {
     let error: Error | undefined = undefined;
-    let length: number | null | undefined = undefined;
+    let length: number = 0;
     try {
       length = await countSessions();
       logger.info({num: length}, '[SessionStore} number of active sessions');
@@ -124,10 +124,10 @@ class SessionStore extends Store {
    */
   get = async (
     sessionId: string,
-    callback: (error?: Error, session?: Express.SessionData | null) => void,
+    callback: (error?: Error, session?: SessionData | null) => void,
   ) => {
     let error: Error | undefined = undefined;
-    let data: Express.SessionData | null | undefined = undefined;
+    let data: SessionData | null | undefined = undefined;
     try {
       const model = await getSession(sessionId);
       data = model?.data;
@@ -146,7 +146,7 @@ class SessionStore extends Store {
    */
   set = async (
     sessionId: string,
-    data: Express.SessionData,
+    data: SessionData,
     callback?: (error?: Error) => void,
   ) => {
     let error: Error | undefined = undefined;
@@ -171,7 +171,7 @@ class SessionStore extends Store {
    */
   touch = async (
     sessionId: string,
-    _session: Express.SessionData,
+    _session: SessionData,
     callback?: (error?: Error) => void,
   ) => {
     let error: Error | undefined = undefined;

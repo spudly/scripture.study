@@ -1,6 +1,6 @@
 import React, {FC, useState} from 'react';
 import {useId} from '@reach/auto-id';
-import {useQueryCache} from 'react-query';
+import {useQueryClient} from 'react-query';
 import {createPerson, updatePerson} from '../api/api.client';
 import ErrorAlert from '../widgets/ErrorAlert';
 import Dialog from '../widgets/Dialog';
@@ -22,7 +22,7 @@ const EditPersonDialog: FC<{
   const [description, setDescriptiongrapy] = useState(
     person.description ?? null,
   );
-  const queryCache = useQueryCache();
+  const queryClient = useQueryClient();
 
   const [error, setError] = useState<Error | null>(null);
 
@@ -43,7 +43,7 @@ const EditPersonDialog: FC<{
           order: order || null,
         });
       }
-      queryCache.invalidateQueries('people');
+      queryClient.invalidateQueries('people');
       close();
     } catch (err) {
       setError(err);
@@ -57,7 +57,7 @@ const EditPersonDialog: FC<{
           id={nameFieldId}
           type="text"
           value={name ?? ''}
-          onChange={(e) => setName(e.currentTarget.value)}
+          onChange={e => setName(e.currentTarget.value)}
         />
       </FormGroup>
 
@@ -68,7 +68,7 @@ const EditPersonDialog: FC<{
           min={1}
           step={1}
           value={order ?? ''}
-          onChange={(e) => setOrder(e.currentTarget.valueAsNumber)}
+          onChange={e => setOrder(e.currentTarget.valueAsNumber)}
         />
       </FormGroup>
 
@@ -76,7 +76,7 @@ const EditPersonDialog: FC<{
         <Textarea
           id={descriptionFieldId}
           value={description ?? ''}
-          onChange={(e) => setDescriptiongrapy(e.currentTarget.value)}
+          onChange={e => setDescriptiongrapy(e.currentTarget.value)}
         />
       </FormGroup>
 

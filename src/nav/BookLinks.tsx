@@ -14,13 +14,13 @@ const BookLinks: FC<{
 }> = ({volume, bookTitle, closeSideNav}) => {
   const {data: {items: books = undefined} = {}} = useQuery(
     ['books', volume.id],
-    useCallback((key, volumeId) => getAllBooksByVolumeId(volumeId), []),
-    {enabled: volume},
+    () => getAllBooksByVolumeId(volume.id),
+    {enabled: volume != null},
   );
 
   return (
     <>
-      {books?.map((book) => (
+      {books?.map(book => (
         <SideNavLinkBranch
           key={book.id}
           isOpen={book.title === bookTitle}

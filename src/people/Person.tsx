@@ -15,27 +15,27 @@ const Person: FC<{id: string}> = ({id}) => {
   const [self] = usePerson(id);
   const {data: links} = useQuery(
     ['people_links', id],
-    async (key: string, selfId: ID): Promise<Array<PersonLinkRecord>> => {
+    async (): Promise<Array<PersonLinkRecord>> => {
       const [
         {items: linksFromPerson},
         {items: linksToPerson},
       ] = await Promise.all([
         fetchJson<GetAllResponseBody<PersonLinkRecord>>(
           `/api/people-links?${stringify({
-            fromPersonId: selfId,
+            fromPersonId: id,
           })}`,
         ),
         fetchJson<GetAllResponseBody<PersonLinkRecord>>(
           `/api/people-links?${stringify({
-            toPersonId: selfId,
+            toPersonId: id,
           })}`,
         ),
       ]);
       const siblingLinks = (
         await Promise.all(
           linksFromPerson
-            .filter((l) => l.type === 'childOf')
-            .map(async (parentLink) => {
+            .filter(l => l.type === 'childOf')
+            .map(async parentLink => {
               const result = await fetchJson<
                 GetAllResponseBody<PersonLinkRecord>
               >(
@@ -48,7 +48,7 @@ const Person: FC<{id: string}> = ({id}) => {
             }),
         )
       ).flat();
-      return uniqBy((link) => link.id, [
+      return uniqBy(link => link.id, [
         ...linksFromPerson,
         ...siblingLinks,
         ...linksToPerson,

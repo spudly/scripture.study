@@ -12,12 +12,12 @@ const ChapterLinks: FC<{
 }> = ({volume, book, closeSideNav}) => {
   const {data: {items: chapters = undefined} = {}} = useQuery(
     ['chapters', book.id],
-    useCallback((key, bookId) => getAllChaptersByBookId(bookId), []),
+    () => getAllChaptersByBookId(book.id),
   );
 
   return (
     <div className="flex flex-wrap pl-8">
-      {chapters?.map((chapter) => (
+      {chapters?.map(chapter => (
         <NavLink
           key={chapter.id}
           to={scriptureLinkHref(volume.title, book.title, chapter.number)}

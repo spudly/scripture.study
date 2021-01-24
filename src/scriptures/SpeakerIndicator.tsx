@@ -15,7 +15,7 @@ const SpeakerIndicator: FC<{
   return (
     <Link
       to={`/people/${speakerId}`}
-      className="inline-flex flex-col justify-center w-rel-8 h-rel-8 mx-rel-1 align-middle overflow-hidden select-none transform hover:scale-110 focus:outline-none focus:shadow-outline"
+      className="inline-flex flex-col justify-center w-rel-8 h-rel-8 mx-rel-1 align-middle overflow-hidden select-none transform hover:scale-110 focus:outline-none focus:ring"
       data-selection-ignore
       title={serializePerson(speaker)}
     >

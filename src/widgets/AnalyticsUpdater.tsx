@@ -1,12 +1,12 @@
 import {FC, useEffect} from 'react';
-import {LocationListener} from 'history';
+import type {LocationListener} from 'history';
 import {useHistory} from 'react-router-dom';
 
 const GoogleAnalyticsUpdater: FC = () => {
   const history = useHistory();
 
   useEffect(() => {
-    const callback: LocationListener = (location) => {
+    const callback: LocationListener = location => {
       if (!window.ga) {
         return;
       }

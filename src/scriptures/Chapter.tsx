@@ -1,6 +1,6 @@
 import React, {FC, useCallback, useEffect} from 'react';
 import {useRouteMatch} from 'react-router';
-import {QueryCache, useQuery, useQueryCache} from 'react-query';
+import {QueryClient, useQuery, useQueryClient} from 'react-query';
 import {isNotNil} from '@spudly/pushpop';
 import Spinner from '../widgets/Spinner';
 import refToTitle from '../utils/refToTitle';
@@ -31,7 +31,7 @@ type PrevNext = {
 };
 
 const prefetchAdjacent = async (
-  queryCache: QueryCache,
+  queryClient: QueryClient,
   prev: PrevNext | null,
   next: PrevNext | null,
 ): Promise<void> => {
@@ -39,34 +39,27 @@ const prefetchAdjacent = async (
     [prev, next]
       .filter(isNotNil)
       .flatMap<Promise<any>>(({volume, book, chapter}) => [
-        queryCache.prefetchQuery(
-          ['volumes', volume.title],
-          (key, title: string) => getVolumeByTitle(title),
+        queryClient.prefetchQuery(['volumes', volume.title], () =>
+          getVolumeByTitle(volume.title),
         ),
-        queryCache.prefetchQuery(
-          ['books', volume.id, book.title],
-          (key, volumeId: string, title: string) =>
-            getBookByVolumeIdAndTitle(volumeId, title),
+        queryClient.prefetchQuery(['books', volume.id, book.title], () =>
+          getBookByVolumeIdAndTitle(volume.id, book.title),
         ),
-        queryCache.prefetchQuery(
-          ['chapters', book.id, chapter.number],
-          (key, bookId: string, number: number) =>
-            getChapterByBookIdAndNumber(bookId, number),
+        queryClient.prefetchQuery(['chapters', book.id, chapter.number], () =>
+          getChapterByBookIdAndNumber(book.id, chapter.number),
         ),
-        queryCache.prefetchQuery(
-          ['verses', chapter.id],
-          (key, chapterId: string) => getAllVersesByChapterId(chapterId),
+        queryClient.prefetchQuery(['verses', chapter.id], () =>
+          getAllVersesByChapterId(chapter.id),
         ),
-        queryCache.prefetchQuery(
-          ['marks', chapter?.id],
-          (key, chapterId: string) => getAllMarksByChapterId(chapterId),
+        queryClient.prefetchQuery(['marks', chapter?.id], () =>
+          getAllMarksByChapterId(chapter?.id),
         ),
       ]),
   );
 };
 
 const Chapter: FC = () => {
-  const queryCache = useQueryCache();
+  const queryClient = useQueryClient();
   useRestoreScrollPosition();
   const match = useRouteMatch<{
     volumeRef: string;
@@ -79,17 +72,13 @@ const Chapter: FC = () => {
     data: volume,
     isLoading: isVolumeLoading,
     error: volumeError,
-  } = useQuery(
-    ['volumes', refToTitle(volumeRef)],
-    useCallback((key, title) => getVolumeByTitle(title), []),
+  } = useQuery(['volumes', refToTitle(volumeRef)], () =>
+    getVolumeByTitle(refToTitle(volumeRef)),
   );
 
   const {data: book, isLoading: isBookLoading, error: bookError} = useQuery(
     ['books', volume?.id, refToTitle(bookRef)],
-    useCallback(
-      (key, volumeId, title) => getBookByVolumeIdAndTitle(volumeId, title),
-      [],
-    ),
+    () => getBookByVolumeIdAndTitle(volume!.id, refToTitle(bookRef)),
     {
       enabled: volume != null,
     },
@@ -101,10 +90,7 @@ const Chapter: FC = () => {
     error: chapterError,
   } = useQuery(
     ['chapters', book?.id, refToNumber(chapterRef)],
-    useCallback(
-      (key, bookId, number) => getChapterByBookIdAndNumber(bookId, number),
-      [],
-    ),
+    () => getChapterByBookIdAndNumber(book!.id, refToNumber(chapterRef)),
     {enabled: book != null},
   );
 
@@ -114,13 +100,13 @@ const Chapter: FC = () => {
     error: versesError,
   } = useQuery(
     ['verses', chapter?.id],
-    useCallback((key, chapterId) => getAllVersesByChapterId(chapterId), []),
+    () => getAllVersesByChapterId(chapter!.id),
     {enabled: volume != null && chapter != null},
   );
 
   const {data: marks, isLoading: isMarksLoading, error: marksError} = useQuery(
     ['marks', chapter?.id],
-    useCallback((key, chapterId) => getAllMarksByChapterId(chapterId), []),
+    () => getAllMarksByChapterId(chapter!.id),
     {enabled: volume != null && chapter != null},
   );
 
@@ -130,7 +116,7 @@ const Chapter: FC = () => {
     error: adjacentError,
   } = useQuery(
     ['prevChapter', chapter?.id],
-    useCallback((key, chapterId) => getAdjacentChapters(chapterId), []),
+    () => getAdjacentChapters(chapter!.id),
     {enabled: volume != null && chapter != null},
   );
 
@@ -141,8 +127,8 @@ const Chapter: FC = () => {
   } = useQuery('people', getAllPeople);
 
   useEffect(() => {
-    prefetchAdjacent(queryCache, prev, next);
-  }, [queryCache, prev, next]);
+    prefetchAdjacent(queryClient, prev, next);
+  }, [queryClient, prev, next]);
 
   if (
     isVolumeLoading ||

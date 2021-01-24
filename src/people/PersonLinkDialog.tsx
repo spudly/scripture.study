@@ -1,6 +1,6 @@
 import {useId} from '@reach/auto-id';
 import React, {FC, useState} from 'react';
-import {useMutation, useQueryCache} from 'react-query';
+import {useMutation, useQueryClient} from 'react-query';
 import {createPersonLink, updatePersonLink} from '../api/api.client';
 import {ID, PersonLinkRecord, PersonRecord, Unsaved} from '../types';
 import Button from '../widgets/Button';
@@ -59,11 +59,11 @@ const PersonLinkDialog: FC<{
   );
   const typeFieldId = useId();
   const otherPersonFieldId = useId();
-  const queryCache = useQueryCache();
+  const queryClient = useQueryClient();
 
-  const [save] = useMutation(createOrUpdatePersonLink, {
+  const {mutate: save} = useMutation(createOrUpdatePersonLink, {
     onSuccess: () => {
-      void queryCache.invalidateQueries('people_links');
+      void queryClient.invalidateQueries('people_links');
       close();
     },
   });
@@ -74,7 +74,7 @@ const PersonLinkDialog: FC<{
         <Select
           id={typeFieldId}
           value={`${reverse ? 'reverse:' : ''}${type ?? ''}`}
-          onChange={(e) => {
+          onChange={e => {
             const {value} = e.currentTarget;
             setType(
               (value?.replace(/^reverse:/u, '') || null) as
@@ -97,7 +97,7 @@ const PersonLinkDialog: FC<{
         <PersonSelect
           id={otherPersonFieldId}
           value={otherPersonId ?? ''}
-          onChange={(e) => setOtherPersonId(e.currentTarget.value || null)}
+          onChange={e => setOtherPersonId(e.currentTarget.value || null)}
         />
       </FormGroup>
       <Button

@@ -1,6 +1,13 @@
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 import type {UserWithRoles} from './records';
 
+declare module 'express-session' {
+  interface SessionData {
+    user: UserWithRoles;
+    authRedirectUrl: string;
+  }
+}
+
 declare global {
   const IS_DEV: boolean;
   const IS_PROD: boolean;
@@ -8,9 +15,6 @@ declare global {
 
   namespace Express {
     interface User extends UserWithRoles {}
-    interface SessionData {
-      user: UserWithRoles;
-    }
   }
 
   interface CSSStyleDeclaration {

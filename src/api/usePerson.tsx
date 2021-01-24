@@ -10,13 +10,10 @@ const usePerson = (id?: ID | null) => {
     error,
   } = useQuery(
     ['people', id],
-    useCallback(
-      (key, personId) =>
-        fetchJson<GetAllResponseBody<PersonRecord>>(
-          `/api/people?id=${encodeURIComponent(personId)}`,
-        ),
-      [],
-    ),
+    () =>
+      fetchJson<GetAllResponseBody<PersonRecord>>(
+        `/api/people?id=${encodeURIComponent(id!)}`,
+      ),
     {enabled: id != null},
   );
   return [person as PersonRecord | undefined, isLoading, error] as const;

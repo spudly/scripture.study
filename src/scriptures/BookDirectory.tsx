@@ -1,4 +1,4 @@
-import React, {FC, useCallback} from 'react';
+import React, {FC} from 'react';
 import {compareBy, get} from '@spudly/pushpop';
 import {useQuery} from 'react-query';
 import {getAllBooksByVolumeId, getVolumeByTitle} from '../api/api.client';
@@ -15,14 +15,13 @@ const BookDirectory: FC = () => {
   if (!volumeTitle) {
     throw new Error('Missing volume title');
   }
-  const {data: volume} = useQuery(
-    ['volumes', volumeTitle],
-    useCallback((key, title) => getVolumeByTitle(title), []),
+  const {data: volume} = useQuery(['volumes', volumeTitle], () =>
+    getVolumeByTitle(volumeTitle),
   );
   const {data: {items: books = undefined} = {}} = useQuery(
     ['books', volume?.id],
-    useCallback((key, volumeId) => getAllBooksByVolumeId(volumeId), []),
-    {enabled: volume},
+    () => getAllBooksByVolumeId(volume!.id),
+    {enabled: volume != null},
   );
 
   if (!volume || !books) {
@@ -31,7 +30,7 @@ const BookDirectory: FC = () => {
 
   return (
     <Directory>
-      {books.sort(compareOrder).map((book) => (
+      {books.sort(compareOrder).map(book => (
         <DirectoryItem
           key={book.id}
           href={scriptureLinkHref(volume.title, book.title)}

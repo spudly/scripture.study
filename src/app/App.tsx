@@ -1,13 +1,13 @@
 import React, {FC, Suspense} from 'react';
 import {Redirect, Route, Switch} from 'react-router';
-import {ReactQueryCacheProvider} from 'react-query';
+import {QueryClientProvider} from 'react-query';
 import {Link} from 'react-router-dom';
 import ErrorBoundary from '../widgets/ErrorBoundary';
 import Authenticate from '../auth/Authenticate';
 import Title from '../widgets/Title';
 import Nav from '../nav/Nav';
 import Comparisons from '../comparisons/Comparisons';
-import queryCache from '../utils/queryCache';
+import queryClient from '../utils/queryClient';
 import Spinner from '../widgets/Spinner';
 import BrowserSupport from '../support/BrowserSupport';
 import AnchorLink from '../widgets/AnchorLink';
@@ -117,7 +117,7 @@ const People = React.lazy(
 
 const App: FC = () => {
   return (
-    <ReactQueryCacheProvider queryCache={queryCache}>
+    <QueryClientProvider client={queryClient}>
       <Title title="scripture.study">
         <Authenticate>
           <div className="min-h-screen flex flex-col bg-gray-200 pt-20">
@@ -188,7 +188,7 @@ const App: FC = () => {
           <Nav />
         </Authenticate>
       </Title>
-    </ReactQueryCacheProvider>
+    </QueryClientProvider>
   );
 };
 

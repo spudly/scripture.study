@@ -33,7 +33,7 @@ const VERSES_PER_PAGE = 5;
 const flattenAndCombineMarks = (
   groups: Array<GetAllResponseBody<MarkRecordPlus>> = [],
 ): Array<MarkedVerse> => {
-  const x = groups.filter(isNotNil).flatMap((group) => group.items);
+  const x = groups.filter(isNotNil).flatMap(group => group.items);
   const y = x.reduce<Array<MarkedVerse>>(
     (
       markedVerses,
@@ -77,26 +77,26 @@ const PersonVerses: FC<{
   person: PersonRecord;
 }> = ({person}) => {
   const {
-    data: markGroups,
-    fetchMore,
+    data: {pages: markGroups} = {},
+    fetchNextPage,
     isFetching,
-    isFetchingMore,
-    canFetchMore,
+    isFetchingNextPage,
+    hasNextPage,
   } = useInfiniteQuery(
     ['verses', 'marks', person.id],
-    async (_, __, speakerId: ID, offset: number) => {
+    async ({pageParam = 0}) => {
       return await fetchJson<GetAllResponseBody<MarkRecordPlus>>(
         `/api/verses/bySpeakerId/${encodeURIComponent(
-          speakerId,
+          person.id,
         )}?limit=${encodeURIComponent(
           VERSES_PER_PAGE,
-        )}&offset=${encodeURIComponent(offset ?? '')}`,
+        )}&offset=${encodeURIComponent(pageParam * VERSES_PER_PAGE)}`,
       );
     },
     {
-      getFetchMore: (lastGroup) => {
-        const nextOffset = lastGroup.offset + VERSES_PER_PAGE;
-        return nextOffset < lastGroup.count ? nextOffset : null;
+      getNextPageParam: lastPage => {
+        const nextOffset = lastPage.offset + VERSES_PER_PAGE;
+        return nextOffset < lastPage.count ? nextOffset : null;
       },
     },
   );
@@ -105,7 +105,7 @@ const PersonVerses: FC<{
     markGroups,
   ]);
 
-  if (isFetching && !isFetchingMore) {
+  if (isFetching && !isFetchingNextPage) {
     return <Spinner grow />;
   }
 
@@ -144,10 +144,10 @@ const PersonVerses: FC<{
         );
         return els;
       })}
-      {canFetchMore && (
+      {hasNextPage && (
         <div className="text-center">
-          <Button onClick={() => fetchMore()}>
-            {isFetchingMore ? (
+          <Button onClick={() => fetchNextPage()}>
+            {isFetchingNextPage ? (
               <>
                 <Spinner />
                 <Spacer x={2} />

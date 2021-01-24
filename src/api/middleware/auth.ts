@@ -81,13 +81,13 @@ export const googleCallbackMiddleware: Handler = async (req, resp) => {
   const roles = await getUserRolesById(user.id);
   const userWithRoles: UserWithRoles = {
     ...user,
-    roles: roles.map((r) => r.name),
+    roles: roles.map(r => r.name),
   };
 
   const authRedirectUrl = req.session?.authRedirectUrl ?? '/';
 
-  await new Promise((resolve, reject) => {
-    req.session!.regenerate((error) => {
+  await new Promise<void>((resolve, reject) => {
+    req.session!.regenerate(error => {
       if (error) {
         reject(error);
         return;
@@ -106,8 +106,8 @@ export const logout: Handler = async (req, resp) => {
   const user = req.session?.user;
   authRedirectUrl = sanitizeAuthRedirectUrl(authRedirectUrl);
 
-  await new Promise((resolve, reject) => {
-    req.session!.regenerate((error) => {
+  await new Promise<void>((resolve, reject) => {
+    req.session!.regenerate(error => {
       if (error) {
         reject(error);
         return;
