@@ -14,7 +14,7 @@ const PersonSelect: FC<ComponentProps<typeof Select>> = ({
   onChange,
   ...rest
 }) => {
-  const [recentPersonIds, setPersonIdUsed] = useRecentItems('recentPeople', 5);
+  const [recentPersonIds, setPersonIdUsed] = useRecentItems('recentPeople', 15);
 
   const {data: {items: people = undefined} = {}, error, isLoading} = useQuery(
     ['people'],
@@ -29,7 +29,7 @@ const PersonSelect: FC<ComponentProps<typeof Select>> = ({
     return <ErrorAlert error={error} />;
   }
 
-  const recentPeople = people.filter((s) => recentPersonIds?.includes(s.id));
+  const recentPeople = people.filter(s => recentPersonIds?.includes(s.id));
   const renderPersonOption = (person: PersonRecord) => (
     <option key={person.id} value={person.id}>
       {serializePerson(person)}
@@ -39,7 +39,7 @@ const PersonSelect: FC<ComponentProps<typeof Select>> = ({
     <Select
       {...rest}
       value={value}
-      onChange={(e) => {
+      onChange={e => {
         setPersonIdUsed(e.currentTarget.value);
         onChange?.(e);
       }}
