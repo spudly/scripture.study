@@ -1,6 +1,6 @@
 import React, {FC, ReactNode, useCallback, useState} from 'react';
 import classnames from 'classnames';
-import {MdClose} from 'react-icons/md';
+import {MdClose} from '@meronex/icons/md';
 import {ThemeName, theme} from '../utils/themes';
 import CircleButton from './CircleButton';
 import Overlay from './Overlay';

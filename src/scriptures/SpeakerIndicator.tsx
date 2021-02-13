@@ -1,5 +1,5 @@
 import React, {FC} from 'react';
-import {MdRecordVoiceOver} from 'react-icons/md';
+import {MdRecordVoiceOver} from '@meronex/icons/md';
 import {Link} from 'react-router-dom';
 import {ID, PersonRecord} from '../types';
 import {serializePerson, serializePersonJsx} from '../utils/serializePerson';

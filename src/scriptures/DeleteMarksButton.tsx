@@ -1,5 +1,5 @@
 import React, {FC} from 'react';
-import {MdDelete} from 'react-icons/md';
+import {MdDelete} from '@meronex/icons/md';
 import CircleButton from '../widgets/CircleButton';
 import Spinner from '../widgets/Spinner';
 import {ID, MarkRecord} from '../types';
@@ -14,7 +14,7 @@ const DeleteMarksButton: FC<{
     themeId="red"
     onClick={() =>
       deleteMarks(
-        marks.filter((m) => selectedMarkIds.includes(m.id)).map((m) => m.id),
+        marks.filter(m => selectedMarkIds.includes(m.id)).map(m => m.id),
       )
     }
     disabled={isDeleting}

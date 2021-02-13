@@ -1,6 +1,6 @@
 import React, {FC} from 'react';
 import classnames from 'classnames';
-import {MdKeyboardArrowRight} from 'react-icons/md';
+import {MdKeyboardArrowRight} from '@meronex/icons/md';
 
 const OpenIndicator: FC<{isOpen: boolean}> = ({isOpen}) => (
   <MdKeyboardArrowRight

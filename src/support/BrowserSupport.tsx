@@ -1,11 +1,14 @@
 import React, {cloneElement, FC, ReactElement} from 'react';
+import {
+  LgChrome,
+  LgFirefox,
+  LgMicrosoftEdge,
+  LgSafari,
+} from '@meronex/icons/lg';
+import {IconBaseProps} from '@meronex/icons/lib';
 import Heading from '../widgets/Heading';
 import {browsers} from '../meta';
-import FirefoxLogo from '../widgets/FirefoxLogo';
-import EdgeLogo from '../widgets/EdgeLogo';
-import ChromeLogo from '../widgets/ChromeLogo';
 import AnchorLink from '../widgets/AnchorLink';
-import SafariLogo from '../widgets/SafariLogo';
 
 type BrowserName = keyof typeof browsers;
 
@@ -13,28 +16,28 @@ const browserDetails: {
   [KEY in keyof typeof browsers]: {
     displayName: string;
     downloadHref: string;
-    logo: ReactElement<JSX.IntrinsicElements['svg']>;
+    logo: ReactElement<IconBaseProps>;
   };
 } = {
   chrome: {
     displayName: 'Google Chrome',
     downloadHref: 'https://www.google.com/chrome/',
-    logo: <ChromeLogo />,
+    logo: <LgChrome />,
   },
   edge: {
     displayName: 'Microsoft Edge',
     downloadHref: 'https://www.microsoft.com/en-us/edge',
-    logo: <EdgeLogo />,
+    logo: <LgMicrosoftEdge />,
   },
   firefox: {
     displayName: 'Mozilla Firefox',
     downloadHref: 'https://www.mozilla.org/en-US/firefox/new/',
-    logo: <FirefoxLogo />,
+    logo: <LgFirefox />,
   },
   safari: {
     displayName: 'Apple Safari',
     downloadHref: 'https://support.apple.com/downloads/safari',
-    logo: <SafariLogo />,
+    logo: <LgSafari />,
   },
 };
 
@@ -63,7 +66,7 @@ const BrowserSupport: FC<{}> = () => {
                 rel="noopener noreferrer"
                 className="transform hover:scale-110 duration-75"
               >
-                {cloneElement(logo, {className: 'w-full'})}
+                {cloneElement(logo, {size: '100%'})}
               </a>
               <AnchorLink
                 href={downloadHref}

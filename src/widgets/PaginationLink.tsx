@@ -1,6 +1,6 @@
 import React, {FC} from 'react';
 import {Link} from 'react-router-dom';
-import {MdNavigateBefore, MdNavigateNext} from 'react-icons/md';
+import {MdNavigateBefore, MdNavigateNext} from '@meronex/icons/md';
 import classnames from 'classnames';
 
 const PaginationLink: FC<{

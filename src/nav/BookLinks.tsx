@@ -1,5 +1,5 @@
 import React, {FC, useCallback} from 'react';
-import {BiBook} from 'react-icons/bi';
+import {BiBook} from '@meronex/icons/bi';
 import {useQuery} from 'react-query';
 import scriptureLinkHref from '../utils/scriptureLinkHref';
 import {getAllBooksByVolumeId} from '../api/api.client';

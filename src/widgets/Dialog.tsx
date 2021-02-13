@@ -1,5 +1,5 @@
 import React, {FC, ReactNode, useEffect} from 'react';
-import {MdClose} from 'react-icons/md';
+import {MdClose} from '@meronex/icons/md';
 import Overlay from './Overlay';
 
 const Dialog: FC<{title: ReactNode; close: () => void}> = ({

@@ -1,8 +1,8 @@
 import React, {FC, useContext} from 'react';
 import classnames from 'classnames';
-import {MdClose, MdPeople, MdPerson, MdSettings} from 'react-icons/md';
-import {VscBook} from 'react-icons/vsc';
-import {FiLogOut} from 'react-icons/fi';
+import {MdClose, MdPeople, MdPerson, MdSettings} from '@meronex/icons/md';
+import {VscBook} from '@meronex/icons/vsc';
+import {FiLogOut} from '@meronex/icons/fi';
 import {useLocation} from 'react-router-dom';
 import Button from '../widgets/Button';
 import UserContext from '../utils/UserContext';

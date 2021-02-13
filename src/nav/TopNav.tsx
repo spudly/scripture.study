@@ -1,5 +1,5 @@
 import React, {FC} from 'react';
-import {MdMenu} from 'react-icons/md';
+import {MdMenu} from '@meronex/icons/md';
 import Button from '../widgets/Button';
 import Spacer from '../widgets/Spacer';
 

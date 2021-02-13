@@ -1,5 +1,5 @@
 import React, {FC} from 'react';
-import {MdErrorOutline} from 'react-icons/md';
+import {MdErrorOutline} from '@meronex/icons/md';
 
 const Alert: FC = ({children}) => (
   <div className="flex-1 flex items-center justify-center bg-red-200 border border-red-800 text-red-800 p-2">

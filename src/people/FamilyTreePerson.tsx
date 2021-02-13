@@ -1,7 +1,7 @@
 import React, {Dispatch, SetStateAction, forwardRef, useContext} from 'react';
 import {Link} from 'react-router-dom';
 import classnames from 'classnames';
-import {MdDelete, MdEdit} from 'react-icons/md';
+import {MdDelete, MdEdit} from '@meronex/icons/md';
 import {useMutation} from 'react-query';
 import {ID, PersonLinkRecord} from '../types';
 import usePerson from '../api/usePerson';

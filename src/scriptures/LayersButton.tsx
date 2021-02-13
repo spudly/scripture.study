@@ -5,8 +5,8 @@ import {
   MdCheckBoxOutlineBlank,
   MdLayers,
   MdRecordVoiceOver,
-} from 'react-icons/md';
-import {GoMention} from 'react-icons/go';
+} from '@meronex/icons/md';
+import {GoMention} from '@meronex/icons/go';
 import classnames from 'classnames';
 import {Layers} from '../types';
 import Action from '../widgets/Action';

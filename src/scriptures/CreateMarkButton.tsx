@@ -1,5 +1,5 @@
 import React, {FC} from 'react';
-import {MdRecordVoiceOver} from 'react-icons/md';
+import {MdRecordVoiceOver} from '@meronex/icons/md';
 import {ID, MarkRecord, PersonRecord, Unsaved, VerseSelection} from '../types';
 import Spinner from '../widgets/Spinner';
 import PersonSelect from '../people/PersonSelect';
@@ -9,7 +9,7 @@ const buildSpeakerMarks = (
   selections: Array<VerseSelection>,
   speakerId: ID,
 ): Array<Unsaved<MarkRecord>> =>
-  selections.map((selection) => ({
+  selections.map(selection => ({
     ...selection,
     eventId: null,
     isActive: true,
@@ -35,7 +35,7 @@ const CreateMarkButton: FC<{
     {({close}) => (
       <PersonSelect
         value=""
-        onChange={(e) => {
+        onChange={e => {
           const speaker = e.currentTarget.value;
           if (speaker) {
             close();

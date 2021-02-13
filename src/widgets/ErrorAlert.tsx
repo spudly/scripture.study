@@ -1,5 +1,5 @@
 import React, {FC} from 'react';
-import {MdErrorOutline} from 'react-icons/md';
+import {MdErrorOutline} from '@meronex/icons/md';
 
 type Props = {
   error: unknown;

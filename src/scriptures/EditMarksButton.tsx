@@ -1,5 +1,5 @@
 import React, {FC} from 'react';
-import {MdEdit} from 'react-icons/md';
+import {MdEdit} from '@meronex/icons/md';
 import {MarkRecord, PersonRecord, SpeakerMarkRecord} from '../types';
 import PersonSelect from '../people/PersonSelect';
 import Spinner from '../widgets/Spinner';
@@ -20,15 +20,15 @@ const EditMarksButton: FC<{
     {({close}) => (
       <PersonSelect
         value=""
-        onChange={(e) => {
+        onChange={e => {
           const personId = e.currentTarget.value;
           if (personId) {
             close();
             updateMarks(
               marks
-                .filter((m) => selectedMarkIds.includes(m.id))
+                .filter(m => selectedMarkIds.includes(m.id))
                 .filter((m): m is SpeakerMarkRecord => m.type === 'speaker')
-                .map((m) => ({
+                .map(m => ({
                   ...m,
                   speakerId: personId,
                 })),

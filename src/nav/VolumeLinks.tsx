@@ -1,5 +1,5 @@
 import React, {FC} from 'react';
-import {ImBooks} from 'react-icons/im';
+import {ImBooks} from '@meronex/icons/im';
 import {useQuery} from 'react-query';
 import scriptureLinkHref from '../utils/scriptureLinkHref';
 import {getAllVolumes} from '../api/api.client';
@@ -18,7 +18,7 @@ const VolumeLinks: FC<{
 
   return (
     <>
-      {volumes?.map((volume) => (
+      {volumes?.map(volume => (
         <SideNavLinkBranch
           key={volume.id}
           isOpen={volume.title === volumeTitle}

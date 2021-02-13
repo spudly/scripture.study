@@ -1,5 +1,5 @@
 import React, {FC, useContext, useState} from 'react';
-import {MdAdd, MdEdit} from 'react-icons/md';
+import {MdAdd, MdEdit} from '@meronex/icons/md';
 import {useQuery} from 'react-query';
 import {Link} from 'react-router-dom';
 import {getAllPeople} from '../api/api.client';
