@@ -14,3 +14,4 @@ cypress/videos
 .nyc_output
 coverage
 src/meta.ts
+.env
