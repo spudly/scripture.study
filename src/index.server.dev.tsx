@@ -16,9 +16,6 @@ const compiler = webpack(webpackConfig);
 const app = express()
   .use(
     webpackDevMiddleware(compiler, {
-      headers: {
-        'Service-Worker-Allowed': '/',
-      },
       publicPath: '/',
     }),
   )

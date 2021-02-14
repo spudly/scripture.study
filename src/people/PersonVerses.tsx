@@ -113,9 +113,9 @@ const PersonVerses: FC<{
   const lastGroup = markGroups?.[markGroups.length - 1];
   return (
     <>
-      {lastGroup && (
+      {lastGroup && lastGroup.count > 0 && (
         <div className="float-right text-xs text-gray-500">
-          Showing 1-{lastGroup.offset + VERSES_PER_PAGE} of {lastGroup.count}
+          Showing 1-{lastGroup.offset + Math.min(VERSES_PER_PAGE, lastGroup.count)} of {lastGroup.count}
         </div>
       )}
       {markedVerses.map(({verse, chapter, book, volume, marks}) => {

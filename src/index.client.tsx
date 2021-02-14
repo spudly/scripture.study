@@ -12,14 +12,3 @@ ReactDOM.render(
   </BrowserRouter>,
   document.getElementById('root'),
 );
-
-if ('serviceWorker' in navigator) {
-  window.addEventListener('load', async () => {
-    await navigator.serviceWorker.register(
-      /* webpackChunkName: "worker" */
-      // @ts-expect-error
-      new URL('./index.worker', import.meta.url),
-      {scope: '/'},
-    );
-  });
-}

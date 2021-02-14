@@ -89,13 +89,8 @@ const FamilyTree: FC<{
     l => (l.toPersonId === self.id ? l.fromPersonId : l.toPersonId),
     (links ?? []).filter(l => l.type === 'spouseOf'),
   );
-  const siblingAndSpouseLinks = [
-    ...siblingsWithoutSelf.slice(0, centerIndex),
-    siblingLinks[indexOfSelf],
-    ...spouseLinks,
-    ...siblingsWithoutSelf.slice(centerIndex),
-  ].filter(Boolean);
-  console.log({siblingAndSpouseLinks});
+  const leftSiblings = siblingsWithoutSelf.slice(0, centerIndex);
+  const rightSiblings = siblingsWithoutSelf.slice(centerIndex);
 
   const childLinks = uniqBy(l => l.fromPersonId, links ?? []).filter(
     l => l.type === 'childOf' && l.toPersonId === self.id,
@@ -118,7 +113,8 @@ const FamilyTree: FC<{
           ))}
         </div>
         <div className="flex justify-around">
-          {siblingAndSpouseLinks.map(link => (
+          
+        {leftSiblings.map(link => (
             <FamilyTreePerson
               key={link.id}
               id={link.fromPersonId}
@@ -130,10 +126,8 @@ const FamilyTree: FC<{
               setEditLink={setEditLink}
             />
           ))}
-          {siblingAndSpouseLinks.find(
-            l => l.fromPersonId === self.id,
-          ) ? null : (
-            <FamilyTreePerson
+
+<FamilyTreePerson
               id={self.id}
               isActive
               ref={el => {
@@ -141,7 +135,34 @@ const FamilyTree: FC<{
               }}
               setEditLink={setEditLink}
             />
-          )}
+
+{spouseLinks.map(link => {
+  const spouseId = link.fromPersonId === self.id ? link.toPersonId : link.fromPersonId;
+  return (
+            <FamilyTreePerson
+              key={link.id}
+              id={spouseId}
+              isActive={spouseId === self.id}
+              ref={el => {
+                individualsRef.current[spouseId] = el;
+              }}
+              link={link}
+              setEditLink={setEditLink}
+            />
+          )})}
+
+{rightSiblings.map(link => (
+            <FamilyTreePerson
+              key={link.id}
+              id={link.fromPersonId}
+              isActive={link.fromPersonId === self.id}
+              ref={el => {
+                individualsRef.current[link.fromPersonId] = el;
+              }}
+              link={link}
+              setEditLink={setEditLink}
+            />
+          ))}
         </div>
         <div className="flex justify-around">
           {[...childLinks, ...descendantLinks].map(link => (

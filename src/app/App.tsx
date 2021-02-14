@@ -114,6 +114,14 @@ const People = React.lazy(
       '../people/People'
     ),
 );
+const Tree = React.lazy(
+  () =>
+    import(
+      /* webpackPrefetch: true */
+      /* webpackChunkName: "Tree" */
+      '../tree/Tree'
+    ),
+);
 
 const App: FC = () => {
   return (
@@ -132,6 +140,10 @@ const App: FC = () => {
                     />
                     <Route path="/user/profile" component={UserProfile} />
                     <Route path="/user/settings" component={UserSettings} />
+                    <Route
+                      path="/tree"
+                      render={({match}) => <Tree />}
+                    />
                     <Route
                       path="/people/:id"
                       render={({match}) => <Person id={match.params.id} />}

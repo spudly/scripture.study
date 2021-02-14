@@ -10,6 +10,7 @@ import uniqBy from '../utils/uniqBy';
 import Box from '../widgets/Box';
 import FamilyTree from './FamilyTree';
 import PersonVerses from './PersonVerses';
+import Tree from '../tree/Tree';
 
 const Person: FC<{id: string}> = ({id}) => {
   const [self] = usePerson(id);
@@ -78,6 +79,7 @@ const Person: FC<{id: string}> = ({id}) => {
           <Box>
             <FamilyTree self={self} links={links} />
           </Box>
+          <Tree />
         </>
       )}
 

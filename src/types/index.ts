@@ -19,4 +19,3 @@ export * from './google';
 export * from './records';
 export * from './styling';
 export * from './manifest';
-export * from './service-worker';

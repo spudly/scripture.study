@@ -15,14 +15,14 @@ const isNotNil = <T>(val: T | null | undefined): val is NonNullable<T> =>
 
 const config: Configuration = {
   context: path.resolve(__dirname, '..'),
-  devtool: 'source-map',
+  devtool: IS_PROD ? 'source-map' : 'eval',
   entry: {
     index: [
       !IS_PROD ? 'webpack-hot-middleware/client?name=index.client' : null,
       `./src/index.client.tsx`,
     ].filter(isNotNil),
   },
-  mode: !IS_PROD ? 'production' : 'development',
+  mode: IS_PROD ? 'production' : 'development',
   module: {
     rules: [
       {
@@ -40,6 +40,7 @@ const config: Configuration = {
         ],
       },
       {
+        exclude: /node_modules/u,
         test: /\.css$/u,
         use: [
           !IS_PROD ? 'style-loader' : MiniCssExtractPlugin.loader,
@@ -88,6 +89,7 @@ const config: Configuration = {
   ],
   resolve: {
     extensions: ['.tsx', '.ts', '.js'],
+    symlinks: false,
   },
 };
 

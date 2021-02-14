@@ -101,7 +101,7 @@ export type PersonRecord = {
 export type PersonLinkRecord = {
   id: ID;
   fromPersonId: ID;
-  type: 'childOf' | 'spouseOf' | 'descendantOf';
+  type: 'childOf' | 'spouseOf' | 'descendantOf' | 'contemporaryOf';
   toPersonId: ID;
 } & EditableRecord;
 

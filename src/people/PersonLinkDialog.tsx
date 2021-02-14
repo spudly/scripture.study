@@ -87,6 +87,7 @@ const PersonLinkDialog: FC<{
           <option aria-label="None" />
           <option value="spouseOf">Spouse</option>
           <option value="childOf">Parent</option>
+          <option value="contemporaryOf">Contemporary</option>
           <option value="reverse:childOf">Child</option>
           <option value="descendantOf">Ancestor</option>
           <option value="reverse:descendantOf">Descendent</option>

@@ -18,7 +18,7 @@ const FamilyTreePerson = forwardRef<
     id: ID;
     isActive?: boolean;
     link?: PersonLinkRecord;
-    setEditLink: Dispatch<SetStateAction<PersonLinkRecord | null>>;
+    setEditLink?: Dispatch<SetStateAction<PersonLinkRecord | null>>;
   }
 >(({id, isActive, link, setEditLink}, ref) => {
   const user = useContext(UserContext);
@@ -49,7 +49,7 @@ const FamilyTreePerson = forwardRef<
           <IconButton
             title={`Edit Link to ${serializePerson(person)}`}
             icon={<MdEdit />}
-            onClick={() => setEditLink(link)}
+            onClick={() => setEditLink?.(link)}
           />
           <IconButton
             title={`Delete Link to ${serializePerson(person)}`}

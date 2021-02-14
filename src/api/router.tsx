@@ -239,7 +239,7 @@ const router = express
   .use(compression())
   .use(createNonce)
   .use(
-    IS_TEST
+    !IS_PROD
       ? noopHandler
       : helmet({
           contentSecurityPolicy: {
@@ -291,17 +291,7 @@ const router = express
   .use(sessionMiddleware)
   .use(provideUserFromSession)
   .use(requestLogger)
-  .use(
-    express.static(publicDir, {
-      index: false,
-      setHeaders: (resp, filePath, stat) => {
-        const relPath = path.relative(publicDir, filePath);
-        if (relPath === 'js/worker.js') {
-          resp.set('Service-Worker-Allowed', '/');
-        }
-      },
-    }),
-  )
+  .use(express.static(publicDir, {index: false}))
   .get('/manifest.json', (req, resp) => resp.json(manifest))
   .get('/auth/google', googleLoginMiddleware)
   .get('/auth/google/callback', googleCallbackMiddleware)
