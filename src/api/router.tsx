@@ -44,6 +44,7 @@ import {
   makeDeleteRecord,
   makeUpdateRecord,
   sql,
+  mergePeople,
 } from './api.postgres';
 import {
   googleCallbackMiddleware,
@@ -233,6 +234,12 @@ const createNonce: Handler = (req, resp, next) => {
 
 const noopHandler: Handler = (req, resp, next) => next();
 
+const handleMergePeople: Handler = async (req, resp, next) => {
+  const {ids} = req.body;
+  await mergePeople(ids);
+  resp.json({id: ids[0]});
+};
+
 const router = express
   // eslint-disable-next-line new-cap
   .Router()
@@ -318,6 +325,7 @@ const router = express
     ),
   )
   .use('/api/people-links', makeTableRouter(PersonLink))
+  .post('/api/people/merge', handleMergePeople)
   .use('/api/people', makeTableRouter(Person))
   .use(
     '/api/verses',

@@ -128,3 +128,12 @@ export const deletePersonLink = async ({id}: {id: ID}) =>
   await fetchJson<ID>(`/api/people-links/${id}`, {
     method: 'DELETE',
   });
+
+export const mergePeople = async ({ids}: {ids: Array<ID>}) =>
+  await fetchJson<ID>(`/api/people/merge`, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({ids}),
+  });

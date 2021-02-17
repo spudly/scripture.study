@@ -998,3 +998,17 @@ export const setSessionExpirationDate = async (
   }
   await model.update({expirationDate});
 };
+
+export const mergePeople = async (ids: Array<ID>) => {
+  await Promise.all(
+    ids.slice(1).map(async id => {
+      await Mark.update({speakerId: ids[0]}, {where: {speakerId: id}});
+      await PersonLink.update(
+        {fromPersonId: ids[0]},
+        {where: {fromPersonId: id}},
+      );
+      await PersonLink.update({toPersonId: ids[0]}, {where: {toPersonId: id}});
+      await Person.destroy({where: {id}});
+    }),
+  );
+};

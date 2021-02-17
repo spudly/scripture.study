@@ -1,5 +1,5 @@
 import React, {FC, useContext, useState} from 'react';
-import {MdAdd, MdEdit} from '@meronex/icons/md';
+import {MdAdd, MdEdit, MdCallMerge} from '@meronex/icons/md';
 import {useQuery} from 'react-query';
 import {Link} from 'react-router-dom';
 import {getAllPeople} from '../api/api.client';
@@ -15,6 +15,7 @@ import hasRole from '../utils/hasRole';
 import UserContext from '../utils/UserContext';
 import {serializePersonJsx} from '../utils/serializePerson';
 import EditPersonDialog from './EditPersonDialog';
+import MergePersonDialog from './MergePersonDialog';
 
 const People: FC = () => {
   const user = useContext(UserContext);
@@ -25,6 +26,7 @@ const People: FC = () => {
   const [editPerson, setEditPerson] = useState<
     PersonRecord | Unsaved<PersonRecord> | null
   >(null);
+  const [mergePerson, setMergePerson] = useState<PersonRecord | null>(null);
 
   if (error) {
     return <ErrorAlert error={error} />;
@@ -78,6 +80,11 @@ const People: FC = () => {
                       <MdEdit />
                     </Button>
                   )}
+                  {hasRole('author', user) && (
+                    <Button onClick={() => setMergePerson(person)}>
+                      <MdCallMerge />
+                    </Button>
+                  )}
                 </td>
               </tr>
             ))}
@@ -88,6 +95,12 @@ const People: FC = () => {
         <EditPersonDialog
           person={editPerson}
           close={() => setEditPerson(null)}
+        />
+      )}
+      {mergePerson && hasRole('author', user) && (
+        <MergePersonDialog
+          person={mergePerson}
+          close={() => setMergePerson(null)}
         />
       )}
     </>
