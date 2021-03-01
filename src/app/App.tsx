@@ -114,12 +114,12 @@ const People = React.lazy(
       '../people/People'
     ),
 );
-const Tree = React.lazy(
+const Time = React.lazy(
   () =>
     import(
       /* webpackPrefetch: true */
-      /* webpackChunkName: "Tree" */
-      '../tree/Tree'
+      /* webpackChunkName: "Time" */
+      '../time/Time'
     ),
 );
 
@@ -140,10 +140,7 @@ const App: FC = () => {
                     />
                     <Route path="/user/profile" component={UserProfile} />
                     <Route path="/user/settings" component={UserSettings} />
-                    <Route
-                      path="/tree"
-                      render={({match}) => <Tree />}
-                    />
+                    <Route path="/time" render={({match}) => <Time />} />
                     <Route
                       path="/people/:id"
                       render={({match}) => <Person id={match.params.id} />}

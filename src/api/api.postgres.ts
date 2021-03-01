@@ -401,6 +401,18 @@ const Person = sql.define<Model<PersonRecord, PersonRecord>>(
       type: sequelize.TEXT,
       allowNull: true,
     },
+    circaBirth: {
+      type: sequelize.INTEGER,
+      allowNull: true,
+    },
+    circa: {
+      type: sequelize.INTEGER,
+      allowNull: true,
+    },
+    circaDeath: {
+      type: sequelize.INTEGER,
+      allowNull: true,
+    },
     lastUpdatedBy: {
       type: sequelize.UUID,
       allowNull: false,

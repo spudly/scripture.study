@@ -16,9 +16,15 @@ const EditPersonDialog: FC<{
 }> = ({person, close}) => {
   const nameFieldId = useId();
   const orderFieldId = useId();
+  const circaBirthFieldId = useId();
+  const circaFieldId = useId();
+  const circaDeathFieldId = useId();
   const descriptionFieldId = useId();
   const [name, setName] = useState(person.name ?? null);
   const [order, setOrder] = useState(person.order ?? null);
+  const [circaBirth, setCircaBirth] = useState(person.circaBirth ?? null);
+  const [circa, setCirca] = useState(person.circa ?? null);
+  const [circaDeath, setCircaDeath] = useState(person.circaDeath ?? null);
   const [description, setDescriptiongrapy] = useState(
     person.description ?? null,
   );
@@ -35,12 +41,18 @@ const EditPersonDialog: FC<{
           description,
           name: name || null,
           order: order || null,
+          circaBirth: circaBirth || null,
+          circa: circa || null,
+          circaDeath: circaDeath || null,
         });
       } else {
         await createPerson({
           description,
           name: name || null,
           order: order || null,
+          circaBirth: circaBirth || null,
+          circa: circa || null,
+          circaDeath: circaDeath || null,
         });
       }
       queryClient.invalidateQueries('people');
@@ -69,6 +81,39 @@ const EditPersonDialog: FC<{
           step={1}
           value={order ?? ''}
           onChange={e => setOrder(e.currentTarget.valueAsNumber)}
+        />
+      </FormGroup>
+
+      <FormGroup label="Estimated Birth Year" labelFor={circaBirthFieldId}>
+        <Input
+          id={circaBirthFieldId}
+          type="number"
+          min={1}
+          step={1}
+          value={circaBirth ?? ''}
+          onChange={e => setCircaBirth(e.currentTarget.valueAsNumber)}
+        />
+      </FormGroup>
+
+      <FormGroup label="Estimated Existence Year" labelFor={circaFieldId}>
+        <Input
+          id={circaFieldId}
+          type="number"
+          min={1}
+          step={1}
+          value={circa ?? ''}
+          onChange={e => setCirca(e.currentTarget.valueAsNumber)}
+        />
+      </FormGroup>
+
+      <FormGroup label="Estimated Death Year" labelFor={circaDeathFieldId}>
+        <Input
+          id={circaDeathFieldId}
+          type="number"
+          min={1}
+          step={1}
+          value={circaDeath ?? ''}
+          onChange={e => setCircaDeath(e.currentTarget.valueAsNumber)}
         />
       </FormGroup>
 

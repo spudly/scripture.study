@@ -10,6 +10,9 @@ export const nephi1: PersonRecord = {
   description: 'Son of Lehi',
   lastUpdatedBy: johnDoe.id,
   approvedBy: johnDoe.id,
+  circaBirth: null,
+  circa: -600,
+  circaDeath: null,
 };
 
 export const nephi2: PersonRecord = {
@@ -21,6 +24,9 @@ export const nephi2: PersonRecord = {
   description: 'Son of Helaman',
   lastUpdatedBy: johnDoe.id,
   approvedBy: johnDoe.id,
+  circaBirth: null,
+  circa: -600,
+  circaDeath: null,
 };
 
 export const lehi1: PersonRecord = {
@@ -32,6 +38,9 @@ export const lehi1: PersonRecord = {
   description: null,
   lastUpdatedBy: johnDoe.id,
   approvedBy: johnDoe.id,
+  circaBirth: null,
+  circa: -600,
+  circaDeath: null,
 };
 
 export const sariah: PersonRecord = {
@@ -43,6 +52,9 @@ export const sariah: PersonRecord = {
   description: null,
   lastUpdatedBy: johnDoe.id,
   approvedBy: johnDoe.id,
+  circaBirth: null,
+  circa: -600,
+  circaDeath: null,
 };
 
 export const lehi4: PersonRecord = {
@@ -54,6 +66,9 @@ export const lehi4: PersonRecord = {
   lastUpdatedDate: 41525,
   approvedBy: johnDoe.id,
   approvedDate: 10314,
+  circaBirth: null,
+  circa: -600,
+  circaDeath: null,
 };
 
 export const armyOfHelaman: PersonRecord = {
@@ -65,6 +80,9 @@ export const armyOfHelaman: PersonRecord = {
   description: 'Army of Helaman',
   lastUpdatedBy: johnDoe.id,
   approvedBy: johnDoe.id,
+  circaBirth: null,
+  circa: -600,
+  circaDeath: null,
 };
 
 export default [lehi1, nephi1, nephi2, lehi4, sariah, armyOfHelaman];

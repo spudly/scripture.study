@@ -96,6 +96,9 @@ export type PersonRecord = {
   name: string | null;
   order: number | null;
   description: string | null;
+  circaBirth: number | null;
+  circa: number | null;
+  circaDeath: number | null;
 } & EditableRecord;
 
 export type PersonLinkRecord = {

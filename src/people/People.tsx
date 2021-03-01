@@ -14,6 +14,7 @@ import CircleButton from '../widgets/CircleButton';
 import hasRole from '../utils/hasRole';
 import UserContext from '../utils/UserContext';
 import {serializePersonJsx} from '../utils/serializePerson';
+import getCircas from '../utils/getCircas';
 import EditPersonDialog from './EditPersonDialog';
 import MergePersonDialog from './MergePersonDialog';
 
@@ -47,6 +48,9 @@ const People: FC = () => {
                 description: null,
                 name: null,
                 order: null,
+                circaBirth: null,
+                circa: null,
+                circaDeath: null,
               })
             }
           >
@@ -57,37 +61,48 @@ const People: FC = () => {
           <thead>
             <tr>
               <th>Name</th>
+              <th>Circa</th>
               <th>Description</th>
               <th aria-label="Actions" />
             </tr>
           </thead>
           <tbody>
-            {people.sort(comparePeople).map(person => (
-              <tr key={person.id}>
-                <td>
-                  <Link to={`/people/${person.id}`} component={AnchorLink}>
-                    {person.name ? (
-                      serializePersonJsx(person, {includeDescription: false})
-                    ) : (
-                      <em>Unnamed</em>
+            {people.sort(comparePeople).map(person => {
+              const {birth, death} = getCircas(person);
+              return (
+                <tr key={person.id}>
+                  <td>
+                    <Link to={`/people/${person.id}`} component={AnchorLink}>
+                      {person.name ? (
+                        serializePersonJsx(person, {includeDescription: false})
+                      ) : (
+                        <em>Unnamed</em>
+                      )}
+                    </Link>
+                  </td>
+                  <td>
+                    {birth != null && Math.abs(birth)}
+                    {birth && death && ' - '}
+                    {death != null && Math.abs(death)}{' '}
+                    {(birth || death) &&
+                      ((death || birth)! < 0 ? 'B.C.' : 'A.D.')}
+                  </td>
+                  <td>{person.description ?? <em>No Description</em>}</td>
+                  <td>
+                    {hasRole('author', user) && (
+                      <Button onClick={() => setEditPerson(person)}>
+                        <MdEdit />
+                      </Button>
                     )}
-                  </Link>
-                </td>
-                <td>{person.description ?? <em>No Description</em>}</td>
-                <td>
-                  {hasRole('author', user) && (
-                    <Button onClick={() => setEditPerson(person)}>
-                      <MdEdit />
-                    </Button>
-                  )}
-                  {hasRole('author', user) && (
-                    <Button onClick={() => setMergePerson(person)}>
-                      <MdCallMerge />
-                    </Button>
-                  )}
-                </td>
-              </tr>
-            ))}
+                    {hasRole('author', user) && (
+                      <Button onClick={() => setMergePerson(person)}>
+                        <MdCallMerge />
+                      </Button>
+                    )}
+                  </td>
+                </tr>
+              );
+            })}
           </tbody>
         </Table>
       </div>
