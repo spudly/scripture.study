@@ -28,6 +28,7 @@ const sql = new sequelize.Sequelize(DATABASE_URL!, {
   ssl: IS_PROD,
   dialectOptions: {
     ssl: IS_PROD,
+    rejectUnauthorized: false,
   },
   define: {
     timestamps: false, // disable automatic createdAt & updatedAt columns
