@@ -26,6 +26,9 @@ const {DATABASE_URL} = process.env;
 const sql = new sequelize.Sequelize(DATABASE_URL!, {
   dialect: 'postgres',
   ssl: IS_PROD,
+  dialectOptions: {
+    ssl: IS_PROD,
+  },
   define: {
     timestamps: false, // disable automatic createdAt & updatedAt columns
     freezeTableName: true, // disable automatic pluralization of table names
