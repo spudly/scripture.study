@@ -27,8 +27,10 @@ const sql = new sequelize.Sequelize(DATABASE_URL!, {
   dialect: 'postgres',
   ssl: IS_PROD,
   dialectOptions: {
-    ssl: IS_PROD,
-    rejectUnauthorized: true,
+    ssl: {
+      require: IS_PROD,
+      rejectUnauthorized: false,
+    },
   },
   define: {
     timestamps: false, // disable automatic createdAt & updatedAt columns
