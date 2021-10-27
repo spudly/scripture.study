@@ -1,0 +1,7 @@
+#!/bin/sh
+. "$(dirname "$0")/_/husky.sh"
+
+npm run depcheck
+npx --no-install lint-staged
+npm run build
+npm run test

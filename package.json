@@ -9,12 +9,13 @@
   "main": "index.js",
   "scripts": {
     "build": "npm run codegen && npm run build:server && npm run build:client",
-    "build:client": "rm stats.json; rm -rf public/js; rm -rf public/css; cross-env NODE_ENV=production webpack --config=build/webpack.config.js --json > stats.json",
+    "build:client": "(rm stats.json || true) && (rm -rf public/js || true) && (rm -rf public/css || true) && cross-env NODE_ENV=production webpack --config=build/webpack.config.js --json > stats.json",
     "build:server": "rm -rf build && tsc",
     "codegen": "npm run codegen:meta",
     "codegen:meta": "ts-node -r dotenv/config scripts/meta.ts | prettier --stdin-filepath src/meta.ts > src/meta.ts",
     "depcheck": "node node_modules/depcheck/bin/depcheck.js --ignores=\",@commitlint/*,@types/*,prettier,pretty-quick,sort-package-json,typescript,autoprefixer,tailwindcss,postcss-import,webpack-cli,pg,pg-hstore,*-loader,babel-*,dotenv\"",
     "lint": "eslint . --ext .js,.jsx,.ts,.tsx",
+    "prepare": "husky install",
     "seed": "ts-node -r dotenv/config scripts/seed.ts | pino-pretty",
     "start": "cross-env NODE_ENV=production node build/index.server.js",
     "start:dev": "cross-env NODE_ENV=development npm run start:dev:server | pino-pretty",
@@ -25,12 +26,6 @@
     "test:integration:open": "cypress open",
     "test:integration:run": "cypress run",
     "test:unit": "jest --coverage --forceExit"
-  },
-  "husky": {
-    "hooks": {
-      "pre-commit": "npm run depcheck && lint-staged && npm run build && npm run test",
-      "commit-msg": "commitlint -E HUSKY_GIT_PARAMS"
-    }
   },
   "commitlint": {
     "extends": [
@@ -202,7 +197,7 @@
     "eslint": "^7.18.0",
     "extract-loader": "^5.1.0",
     "file-loader": "^6.2.0",
-    "husky": "^4.3.8",
+    "husky": "^7.0.0",
     "jest": "^26.6.3",
     "lint-staged": "^10.5.3",
     "mini-css-extract-plugin": "^1.3.4",

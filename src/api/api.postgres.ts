@@ -47,10 +47,11 @@ const sql = new sequelize.Sequelize(DATABASE_URL!, {
   },
 });
 
-function dateGetter(this: {getDataValue: Function}) {
-  // eslint-disable-next-line no-invalid-this
-  return new Date(this.getDataValue('lastUpdatedDate')).getTime();
-}
+const dateGetter = (key: string) =>
+  function (this: {getDataValue: Function}) {
+    // eslint-disable-next-line no-invalid-this
+    return new Date(this.getDataValue(key)).getTime();
+  };
 
 const User = sql.define<Model<UserRecord, UserRecord>>(
   'user',
@@ -107,7 +108,7 @@ const Session = sql.define<Model<SessionRecord, SessionRecord>>(
     expirationDate: {
       type: sequelize.DATE,
       allowNull: true,
-      get: dateGetter,
+      get: dateGetter('expirationDate'),
     },
   },
   {
@@ -198,12 +199,12 @@ const Volume = sql.define<Model<VolumeRecord, VolumeRecord>>(
       },
     },
     lastUpdatedDate: {
-      get: dateGetter,
+      get: dateGetter('lastUpdatedDate'),
       type: sequelize.DATE,
       allowNull: false,
     },
     approvedDate: {
-      get: dateGetter,
+      get: dateGetter('approvedDate'),
       type: sequelize.DATE,
       allowNull: false,
     },
@@ -256,7 +257,7 @@ const Book = sql.define<Model<BookRecord, BookRecord>>(
       allowNull: false,
     },
     lastUpdatedDate: {
-      get: dateGetter,
+      get: dateGetter('lastUpdatedDate'),
       type: sequelize.DATE,
       allowNull: false,
     },
@@ -266,7 +267,7 @@ const Book = sql.define<Model<BookRecord, BookRecord>>(
       references: {model: User, key: 'id'},
     },
     approvedDate: {
-      get: dateGetter,
+      get: dateGetter('approvedDate'),
       type: sequelize.DATE,
       allowNull: false,
     },
@@ -304,7 +305,7 @@ const Chapter = sql.define<Model<ChapterRecord, ChapterRecord>>(
       allowNull: true,
     },
     lastUpdatedDate: {
-      get: dateGetter,
+      get: dateGetter('lastUpdatedDate'),
       type: sequelize.DATE,
       allowNull: false,
     },
@@ -317,7 +318,7 @@ const Chapter = sql.define<Model<ChapterRecord, ChapterRecord>>(
       },
     },
     approvedDate: {
-      get: dateGetter,
+      get: dateGetter('dateGetter'),
       type: sequelize.DATE,
       allowNull: false,
     },
@@ -360,7 +361,7 @@ const Verse = sql.define<Model<VerseRecord, VerseRecord>>(
       },
     },
     lastUpdatedDate: {
-      get: dateGetter,
+      get: dateGetter('lastUpdatedDate'),
       type: sequelize.DATE,
       allowNull: false,
     },
@@ -369,7 +370,7 @@ const Verse = sql.define<Model<VerseRecord, VerseRecord>>(
       allowNull: false,
     },
     approvedDate: {
-      get: dateGetter,
+      get: dateGetter('approvedDate'),
       type: sequelize.DATE,
       allowNull: false,
     },
@@ -428,12 +429,12 @@ const Person = sql.define<Model<PersonRecord, PersonRecord>>(
       },
     },
     lastUpdatedDate: {
-      get: dateGetter,
+      get: dateGetter('lastUpdatedDate'),
       type: sequelize.DATE,
       allowNull: false,
     },
     approvedDate: {
-      get: dateGetter,
+      get: dateGetter('approvedDate'),
       type: sequelize.DATE,
       allowNull: false,
     },
@@ -480,7 +481,7 @@ const PersonLink = sql.define<Model<PersonLinkRecord, PersonLinkRecord>>(
       },
     },
     lastUpdatedDate: {
-      get: dateGetter,
+      get: dateGetter('lastUpdatedDate'),
       type: sequelize.DATE,
       allowNull: false,
     },
@@ -493,7 +494,7 @@ const PersonLink = sql.define<Model<PersonLinkRecord, PersonLinkRecord>>(
       },
     },
     approvedDate: {
-      get: dateGetter,
+      get: dateGetter('approvedDate'),
       type: sequelize.DATE,
       allowNull: false,
     },
@@ -558,12 +559,12 @@ const Mark = sql.define<Model<MarkRecord, MarkRecord>>(
       },
     },
     lastUpdatedDate: {
-      get: dateGetter,
+      get: dateGetter('lastUpdatedDate'),
       type: sequelize.DATE,
       allowNull: false,
     },
     approvedDate: {
-      get: dateGetter,
+      get: dateGetter('approvedDate'),
       type: sequelize.DATE,
       allowNull: false,
     },

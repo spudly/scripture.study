@@ -133,7 +133,7 @@ class SessionStore extends Store {
       data = model?.data;
       logger.info('[SessionStore] session data');
     } catch (err) {
-      logger.error('[SessionStore] failed to get session data');
+      logger.error({error: err}, `[SessionStore] failed to get session data`);
       error = err;
     }
     callback(error, data);

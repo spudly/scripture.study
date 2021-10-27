@@ -1,8 +1,8 @@
 import {PersonRecord} from '../types';
 
 const comparePeople = (a: PersonRecord, b: PersonRecord) => {
-  const aName = a.name ?? a.description ?? '';
-  const bName = b.name ?? b.description ?? '';
+  const aName = (a.name ?? a.description ?? '').toLowerCase();
+  const bName = (b.name ?? b.description ?? '').toLowerCase();
 
   if (aName < bName) {
     return -1;
