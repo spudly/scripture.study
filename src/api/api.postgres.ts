@@ -972,7 +972,6 @@ export {
 export const deleteExpiredSessions = async (): Promise<number> => {
   return await Session.destroy({
     where: {
-      // @ts-expect-error: ??
       expirationDate: {[Op.lt]: sequelize.fn('NOW')},
     },
   });
