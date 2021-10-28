@@ -1,3 +1,7 @@
+import dotenv from 'dotenv';
+
+dotenv.config();
+
 // @ts-expect-error
 global.IS_DEV = process.env.NODE_ENV === 'development';
 // @ts-expect-error

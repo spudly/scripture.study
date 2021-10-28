@@ -1,4 +1,4 @@
-import sequelize, {Model, ModelCtor, Op} from 'sequelize';
+import sequelize, {Model, ModelCtor, Op, Options} from 'sequelize';
 import {v4 as uuid} from 'uuid';
 import {
   BookRecord,
@@ -23,7 +23,7 @@ import {logger} from '../utils/logger';
 
 const {DATABASE_URL} = process.env;
 
-const sql = new sequelize.Sequelize(DATABASE_URL!, {
+const SQL_OPTIONS: Options = {
   dialect: 'postgres',
   ssl: IS_PROD,
   dialectOptions: {
@@ -45,7 +45,11 @@ const sql = new sequelize.Sequelize(DATABASE_URL!, {
   logging: msg => {
     logger.info(msg);
   },
-});
+};
+
+console.log({DATABASE_URL, SQL_OPTIONS: JSON.stringify(SQL_OPTIONS)});
+
+const sql = new sequelize.Sequelize(DATABASE_URL!, SQL_OPTIONS);
 
 const dateGetter = (key: string) =>
   function (this: {getDataValue: Function}) {
@@ -968,6 +972,7 @@ export {
 export const deleteExpiredSessions = async (): Promise<number> => {
   return await Session.destroy({
     where: {
+      // @ts-expect-error: ??
       expirationDate: {[Op.lt]: sequelize.fn('NOW')},
     },
   });
