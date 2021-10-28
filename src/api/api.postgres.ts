@@ -26,12 +26,11 @@ const {DATABASE_URL} = process.env;
 const SQL_OPTIONS: Options = {
   dialect: 'postgres',
   ssl: IS_PROD,
-  dialectOptions: {
-    ssl: {
-      require: IS_PROD,
-      rejectUnauthorized: false,
-    },
-  },
+  dialectOptions: IS_PROD
+    ? {
+        ssl: {require: true, rejectUnauthorized: false},
+      }
+    : {},
   define: {
     timestamps: false, // disable automatic createdAt & updatedAt columns
     freezeTableName: true, // disable automatic pluralization of table names
@@ -46,8 +45,6 @@ const SQL_OPTIONS: Options = {
     logger.info(msg);
   },
 };
-
-console.log({DATABASE_URL, SQL_OPTIONS: JSON.stringify(SQL_OPTIONS)});
 
 const sql = new sequelize.Sequelize(DATABASE_URL!, SQL_OPTIONS);
 
